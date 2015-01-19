@@ -1,2 +1,4 @@
 *.pyc
-/.idea
+.idea
+
+channel_integration/mwstest.py

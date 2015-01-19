@@ -3,8 +3,9 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-from .serializers import ChannelIntegrationSerializer
-from .models import ChannelIntegration
+from .serializers import ChannelIntegrationSerializer, AmazonSerializer, AmazonInventorySerializer
+from .models import ChannelIntegration, Amazon, AmazonInventory
+from tasks import amazon_request_report
 
 
 # Create your views here.
@@ -31,11 +32,22 @@ def channels(request):
 
     elif request.method == 'POST':
         data = JSONParser().parse(request)
+        # 'name','site','merchant_id','marketplace_id','merchant_name','status'
+        data['name'] = 'test-user'
+        data['merchant_id'] = data['merchantId']
+        data['marketplace_id'] = data['marketplaceId']
+        data['merchant_name'] = data['merchantName']
+        data['aceess_key'] = data['accesskey']
+        data['secret_key'] = data['secretkey']
+
         serializer = ChannelIntegrationSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return JSONResponse(serializer.data, status=201)
         return JSONResponse(serializer.errors, status=400)
+
+    elif request.method == 'OPTIONS':
+        return HttpResponse(status=200)
 
 
 @csrf_exempt
@@ -63,3 +75,65 @@ def channel(request, pk):
     elif request.method == 'DELETE':
         channel.delete()
         return HttpResponse(status=204)
+
+    elif request.method == 'OPTIONS':
+        return HttpResponse(status=200)
+
+@csrf_exempt
+def inventory(request, pk):
+    """
+    Retrieve, update or delete a code channel.
+    """
+    try:
+        channel = ChannelIntegration.objects.get(pk=pk)
+    except ChannelIntegration.DoesNotExist:
+        return HttpResponse(status=404)
+
+    try:
+        inventory = AmazonInventory.objects.filter(channel=channel)
+    except AmazonInventory.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = AmazonInventorySerializer(inventory, many=True)
+        return JSONResponse(serializer.data)
+
+    # elif request.method == 'PUT':
+    #     data = JSONParser().parse(request)
+    #     serializer = ChannelIntegrationSerializer(channel, data=data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return JSONResponse(serializer.data)
+    #     return JSONResponse(serializer.errors, status=400)
+    #
+    # elif request.method == 'DELETE':
+    #     channel.delete()
+    #     return HttpResponse(status=204)
+
+    elif request.method == 'OPTIONS':
+        return HttpResponse(status=200)
+
+
+def sync(request, pk):
+    """
+
+    :param request:
+    :type request:
+    :param pk:
+    :type pk:
+    :return:
+    :rtype:
+    """
+    amz = {}
+    try:
+        ch = ChannelIntegration.objects.get(pk=pk)
+    except ChannelIntegration.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        amz["akey"] = ch.aceess_key
+        amz["skey"] = ch.secret_key
+        amz["mid"] = ch.merchant_id
+        amz["mpid"] = ch.marketplace_id
+        amazon_request_report.delay(amz)
+        return HttpResponse(status=200)
