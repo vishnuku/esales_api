@@ -10,7 +10,7 @@ def amazon_request_report(amz, type = '_GET_MERCHANT_LISTINGS_DATA_'):
     rr = con.request_report(ReportType=type)
     rid = rr.RequestReportResult.ReportRequestInfo.ReportRequestId
 
-    amazon_get_report.apply_async((amz, rid), countdown=10)
+    amazon_get_report_list.apply_async((amz, rid), countdown=10)
     #create a news task to get the taskid from get_report ist
     return True
 
@@ -26,7 +26,7 @@ def amazon_get_report_list(amz, rid):
         pass
     else:
         # rerun after some time
-        amazon_get_report.apply_async((amz, rid), countdown=10)
+        amazon_get_report_list.apply_async((amz, rid), countdown=10)
         pass
     return True
 
