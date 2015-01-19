@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'rest_framework',
     'channel_integration',
+    'corsheaders',
 )
 
 REST_FRAMEWORK = {
@@ -52,6 +53,7 @@ REST_FRAMEWORK = {
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -61,6 +63,17 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'esales_api.urls'
 
 WSGI_APPLICATION = 'esales_api.wsgi.application'
+
+
+#CORS CONFIGURATION
+USE_ETAGS = True
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_WHITELIST = (
+    'localhost:1841',
+    'localhost:8000',
+    '127.0.0.1:1841',
+    '127.0.0.1:8000'
+    )
 
 
 # Internationalization
