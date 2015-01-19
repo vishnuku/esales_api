@@ -81,6 +81,9 @@ USE_TZ = True
 
 CORS_ORIGIN_ALLOW_ALL = True
 
+BROKER_URL = 'redis://localhost:6379/0'
+
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
