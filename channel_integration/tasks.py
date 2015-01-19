@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 from boto.mws.connection import MWSConnection
 from celery import shared_task
-from channel_integration.models import AmazonInventory
+from .models import AmazonInventory
 
 @shared_task
 def amazon_request_report(amz, type = '_GET_MERCHANT_LISTINGS_DATA_'):
@@ -51,18 +51,3 @@ def amazon_get_report(amz, rid):
                             add_delete=row[24], pending_quantity=row[25], fulfillment_channel=row[26])
         d.save()
     return True
-
-
-@shared_task
-def add(x, y):
-    return x + y
-
-
-@shared_task
-def mul(x, y):
-    return x * y
-
-
-@shared_task
-def xsum(numbers):
-    return sum(numbers)
