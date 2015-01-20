@@ -4,20 +4,40 @@ from boto.mws.connection import MWSConnection
 from celery import shared_task
 from .models import AmazonInventory
 
+
 @shared_task
 def amazon_request_report(amz, type = '_GET_MERCHANT_LISTINGS_DATA_'):
+    """
+
+    :param amz:
+    :type amz:
+    :param type:
+    :type type:
+    :return:
+    :rtype:
+    """
     con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
     rr = con.request_report(ReportType=type)
     rid = rr.RequestReportResult.ReportRequestInfo.ReportRequestId
 
-    amazon_get_report_list.apply_async((amz, rid), countdown=10)
-    #create a news task to get the taskid from get_report ist
+    amazon_get_report_list.apply_async((amz, rid), countdown=60)
     return True
+
 
 @shared_task
 def amazon_get_report_list(amz, rid):
+    """
+
+    :param amz:
+    :type amz:
+    :param rid:
+    :type rid:
+    :return:
+    :rtype:
+    """
     con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
     rr = con.get_report_request_list(ReportRequestIdList=[rid])
+
     if rr.GetReportRequestListResult.ReportRequestInfo[0].ReportProcessingStatus == '_DONE_':
         rid = rr.GetReportRequestListResult.ReportRequestInfo[0].GeneratedReportId
         amazon_get_report.apply_async((amz, rid))
@@ -30,8 +50,18 @@ def amazon_get_report_list(amz, rid):
         pass
     return True
 
+
 @shared_task
 def amazon_get_report(amz, rid):
+    """
+
+    :param amz:
+    :type amz:
+    :param rid:
+    :type rid:
+    :return:
+    :rtype:
+    """
     con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
     rr = con.get_report(ReportId=rid)
     rr = rr.split("\n")
@@ -48,6 +78,7 @@ def amazon_get_report(amz, rid):
                             zshop_browse_path=row[14], zshop_storefront_feature=row[15], asin1=row[16], asin2=row[17],
                             asin3=row[18], will_ship_internationally=row[19], expedited_shipping=row[20],
                             zshop_boldface=row[21], product_id=row[22], bid_for_featured_placement=row[23],
-                            add_delete=row[24], pending_quantity=row[25], fulfillment_channel=row[26])
+                            add_delete=row[24], pending_quantity=row[25], fulfillment_channel=row[26],
+                            channel_id=amz['cid'])
         d.save()
     return True

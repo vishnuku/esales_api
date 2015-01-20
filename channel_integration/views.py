@@ -135,5 +135,6 @@ def sync(request, pk):
         amz["skey"] = ch.secret_key
         amz["mid"] = ch.merchant_id
         amz["mpid"] = ch.marketplace_id
+        amz["cid"] = pk
         amazon_request_report.delay(amz)
         return HttpResponse(status=200)
