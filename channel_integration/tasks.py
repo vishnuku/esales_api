@@ -46,7 +46,7 @@ def amazon_get_report_list(amz, rid):
         pass
     else:
         # rerun after some time
-        amazon_get_report_list.apply_async((amz, rid), countdown=10)
+        amazon_get_report_list.apply_async((amz, rid), countdown=60)
         pass
     return True
 
