@@ -6,7 +6,7 @@ class ChannelIntegrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChannelIntegration
         fields = ('id','name', 'site', 'merchant_id', 'marketplace_id', 'access_key', 'secret_key', 'merchant_name',
-                  'status')
+                  'status','sync_status')
 
 
 class AmazonSerializer(serializers.ModelSerializer):

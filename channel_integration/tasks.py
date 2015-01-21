@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 from boto.mws.connection import MWSConnection
 from celery import shared_task
-from .models import AmazonInventory
+from .models import AmazonInventory, ChannelIntegration
 
 
 @shared_task
@@ -81,4 +81,10 @@ def amazon_get_report(amz, rid):
                             add_delete=row[24], pending_quantity=row[25], fulfillment_channel=row[26],
                             channel_id=amz['cid'])
         d.save()
+
+        # Update status to completed in ChannelIntegration
+        channel = ChannelIntegration.objects.get(pk=amz['cid'])
+        channel.sync_status = 1
+        channel.save()
+
     return True

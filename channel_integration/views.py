@@ -86,11 +86,6 @@ def inventory(request, pk):
     Retrieve, update or delete a code channel.
     """
     try:
-        channel = ChannelIntegration.objects.get(pk=pk)
-    except ChannelIntegration.DoesNotExist:
-        return HttpResponse(status=404)
-
-    try:
         inventory = AmazonInventory.objects.filter(channel=channel)
     except AmazonInventory.DoesNotExist:
         return HttpResponse(status=404)
@@ -132,10 +127,13 @@ def sync(request, pk):
         return HttpResponse(status=404)
 
     if request.method == 'GET':
-        amz["akey"] = ch.aceess_key
+        print ch
+        amz["akey"] = ch.access_key
         amz["skey"] = ch.secret_key
         amz["mid"] = ch.merchant_id
         amz["mpid"] = ch.marketplace_id
         amz["cid"] = pk
-        amazon_request_report.delay(amz)
+        ch.sync_status = 1
+        ch.save()
+        #amazon_request_report.delay(amz)
         return HttpResponse(status=200)

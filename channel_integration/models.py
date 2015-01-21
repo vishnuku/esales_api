@@ -11,6 +11,7 @@ class ChannelIntegration(models.Model):
     merchant_name = models.CharField(max_length=100, blank=False, unique=True)
     access_key = models.CharField(max_length=100, blank=True, default='')
     secret_key = models.CharField(max_length=100, blank=True, default='')
+    sync_status = models.SmallIntegerField(max_length=1, blank=True, default=0)
     status = models.BooleanField(default=True, verbose_name=_('Is Enabled'))
 
     class Meta:
