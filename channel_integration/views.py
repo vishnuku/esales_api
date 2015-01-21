@@ -86,6 +86,11 @@ def inventory(request, pk):
     Retrieve, update or delete a code channel.
     """
     try:
+        channel = ChannelIntegration.objects.get(pk=pk)
+    except ChannelIntegration.DoesNotExist:
+        return HttpResponse(status=404)
+
+    try:
         inventory = AmazonInventory.objects.filter(channel=channel)
     except AmazonInventory.DoesNotExist:
         return HttpResponse(status=404)
