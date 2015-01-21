@@ -5,14 +5,14 @@ from .models import ChannelIntegration, Amazon, AmazonInventory
 class ChannelIntegrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChannelIntegration
-        fields = ('id','name', 'site', 'merchant_id', 'marketplace_id', 'aceess_key', 'secret_key', 'merchant_name',
+        fields = ('id','name', 'site', 'merchant_id', 'marketplace_id', 'access_key', 'secret_key', 'merchant_name',
                   'status')
 
 
 class AmazonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Amazon
-        fields = ('id','user', 'merchant_id', 'marketplace_id', 'aceess_key', 'secret_key', 'status')
+        fields = ('id','user', 'merchant_id', 'marketplace_id', 'access_key', 'secret_key', 'status')
 
 
 class AmazonInventorySerializer(serializers.ModelSerializer):

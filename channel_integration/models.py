@@ -9,7 +9,7 @@ class ChannelIntegration(models.Model):
     merchant_id = models.CharField(max_length=100, blank=True, default='')
     marketplace_id = models.CharField(max_length=100, blank=True, default='')
     merchant_name = models.CharField(max_length=100, blank=False, unique=True)
-    aceess_key = models.CharField(max_length=100, blank=True, default='')
+    access_key = models.CharField(max_length=100, blank=True, default='')
     secret_key = models.CharField(max_length=100, blank=True, default='')
     status = models.BooleanField(default=True, verbose_name=_('Is Enabled'))
 
@@ -22,7 +22,7 @@ class Amazon(models.Model):
     user = models.CharField(max_length=100, blank=True, default='')
     merchant_id = models.CharField(max_length=100, blank=True, default='')
     marketplace_id = models.CharField(max_length=100, blank=True, default='')
-    aceess_key = models.CharField(max_length=100, blank=True, default='')
+    access_key = models.CharField(max_length=100, blank=True, default='')
     secret_key = models.CharField(max_length=100, blank=True, default='')
     status = models.BooleanField(default=True, verbose_name=_('Is Enabled'))
     created = models.DateTimeField(auto_now_add=True)
