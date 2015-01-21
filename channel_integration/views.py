@@ -32,13 +32,14 @@ def channels(request):
 
     elif request.method == 'POST':
         data = JSONParser().parse(request)
+        print data
         # 'name','site','merchant_id','marketplace_id','merchant_name','status'
-        data['name'] = 'test-user'
+        '''data['name'] = 'test-user'
         data['merchant_id'] = data['merchantId']
         data['marketplace_id'] = data['marketplaceId']
         data['merchant_name'] = data['merchantName']
         data['aceess_key'] = data['accesskey']
-        data['secret_key'] = data['secretkey']
+        data['secret_key'] = data['secretkey']'''
 
         serializer = ChannelIntegrationSerializer(data=data)
         if serializer.is_valid():
