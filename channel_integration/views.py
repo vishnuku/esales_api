@@ -32,7 +32,6 @@ def channels(request):
 
     elif request.method == 'POST':
         data = JSONParser().parse(request)
-        print data
         # 'name','site','merchant_id','marketplace_id','merchant_name','status'
         '''data['name'] = 'test-user'
         data['merchant_id'] = data['merchantId']

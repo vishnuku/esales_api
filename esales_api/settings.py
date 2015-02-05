@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'corsheaders',
     'channel_integration',
+    'inventory_management',
     'djcelery'
 )
 
