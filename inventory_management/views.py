@@ -30,9 +30,10 @@ def category(request):
 
 ''' This function is used to add new inventory item to db and fetch and return on basis of request method
  '''
-def Product(request):
+@csrf_exempt
+def Products(request):
     if request.method == 'GET':
-        products = Products.objects.all()
+        products = InventoryProducts.objects.all()
         serializer = InventoryProductSerializer(products, many=True)
         return JSONResponse(serializer.data)
     elif request.method == 'POST':
@@ -42,3 +43,29 @@ def Product(request):
             serializer.save()
             return JSONResponse(serializer.data, status=200)
         return JSONResponse(serializer.errors, status=400)
+
+@csrf_exempt
+def Product(request, pk):
+    try:
+        product = InventoryProducts.objects.get(pk=pk)
+    except InventoryProducts.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = InventoryProductSerializer(product)
+        return JSONResponse(serializer.data)
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        print data
+        serializer = InventoryProductSerializer(product, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JSONResponse(serializer.data)
+        return JSONResponse(serializer.errors, status=400)
+    elif request.method == 'DELETE':
+        product.delete()
+        return HttpResponse(status=204)
+
+    elif request.method == 'OPTIONS':
+        return HttpResponse(status=200)
+
