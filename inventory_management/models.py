@@ -29,3 +29,14 @@ class InventoryProducts(models.Model):
 
     class Meta:
         ordering = ('created',)
+
+'''InventoryProduct Images'''
+class InventoryProductImages(models.Model):
+    inventory_product = models.ForeignKey(InventoryProducts)
+    image = models.ImageField(upload_to='photos', max_length=254)
+    is_main = models.BooleanField(default=False)
+    status = models.SmallIntegerField(default=0,blank=False)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('created',)
