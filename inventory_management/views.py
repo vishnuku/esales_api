@@ -2,9 +2,11 @@
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
+from rest_framework.parsers import JSONParser, MultiPartParser, FileUploadParser
 from .serializers import *
 from .models import *
+'''  '''
+from rest_framework.views import APIView
 # Create your views here.
 
 class JSONResponse(HttpResponse):
@@ -15,7 +17,7 @@ class JSONResponse(HttpResponse):
         super(JSONResponse, self).__init__(content, **kwargs)
 
 @csrf_exempt
-def category(request):
+def categories(request):
     if request.method == 'GET':
         categories = ProductCategory.objects.all()
         serializer = InventoryProductCategorySerializer(categories, many=True)
@@ -28,13 +30,34 @@ def category(request):
             return JSONResponse(serializer.data, status=201)
         return JSONResponse(serializer.errors, status=400)
 
+@csrf_exempt
+def category(request, pk):
+    try:
+        category_object = ProductCategory.objects.get(pk=pk)
+    except ProductCategory.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = InventoryProductCategorySerializer(category_object)
+        return JSONResponse(serializer.data)
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = InventoryProductCategorySerializer(category_object, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JSONResponse(serializer.data)
+        return JSONResponse(serializer.errors, status=404)
+    elif request.method == 'DELETE':
+        category_object.delete()
+        return HttpResponse(status=204)
+
 ''' This function is used to add new inventory item to db and fetch and return on basis of request method
  '''
 @csrf_exempt
-def Products(request):
+def products(request):
     if request.method == 'GET':
-        products = InventoryProducts.objects.all()
-        serializer = InventoryProductSerializer(products, many=True)
+        products_list = InventoryProducts.objects.all()
+        serializer = InventoryProductSerializer(products_list, many=True)
         return JSONResponse(serializer.data)
     elif request.method == 'POST':
         data = JSONParser().parse(request)
@@ -45,27 +68,43 @@ def Products(request):
         return JSONResponse(serializer.errors, status=400)
 
 @csrf_exempt
-def Product(request, pk):
+def product(request, pk):
     try:
-        product = InventoryProducts.objects.get(pk=pk)
+        product_object = InventoryProducts.objects.get(pk=pk)
     except InventoryProducts.DoesNotExist:
         return HttpResponse(status=404)
 
     if request.method == 'GET':
-        serializer = InventoryProductSerializer(product)
+        serializer = InventoryProductSerializer(product_object)
         return JSONResponse(serializer.data)
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
-        print data
-        serializer = InventoryProductSerializer(product, data=data)
+        serializer = InventoryProductSerializer(product_object, data=data)
         if serializer.is_valid():
             serializer.save()
             return JSONResponse(serializer.data)
         return JSONResponse(serializer.errors, status=400)
     elif request.method == 'DELETE':
-        product.delete()
+        product_object.delete()
         return HttpResponse(status=204)
 
     elif request.method == 'OPTIONS':
         return HttpResponse(status=200)
 
+''' Product Images api calls
+    InventoryImages: Only for Get, Post
+'''
+@csrf_exempt
+def inventory_images(request):
+
+    if request.method == 'GET':
+        images = InventoryProductImages.objects.all()
+        serializer = InventoryProductImageSerializer(images, many=True)
+        return JSONResponse(serializer.data)
+    elif request.method == 'POST':
+        serializer = InventoryProductImageSerializer(request.POST, request.FILES)
+        if serializer.is_valid():
+            print 'yes'
+
+        else:
+            print 'error'

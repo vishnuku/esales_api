@@ -2,8 +2,10 @@ from django.conf.urls import url
 import views
 
 urlpatterns = [
-    url(r'^Category/$', views.category, name='category'),
-    url(r'^InventoryProducts/$', views.Products, name='inventory_products'),
-    url(r'^InventoryProduct/(?P<pk>[0-9]+)/$', views.Product, name='inventory_product')
+    url(r'^Categories/$', views.categories, name='inventory_categories'),
+    url(r'^Category/(?P<pk>[0-9]+)/$', views.category, name='inventory_category'),
+    url(r'^InventoryProducts/$', views.products, name='inventory_products'),
+    url(r'^InventoryProduct/(?P<pk>[0-9]+)/$', views.product, name='inventory_product'),
+    url(r'^InventoryImages/$', views.inventory_images, name="inventory_images")
 ]
 

@@ -97,3 +97,8 @@ try:
     from settings_local import *
 except ImportError:
     pass
+
+''' Global variable for directory access start. '''
+MEDIA_ROOT = os.path.dirname(__file__)+'/media/'
+MEDIA_URL = '/media/'
+''' Global variable for directory access end. '''
