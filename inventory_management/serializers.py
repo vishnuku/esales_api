@@ -15,13 +15,6 @@ class InventoryProductSerializer(serializers.ModelSerializer):
                   'category_id', 'barcode', 'stock_value', 'minimum_stock_level', 'user_id', 'status', 'created')
 
 class InventoryProductImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = InventoryProductImages
-        fields = ('id', 'image', 'is_main', 'status', 'created', 'inventory_product')
-        inventory_product = serializers.Field(source='inventory_product.name')
-
-
-class InventoryProductImageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InventoryProductImages
