@@ -5,9 +5,8 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser, MultiPartParser, FileUploadParser
 from .serializers import *
 from .models import *
-'''  '''
-from rest_framework.views import APIView
-# Create your views here.
+from rest_framework import generics
+from rest_framework import permissions
 
 class JSONResponse(HttpResponse):
 
@@ -93,18 +92,27 @@ def product(request, pk):
 
 ''' Product Images api calls
     InventoryImages: Only for Get, Post
+
 '''
+#TODO remove the imventory_images once InventoryProductImage get method activated
 @csrf_exempt
 def inventory_images(request):
 
     if request.method == 'GET':
         images = InventoryProductImages.objects.all()
-        serializer = InventoryProductImageSerializer(images, many=True)
-        return JSONResponse(serializer.data)
-    elif request.method == 'POST':
-        serializer = InventoryProductImageSerializer(request.POST, request.FILES)
+        serializer = InventoryProductImageSerializer(request.REQUEST, images, many=True)
         if serializer.is_valid():
             print 'yes'
 
         else:
-            print 'error'
+            print serializer.error_messages
+
+        return JSONResponse(serializer.data)
+
+#TODO work on get method
+class InventoryProductImage(generics.ListCreateAPIView):
+    model = InventoryProductImages
+    serializer_class = InventoryProductImageSerializer
+    permission_classes = [
+        permissions.AllowAny
+    ]
