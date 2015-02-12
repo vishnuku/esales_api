@@ -90,28 +90,17 @@ def product(request, pk):
     elif request.method == 'OPTIONS':
         return HttpResponse(status=200)
 
-''' Product Images api calls
-    InventoryImages: Only for Get, Post
 
-'''
-#TODO remove the imventory_images once InventoryProductImage get method activated
-@csrf_exempt
-def inventory_images(request):
-
-    if request.method == 'GET':
-        images = InventoryProductImages.objects.all()
-        serializer = InventoryProductImageSerializer(request.REQUEST, images, many=True)
-        if serializer.is_valid():
-            print 'yes'
-
-        else:
-            print serializer.error_messages
-
-        return JSONResponse(serializer.data)
-
-#TODO work on get method
-class InventoryProductImage(generics.ListCreateAPIView):
+class InventoryProductImageList(generics.ListCreateAPIView):
+    queryset = InventoryProductImages.objects.all()
     model = InventoryProductImages
+    serializer_class = InventoryProductImageSerializer
+    permission_classes = [
+        permissions.AllowAny
+    ]
+
+class InventoryProductImageDetails(generics.RetrieveAPIView):
+    queryset = InventoryProductImages.objects.all()
     serializer_class = InventoryProductImageSerializer
     permission_classes = [
         permissions.AllowAny
