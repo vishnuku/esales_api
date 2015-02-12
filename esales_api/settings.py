@@ -89,7 +89,6 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-STATIC_URL = '/static/'
 
 #IMPORT LOCAL SETTINGS
 #=====================
@@ -99,6 +98,8 @@ except ImportError:
     pass
 
 ''' Global variable for directory access start. '''
+STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.dirname(__file__)+'/media/'
 MEDIA_URL = '/media/'
+
 ''' Global variable for directory access end. '''
