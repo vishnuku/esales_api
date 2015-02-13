@@ -47,7 +47,7 @@ def get_unique_image_file_path(instance=None, filename='dummy.jpg'):
 
 
 class InventoryProductImages(models.Model):
-    inventory_product = models.ForeignKey(InventoryProducts, default=1)
+    inventory_product = models.ForeignKey(InventoryProducts, default=1, related_name='images')
     image = models.ImageField(upload_to=get_unique_image_file_path)
     is_main = models.BooleanField(default=False)
     status = models.SmallIntegerField(default=1, blank=True, null=True)
@@ -58,3 +58,6 @@ class InventoryProductImages(models.Model):
 
     class Meta:
         ordering = ('created',)
+
+    def __unicode__(self):
+        return '%s' % (self.image)
