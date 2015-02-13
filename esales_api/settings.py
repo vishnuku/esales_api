@@ -100,6 +100,6 @@ except ImportError:
 ''' Global variable for directory access start. '''
 STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.dirname(__file__)+'/media/'
-MEDIA_URL = '/media/'
+MEDIA_URL = '/m/'
 
 ''' Global variable for directory access end. '''
