@@ -45,10 +45,11 @@ def get_unique_image_file_path(instance=None, filename='dummy.jpg'):
     # TODO: 'images' is hard coded
     return os.path.join('images', filename)
 
+
 class InventoryProductImages(models.Model):
     inventory_product = models.ForeignKey(InventoryProducts, default=1)
     image = models.ImageField(upload_to=get_unique_image_file_path)
-    is_main = models.BooleanField(default=0)
+    is_main = models.BooleanField(default=False)
     status = models.SmallIntegerField(default=1, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 

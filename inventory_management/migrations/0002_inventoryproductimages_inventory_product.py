@@ -7,13 +7,14 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('inventory_management', '0012_inventoryproductimages'),
+        ('inventory_management', '0001_initial'),
     ]
 
     operations = [
-        migrations.RenameField(
+        migrations.AddField(
             model_name='inventoryproductimages',
-            old_name='inventory_product',
-            new_name='inventory_product_id',
+            name='inventory_product',
+            field=models.ForeignKey(default=1, to='inventory_management.InventoryProducts'),
+            preserve_default=True,
         ),
     ]
