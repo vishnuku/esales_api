@@ -2,7 +2,8 @@ from __future__ import absolute_import
 
 from boto.mws.connection import MWSConnection
 from celery import shared_task
-from .models import AmazonInventory, ChannelIntegration
+from .models import Channel
+from inventory.models import AmazonProduct, Product, Category
 
 
 @shared_task
@@ -71,7 +72,15 @@ def amazon_get_report(amz, rid):
 
     for r in rr:
         row = r.split("\t")
-        d = AmazonInventory(item_name=row[0], item_description=row[1], listing_id=row[2], seller_sku=row[3],
+        #crete or get category
+        c, cr = Category.objects.get_or_create(name=row[13])
+        # chek if product is in local inventory
+        p, created = Product.objects.get_or_create(sku=row[3], defaults={'name': row[0], 'retail_price': row[4],
+                                                                         'user_id': amz['uid'], 'created_by_id': amz['uid'],
+                                                                         'updated_by_id': amz['uid'],
+                                                                         'category_id': c.id})
+
+        d = AmazonProduct(item_name=row[0], item_description=row[1], listing_id=row[2], seller_sku=row[3],
                             price=row[4], quantity=row[5], open_date=row[6], image_url=row[7],
                             item_is_marketplace=row[8], product_id_type=row[9], zshop_shipping_fee=row[10],
                             item_note=row[11], item_condition=row[12], zshop_category1=row[13],
@@ -79,11 +88,11 @@ def amazon_get_report(amz, rid):
                             asin3=row[18], will_ship_internationally=row[19], expedited_shipping=row[20],
                             zshop_boldface=row[21], product_id=row[22], bid_for_featured_placement=row[23],
                             add_delete=row[24], pending_quantity=row[25], fulfillment_channel=row[26],
-                            channel_id=amz['cid'])
+                            channel_id=amz['cid'], product=p)
         d.save()
 
         # Update status to completed in ChannelIntegration
-        channel = ChannelIntegration.objects.get(pk=amz['cid'])
+        channel = Channel.objects.get(pk=amz['cid'])
         channel.sync_status = 1
         channel.save()
 
@@ -91,11 +100,24 @@ def amazon_get_report(amz, rid):
 
 
 @shared_task
-def amazon_add_product():
+def amazon_add_product(amz, products):
+    """
+
+    :param amz:
+    :type amz:
+    :param products:
+    :type products:
+    :return:
+    :rtype:
+    """
+
     pass
+    con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
+    # rr = con.request_report(ReportType=rtype)
+    # rid = rr.RequestReportResult.ReportRequestInfo.ReportRequestId
 
 @shared_task
-def amazon_update_product():
+def amazon_update_product(amz, products):
     pass
 
 @shared_task
