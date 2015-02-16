@@ -179,10 +179,11 @@ class ListingProducts(generics.ListCreateAPIView):
         amz["mid"] = ch.merchant_id
         amz["mpid"] = ch.marketplace_id
         print request.data
+        data = JSONParser().parse(request)
         ps = request.POST.getlist('pids')
 
         if not ps:
-            ps = request.data['pids']
+            ps = data['pids']
         ps = [ps]
         for p in ps:
             pr = {}
