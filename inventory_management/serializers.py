@@ -25,8 +25,10 @@ class InventoryProductImageSerializerTest(serializers.ModelSerializer):
         model = InventoryProducts
         fields = ('id', 'images')
 
+
 class InventoryProductWithImagesSerializer(serializers.ModelSerializer):
-    images = serializers.StringRelatedField(many=True)
+    #images = serializers.StringRelatedField(many=True)
+    images = InventoryProductImageSerializer(many=True)
 
     class Meta:
         model = InventoryProducts

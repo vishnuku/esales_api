@@ -7,6 +7,10 @@ from .serializers import *
 from .models import *
 from rest_framework import generics
 from rest_framework import permissions
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework import filters
+
 
 class JSONResponse(HttpResponse):
 
@@ -92,12 +96,34 @@ def product(request, pk):
 
 
 class InventoryProductImageList(generics.ListCreateAPIView):
-    queryset = InventoryProductImages.objects.all()
+    #queryset = InventoryProductImages.objects.all()
     model = InventoryProductImages
     serializer_class = InventoryProductImageSerializer
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned purchases to a given user,
+        by filtering against a `username` query parameter in the URL.
+        """
+        queryset = InventoryProductImages.objects.all()
+        product = self.request.QUERY_PARAMS.get('product', None)
+        if product is not None:
+            queryset = queryset.filter(inventory_product__id=product)
+        return queryset
+
+
+    def post(self, request, format=None):
+        serializer = InventoryProductImageSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            data = {"success": "true"}
+            return Response(data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     permission_classes = [
         permissions.AllowAny
     ]
+
 
 class InventoryProductImageDetails(generics.RetrieveAPIView):
     queryset = InventoryProductImages.objects.all()
@@ -109,6 +135,7 @@ class InventoryProductImageDetails(generics.RetrieveAPIView):
 class InventoryProductWithImagesList(generics.ListAPIView):
     queryset = InventoryProducts.objects.all()
     serializer_class = InventoryProductWithImagesSerializer
+
     permission_classes = [
         permissions.AllowAny
     ]
