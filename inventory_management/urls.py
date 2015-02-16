@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^InventoryProduct/(?P<pk>[0-9]+)/$', views.product, name='inventory_product'),
     url(r'^InventoryImages/$', views.InventoryProductImageList.as_view(), name="inventory_images"),
     url(r'^InventoryImages/(?P<pk>[0-9]+)/$', views.InventoryProductImageDetails.as_view(), name='inventory_images'),
-    url(r'^InventoryProductImages/$', views.InventoryProductWithImages.as_view(), name="inventory_images"),
+    url(r'^InventoryProductImages/$', views.InventoryProductWithImagesList.as_view(), name="inventory_product_images"),
+    url(r'^InventoryProductImage/(?P<pk>[0-9]+)/$', views.InventoryProductWithImagesDetails.as_view(), name='inventory_product_images'),
 ]
 
