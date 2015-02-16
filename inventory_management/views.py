@@ -106,7 +106,14 @@ class InventoryProductImageDetails(generics.RetrieveAPIView):
         permissions.AllowAny
     ]
 
-class InventoryProductWithImages(generics.ListAPIView):
+class InventoryProductWithImagesList(generics.ListAPIView):
+    queryset = InventoryProducts.objects.all()
+    serializer_class = InventoryProductWithImagesSerializer
+    permission_classes = [
+        permissions.AllowAny
+    ]
+
+class InventoryProductWithImagesDetails(generics.RetrieveAPIView):
     queryset = InventoryProducts.objects.all()
     serializer_class = InventoryProductWithImagesSerializer
     permission_classes = [
