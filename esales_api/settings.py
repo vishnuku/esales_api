@@ -38,9 +38,10 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'channel_integration',
-    'inventory_management',
-    'djcelery'
+    'integration',
+    'inventory',
+    'djcelery',
+    'mptt',
 )
 
 REST_FRAMEWORK = {
@@ -90,7 +91,9 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
-
+STATIC_URL = '/static/'
+MEDIA_ROOT = os.path.dirname(__file__)+'/media/'
+MEDIA_URL = '/m/'
 
 #IMPORT LOCAL SETTINGS
 #=====================
@@ -98,10 +101,3 @@ try:
     from settings_local import *
 except ImportError:
     pass
-
-''' Global variable for directory access start. '''
-STATIC_URL = '/static/'
-MEDIA_ROOT = os.path.dirname(__file__)+'/media/'
-MEDIA_URL = '/m/'
-
-''' Global variable for directory access end. '''
