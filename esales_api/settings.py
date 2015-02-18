@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'corsheaders',
     'integration',
     'inventory',
+    'inventory_management',
     'djcelery',
     'mptt',
 )
