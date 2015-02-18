@@ -1,4 +1,9 @@
 *.pyc
 .idea
-
-channel_integration/mwstest.py
+build
+.sencha
+.idea
+ext
+packages
+esales/bootstrap.json
+esales/media
