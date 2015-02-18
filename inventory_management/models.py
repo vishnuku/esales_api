@@ -61,3 +61,17 @@ class InventoryProductImages(models.Model):
 
     def __unicode__(self):
         return '%s' % (self.image)
+
+
+class InventoryCSV(models.Model):
+
+    """
+    To hold inventory csv files upload by user.
+    """
+    csv_name = models.FileField(upload_to=settings.MEDIA_ROOT+'csv/%Y/%m/%d')
+    status = models.SmallIntegerField(default=0, blank=False)
+    user_id = models.IntegerField(blank=False)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('created',)

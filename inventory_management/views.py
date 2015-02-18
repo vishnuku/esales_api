@@ -125,7 +125,7 @@ class InventoryProductImageList(generics.ListCreateAPIView):
     ]
 
 
-class InventoryProductImageDetails(generics.RetrieveAPIView):
+class InventoryProductImageDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = InventoryProductImages.objects.all()
     serializer_class = InventoryProductImageSerializer
     permission_classes = [
