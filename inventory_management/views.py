@@ -146,3 +146,4 @@ class InventoryProductWithImagesDetails(generics.RetrieveAPIView):
     permission_classes = [
         permissions.AllowAny
     ]
+

@@ -18,12 +18,6 @@ class InventoryProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = InventoryProductImages
 
-''' tesing serializer for image with product '''
-class InventoryProductImageSerializerTest(serializers.ModelSerializer):
-    images = serializers.StringRelatedField(many=True)
-    class Meta:
-        model = InventoryProducts
-        fields = ('id', 'images')
 
 
 class InventoryProductWithImagesSerializer(serializers.ModelSerializer):
