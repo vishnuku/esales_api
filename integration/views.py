@@ -7,7 +7,9 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework import status
+from channel_integration.models import ChannelIntegration
 from inventory.serializers import ImageSerializer
+from inventory_management.models import InventoryProducts
 from .serializers import ChannelSerializer, AmazonSerializer, AmazonProductSerializer
 from .models import Channel
 from inventory.models import AmazonProduct, Images, Product
@@ -153,7 +155,7 @@ def sync(request, pk):
         return HttpResponse(status=200)
 
 
-class ListingProducts(generics.ListCreateAPIView):
+class ListingProducts_original(generics.ListCreateAPIView):
     """
     Doc String
     """
@@ -227,6 +229,99 @@ class ListingProducts(generics.ListCreateAPIView):
         #
         # print rr.SubmitFeedResult.FeedSubmissionInfo.FeedSubmissionId
         # print rr.SubmitFeedResult.FeedSubmissionInfo.FeedProcessingStatus
+
+        # rr = con.submit_feed(FeedType='_POST_PRODUCT_IMAGE_DATA_', PurgeAndReplace=True, FeedContent=pfeedxml,
+        #                      content_type='text/xml')
+
+        # print rr
+        # print rr.SubmitFeedResult.FeedSubmissionInfo.FeedSubmissionId
+        # print rr.SubmitFeedResult.FeedSubmissionInfo.FeedProcessingStatus
+        print pfeedxml
+        print ifeedxml
+        print prfeedxml
+        print imfeedxml
+        print request.POST
+
+        data = {"success": "true"}
+        return Response(data, status=status.HTTP_200_OK)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ListingProducts(generics.ListCreateAPIView):
+    """
+    Doc String
+    """
+    queryset = AmazonProduct.objects.all()
+    model = AmazonProduct
+    serializer_class = AmazonProductSerializer
+    permission_classes = [
+        permissions.AllowAny
+    ]
+
+    def post(self, request, chid, format=None):
+        amz = {}
+        products = []
+        serializer = AmazonProductSerializer(data=request.data)
+        # if serializer.is_valid():
+        #     # serializer.save()
+        #     data = {"success": "true"}
+        #     return Response(data, status=status.HTTP_200_OK)
+        #create product feed
+        ch = ChannelIntegration.objects.get(pk=1)
+        amz["akey"] = ch.access_key
+        amz["skey"] = ch.secret_key
+        amz["mid"] = ch.merchant_id
+        amz["mpid"] = ch.marketplace_id
+        print request.data
+        data = JSONParser().parse(request)
+        ps = request.POST.getlist('pids')
+
+        if not ps:
+            ps = data['pids']
+        ps = [ps]
+        for p in ps:
+            pr = {}
+            p_obj = InventoryProducts.objects.get(id=int(p))
+            pr['sku'] = p_obj.product_sku
+            pr['title'] = p_obj.name
+            pr['brand'] = "Iphone tampered glass"
+            pr['desc'] = "Sample description iphone tampered glass"
+            pr['bulletpoint1'] = "Bullet Pount sample"
+            pr['bulletpoint2'] = "Bullet Pointt sample"
+            pr['MSRP'] = p_obj.retail_price
+            pr['manufacturer'] = 'zuang ho'
+            pr['itemtype'] = 'cell-phone-accessories'
+            pr['upc'] = '0863670007140'
+            pr['qnty'] = p_obj.stock_value
+            pr['ffl'] = "1"
+            pr['imgtype'] = "Main" #Alternate/Swatch
+            pr['imgloc'] = "http://example.com" #Alternate/Swatch
+
+            products.append(pr)
+
+        pfeedxml = amz_product_feed(amz, products)
+        ifeedxml = amz_inventory_feed(amz, products)
+        prfeedxml = amz_price_feed(amz, products)
+        imfeedxml = amz_image_feed(amz, products)
+
+        con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
+        rr = con.submit_feed(FeedType='_POST_PRODUCT_DATA_', PurgeAndReplace=True, FeedContent=pfeedxml,
+                             content_type='text/xml')
+
+        print rr.SubmitFeedResult.FeedSubmissionInfo.FeedSubmissionId
+        print rr.SubmitFeedResult.FeedSubmissionInfo.FeedProcessingStatus
+
+        rr = con.submit_feed(FeedType='_POST_INVENTORY_AVAILABILITY_DATA_', PurgeAndReplace=True, FeedContent=ifeedxml,
+                             content_type='text/xml')
+
+        print rr.SubmitFeedResult.FeedSubmissionInfo.FeedSubmissionId
+        print rr.SubmitFeedResult.FeedSubmissionInfo.FeedProcessingStatus
+
+        rr = con.submit_feed(FeedType='_POST_PRODUCT_PRICING_DATA_', PurgeAndReplace=True, FeedContent=prfeedxml,
+                             content_type='text/xml')
+
+        print rr.SubmitFeedResult.FeedSubmissionInfo.FeedSubmissionId
+        print rr.SubmitFeedResult.FeedSubmissionInfo.FeedProcessingStatus
 
         # rr = con.submit_feed(FeedType='_POST_PRODUCT_IMAGE_DATA_', PurgeAndReplace=True, FeedContent=pfeedxml,
         #                      content_type='text/xml')
