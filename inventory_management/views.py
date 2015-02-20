@@ -1,4 +1,5 @@
 #from django.shortcuts import render
+import token
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
@@ -9,10 +10,11 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
 
-
 from rest_framework import permissions
+from rest_framework import authtoken
+from rest_framework import authentication, permissions
 
-from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope, TokenHasScope
+#from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope, TokenHasScope
 
 class JSONResponse(HttpResponse):
 
@@ -21,6 +23,7 @@ class JSONResponse(HttpResponse):
         kwargs['content_type'] = 'application/json'
         super(JSONResponse, self).__init__(content, **kwargs)
 
+'''
 @csrf_exempt
 def categories(request):
     if request.method == 'GET':
@@ -55,50 +58,40 @@ def category(request, pk):
     elif request.method == 'DELETE':
         category_object.delete()
         return HttpResponse(status=204)
+'''
 
-''' This function is used to add new inventory item to db and fetch and return on basis of request method
- '''
-@csrf_exempt
-def products(request):
-    if request.method == 'GET':
-        products_list = InventoryProducts.objects.all().select_related('image')
-        serializer = InventoryProductSerializer(products_list, many=True)
-        return JSONResponse(serializer.data)
-    elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = InventoryProductSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JSONResponse(serializer.data, status=200)
-        return JSONResponse(serializer.errors, status=400)
+class ProductCategoryList(generics.ListAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = ProductCategory.objects.all()
+    serializer_class = InventoryProductCategorySerializer
 
-@csrf_exempt
-def product(request, pk):
-    try:
-        product_object = InventoryProducts.objects.get(pk=pk)
-    except InventoryProducts.DoesNotExist:
-        return HttpResponse(status=404)
 
-    if request.method == 'GET':
-        serializer = InventoryProductSerializer(product_object)
-        return JSONResponse(serializer.data)
-    elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = InventoryProductSerializer(product_object, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JSONResponse(serializer.data)
-        return JSONResponse(serializer.errors, status=400)
-    elif request.method == 'DELETE':
-        product_object.delete()
-        return HttpResponse(status=204)
+class ProductCategoryDetails(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = ProductCategory.objects.all()
+    serializer_class = InventoryProductCategorySerializer
 
-    elif request.method == 'OPTIONS':
-        return HttpResponse(status=200)
+
+class ProductList(generics.ListAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = InventoryProducts.objects.all()
+    serializer_class = InventoryProductSerializer
+
+
+class ProductDetails(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = InventoryProducts.objects.all()
+    serializer_class = InventoryProductSerializer
+
 
 
 class InventoryProductImageList(generics.ListCreateAPIView):
-    #queryset = InventoryProductImages.objects.all()
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
     model = InventoryProductImages
     serializer_class = InventoryProductImageSerializer
 
@@ -122,31 +115,23 @@ class InventoryProductImageList(generics.ListCreateAPIView):
             return Response(data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    permission_classes = [
-        permissions.AllowAny
-    ]
 
 
 class InventoryProductImageDetails(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = InventoryProductImages.objects.all()
     serializer_class = InventoryProductImageSerializer
-    permission_classes = [
-        permissions.AllowAny
-    ]
 
 class InventoryProductWithImagesList(generics.ListAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = InventoryProducts.objects.all()
     serializer_class = InventoryProductWithImagesSerializer
 
-    permission_classes = [
-        permissions.AllowAny
-    ]
 
 class InventoryProductWithImagesDetails(generics.RetrieveAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = InventoryProducts.objects.all()
     serializer_class = InventoryProductWithImagesSerializer
-    permission_classes = [
-        permissions.AllowAny
-    ]
-
