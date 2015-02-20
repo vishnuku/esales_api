@@ -6,11 +6,13 @@ from rest_framework.parsers import JSONParser, MultiPartParser, FileUploadParser
 from .serializers import *
 from .models import *
 from rest_framework import generics
-from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework import filters
 
+
+from rest_framework import permissions
+
+from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope, TokenHasScope
 
 class JSONResponse(HttpResponse):
 
@@ -126,6 +128,7 @@ class InventoryProductImageList(generics.ListCreateAPIView):
 
 
 class InventoryProductImageDetails(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
     queryset = InventoryProductImages.objects.all()
     serializer_class = InventoryProductImageSerializer
     permission_classes = [

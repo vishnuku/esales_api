@@ -1,5 +1,9 @@
+from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
+from rest_framework.authtoken.models import Token
 
 
 class ChannelIntegration(models.Model):
@@ -58,3 +62,9 @@ class AmazonInventory(models.Model):
     add_delete = models.CharField(max_length=100, blank=True, default='')
     pending_quantity = models.CharField(max_length=100, blank=True, default='')
     fulfillment_channel = models.CharField(max_length=100, blank=True, default='')
+
+
+@receiver(post_save, sender=User)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
