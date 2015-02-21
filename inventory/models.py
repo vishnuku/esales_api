@@ -58,7 +58,7 @@ class Images(models.Model):
     """
     Model to hold the images for product
     """
-    product = models.ForeignKey(Product)
+    product = models.ForeignKey(Product, default=1, related_name='images')
     image = models.ImageField(upload_to='product/images/upload/%Y/%m/%d')
     is_main = models.BooleanField(default=False)
     status = models.SmallIntegerField(default=1, blank=True, null=True)

@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Category, Product, Images
 
@@ -8,7 +9,7 @@ class CategorySerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Category
-        fields = ('id', 'category_name', 'status', 'created', 'user_id')
+        fields = ('id', 'name', 'status', 'created')
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -17,8 +18,7 @@ class ProductSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Product
-        # fields = ('id', 'sku', 'name', 'purchase_price', 'retail_price', 'tax_price', 'meta_data',
-        #           'category', 'barcode', 'stock_value', 'minimum_stock_level', 'user_id', 'status', 'created')
+        fields = ('sku', 'name', 'purchase_price', 'retail_price', 'category', 'meta_data', 'barcode')
 
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -38,5 +38,10 @@ class ProductWithImagesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ('id', 'sku', 'name', 'purchase_price', 'retail_price', 'tax_price', 'meta_data',
-                  'category', 'barcode', 'stock_value', 'minimum_stock_level', 'user_id', 'status', 'created',
+                  'category', 'barcode', 'stock', 'minimum_stock_level', 'user', 'created',
                   'images')
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
