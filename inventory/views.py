@@ -1,12 +1,15 @@
 #from django.shortcuts import render
+
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser, MultiPartParser, FileUploadParser
-from .serializers import ImageSerializer, ProductSerializer, ProductWithImagesSerializer, CategorySerializer
-from .models import Images, Product, Category
+from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer
+from .models import Category, Product, Images
 from rest_framework import generics
-from rest_framework import permissions
+from rest_framework.response import Response
+from rest_framework import status
+
+from rest_framework import authentication, permissions
 
 class JSONResponse(HttpResponse):
 
@@ -15,122 +18,109 @@ class JSONResponse(HttpResponse):
         kwargs['content_type'] = 'application/json'
         super(JSONResponse, self).__init__(content, **kwargs)
 
-@csrf_exempt
-def categories(request):
-    if request.method == 'GET':
-        categories = ProductCategory.objects.all()
-        serializer = InventoryProductCategorySerializer(categories, many=True)
-        return JSONResponse(serializer.data)
-    elif request.method == 'POST':
-        data = JSONParser().parse(request)  ## parese request data to json format.
-        serializer = InventoryProductCategorySerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JSONResponse(serializer.data, status=201)
-        return JSONResponse(serializer.errors, status=400)
 
-@csrf_exempt
-def category(request, pk):
-    try:
-        category_object = Category.objects.get(pk=pk)
-    except Category.DoesNotExist:
-        return HttpResponse(status=404)
+class CategoryList(generics.ListCreateAPIView):
+    """
+    List all the categories
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated, )
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
 
-    if request.method == 'GET':
-        serializer = CategorySerializer(category_object)
-        return JSONResponse(serializer.data)
-    elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = CategorySerializer(category_object, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JSONResponse(serializer.data)
-        return JSONResponse(serializer.errors, status=404)
-    elif request.method == 'DELETE':
-        category_object.delete()
-        return HttpResponse(status=204)
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
 
-''' This function is used to add new inventory item to db and fetch and return on basis of request method
- '''
-@csrf_exempt
-def products(request):
-    if request.method == 'GET':
-        products_list = Product.objects.all().select_related('image')
-        serializer = ProductSerializer(products_list, many=True)
-        return JSONResponse(serializer.data)
-    elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = ProductSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JSONResponse(serializer.data, status=200)
-        return JSONResponse(serializer.errors, status=400)
 
-@csrf_exempt
-def product(request, pk):
-    try:
-        product_object = Product.objects.get(pk=pk)
-    except Product.DoesNotExist:
-        return HttpResponse(status=404)
+class CategoryDetails(generics.RetrieveUpdateDestroyAPIView):
+    """
+    List the category details
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
 
-    if request.method == 'GET':
-        serializer = ProductSerializer(product_object)
-        return JSONResponse(serializer.data)
-    elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = ProductSerializer(product_object, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JSONResponse(serializer.data)
-        return JSONResponse(serializer.errors, status=400)
-    elif request.method == 'DELETE':
-        product_object.delete()
-        return HttpResponse(status=204)
 
-    elif request.method == 'OPTIONS':
-        return HttpResponse(status=200)
+class ProductList(generics.ListCreateAPIView):
+    """
+    List all the products
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+
+
+class ProductDetails(generics.RetrieveUpdateDestroyAPIView):
+    """
+    List Product details
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
 
 
 class ProductImageList(generics.ListCreateAPIView):
     """
-    Doc String
+    List image related to a product
     """
-    queryset = Images.objects.all()
+    #authentication_classes = (authentication.TokenAuthentication,)
+    #permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,) #TOOD Remove This block once fixed on client size
     model = Images
     serializer_class = ImageSerializer
-    permission_classes = [
-        permissions.AllowAny
-    ]
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned purchases to a given user,
+        by filtering against a `username` query parameter in the URL.
+        """
+        queryset = Images.objects.all()
+        product = self.request.QUERY_PARAMS.get('product', None)
+        if product is not None:
+            queryset = queryset.filter(inventory_product__id=product)
+        return queryset
+
+    # @csrf_exempt
+    # def post(self, request, format=None):
+    #     serializer = ImageSerializer(data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         data = {"success": "true"}
+    #         return Response(data, status=status.HTTP_200_OK)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ProductImageDetails(generics.RetrieveAPIView):
+class ProductImageDetails(generics.RetrieveUpdateDestroyAPIView):
     """
-    Doc String
+    List info about a image
     """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = Images.objects.all()
     serializer_class = ImageSerializer
-    permission_classes = [
-        permissions.AllowAny
-    ]
 
 
 class ProductWithImagesList(generics.ListAPIView):
     """
-    Doc String
+    List of product with images
     """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = Product.objects.all()
     serializer_class = ProductWithImagesSerializer
-    permission_classes = [
-        permissions.AllowAny
-    ]
 
 
 class ProductWithImagesDetails(generics.RetrieveAPIView):
     """
-    Doc String
+    Details of product
     """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = Product.objects.all()
     serializer_class = ProductWithImagesSerializer
-    permission_classes = [
-        permissions.AllowAny
-    ]

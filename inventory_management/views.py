@@ -64,8 +64,8 @@ class InventoryProductImageList(generics.ListCreateAPIView):
         if product is not None:
             queryset = queryset.filter(inventory_product__id=product)
         return queryset
-
-
+    '''
+    @csrf_exempt
     def post(self, request, format=None):
         serializer = InventoryProductImageSerializer(data=request.data)
         if serializer.is_valid():
@@ -73,7 +73,7 @@ class InventoryProductImageList(generics.ListCreateAPIView):
             data = {"success": "true"}
             return Response(data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    '''
 
 
 class InventoryProductImageDetails(generics.RetrieveUpdateDestroyAPIView):
