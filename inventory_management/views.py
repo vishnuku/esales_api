@@ -1,20 +1,15 @@
 #from django.shortcuts import render
-import token
+
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser, MultiPartParser, FileUploadParser
 from .serializers import *
 from .models import *
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
 
-from rest_framework import permissions
-from rest_framework import authtoken
 from rest_framework import authentication, permissions
-
-#from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope, TokenHasScope
 
 class JSONResponse(HttpResponse):
 
@@ -23,46 +18,10 @@ class JSONResponse(HttpResponse):
         kwargs['content_type'] = 'application/json'
         super(JSONResponse, self).__init__(content, **kwargs)
 
-'''
-@csrf_exempt
-def categories(request):
-    if request.method == 'GET':
-        categories = ProductCategory.objects.all()
-        serializer = InventoryProductCategorySerializer(categories, many=True)
-        return JSONResponse(serializer.data)
-    elif request.method == 'POST':
-        data = JSONParser().parse(request)  ## parese request data to json format.
-        serializer = InventoryProductCategorySerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JSONResponse(serializer.data, status=201)
-        return JSONResponse(serializer.errors, status=400)
 
-@csrf_exempt
-def category(request, pk):
-    try:
-        category_object = ProductCategory.objects.get(pk=pk)
-    except ProductCategory.DoesNotExist:
-        return HttpResponse(status=404)
-
-    if request.method == 'GET':
-        serializer = InventoryProductCategorySerializer(category_object)
-        return JSONResponse(serializer.data)
-    elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = InventoryProductCategorySerializer(category_object, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JSONResponse(serializer.data)
-        return JSONResponse(serializer.errors, status=404)
-    elif request.method == 'DELETE':
-        category_object.delete()
-        return HttpResponse(status=204)
-'''
-
-class ProductCategoryList(generics.ListAPIView):
+class ProductCategoryList(generics.ListCreateAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, )
     queryset = ProductCategory.objects.all()
     serializer_class = InventoryProductCategorySerializer
 
@@ -74,7 +33,7 @@ class ProductCategoryDetails(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = InventoryProductCategorySerializer
 
 
-class ProductList(generics.ListAPIView):
+class ProductList(generics.ListCreateAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
     queryset = InventoryProducts.objects.all()
@@ -88,10 +47,10 @@ class ProductDetails(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = InventoryProductSerializer
 
 
-
 class InventoryProductImageList(generics.ListCreateAPIView):
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
+    #authentication_classes = (authentication.TokenAuthentication,)
+    #permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,) #TOOD Remove This block once fixed on client size
     model = InventoryProductImages
     serializer_class = InventoryProductImageSerializer
 
@@ -122,6 +81,7 @@ class InventoryProductImageDetails(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = InventoryProductImages.objects.all()
     serializer_class = InventoryProductImageSerializer
+
 
 class InventoryProductWithImagesList(generics.ListAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
