@@ -83,7 +83,7 @@ class ProductImageList(generics.ListCreateAPIView):
         queryset = Images.objects.all()
         product = self.request.QUERY_PARAMS.get('product', None)
         if product is not None:
-            queryset = queryset.filter(inventory_product__id=product)
+            queryset = queryset.filter(product_id=product)
         return queryset
 
     # @csrf_exempt

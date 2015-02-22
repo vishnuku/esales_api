@@ -18,7 +18,6 @@ class ProductSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Product
-        fields = ('sku', 'name', 'purchase_price', 'retail_price', 'category', 'meta_data', 'barcode')
 
 
 class ImageSerializer(serializers.ModelSerializer):
