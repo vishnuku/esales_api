@@ -1,9 +1,0 @@
-*.pyc
-.idea
-build
-.sencha
-.idea
-ext
-packages
-esales/bootstrap.json
-esales/media
