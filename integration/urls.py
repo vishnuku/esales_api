@@ -16,9 +16,8 @@ urlpatterns = [
     url(r'^inventory/channel/(?P<pk>[0-9]+)/$', views.channel, name='channel'),
     # url(r'^channel/$', views.channels, name='cahnnels'),
     # url(r'^inventory/amazon/$', views.inventory),
-    # url(r'^inventory/amazon/(?P<pk>[0-9]+)/$', views.inventory),
-    # url(r'^inventory/sync/(?P<pk>[0-9]+)/$', views.sync),
-
+    url(r'^inventory/amazon/(?P<pk>[0-9]+)/$', views.inventory),
+    url(r'^inventory/sync/(?P<pk>[0-9]+)/$', views.sync),
     url(r'^listing/(?P<chid>[0-9]+)/sync/(?P<synid>[0-9]+)/$', views.sync),
     url(r'^listing/(?P<chid>[0-9]+)/sync/$', views.sync),
     url(r'^listing/(?P<chid>[0-9]+)/products/$', views.ListingProducts.as_view()),

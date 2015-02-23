@@ -131,7 +131,6 @@ def sync(request, pk):
         return HttpResponse(status=404)
 
     if request.method == 'GET':
-        print ch
         amz["akey"] = ch.access_key
         amz["skey"] = ch.secret_key
         amz["mid"] = ch.merchant_id

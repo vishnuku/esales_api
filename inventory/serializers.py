@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Category, Product, Images
+from .models import Category, Product, Images, CSV
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -44,3 +44,9 @@ class ProductWithImagesSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
+
+
+class InventoryCSVSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CSV

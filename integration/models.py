@@ -35,3 +35,5 @@ class Channel(models.Model):
 
     class Meta:
         ordering = ('created',)
+
+
