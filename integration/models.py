@@ -37,3 +37,12 @@ class Channel(models.Model):
         ordering = ('created',)
 
 
+class AmazonCategories(models.Model):
+    """
+    Will store all amazon categories
+    """
+    node_id = models.BigIntegerField(blank=False)
+    node_path = models.TextField(blank=False)
+    item_type_keyword = models.CharField(max_length=200, blank=False)
+    created_by = models.ForeignKey(User)
+    created = models.DateTimeField(auto_now_add=True)
