@@ -342,6 +342,6 @@ class ListingProducts(generics.ListCreateAPIView):
 
 class AmazonCategoriesList(generics.ListAPIView):
     authentication = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated)
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = AmazonCategories.objects.all()
     serializer_class = AmazonCategoriesSerializer
