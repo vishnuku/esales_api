@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Channel
+from .models import Channel, AmazonCategories
 from inventory.models import AmazonProduct
 
 
@@ -28,3 +28,6 @@ class AmazonProductSerializer(serializers.ModelSerializer):
             'add_delete', 'pending_quantity', 'fulfillment_channel')
 
 
+class AmazonCategoriesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AmazonCategories

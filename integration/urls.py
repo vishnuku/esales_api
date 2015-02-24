@@ -21,4 +21,5 @@ urlpatterns = [
     url(r'^listing/(?P<chid>[0-9]+)/sync/(?P<synid>[0-9]+)/$', views.sync),
     url(r'^listing/(?P<chid>[0-9]+)/sync/$', views.sync),
     url(r'^listing/(?P<chid>[0-9]+)/products/$', views.ListingProducts.as_view()),
+    url(r'^inventory/amazon/categories/$', views.AmazonCategoriesList.as_view(), name="inventory_amazon_categories")
 ]

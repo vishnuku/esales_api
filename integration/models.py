@@ -46,3 +46,5 @@ class AmazonCategories(models.Model):
     item_type_keyword = models.CharField(max_length=200, blank=False)
     created_by = models.ForeignKey(User)
     created = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        ordering = ('created',)

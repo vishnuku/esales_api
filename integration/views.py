@@ -10,12 +10,12 @@ from rest_framework import status
 from channel_integration.models import ChannelIntegration
 from inventory.serializers import ImageSerializer
 from inventory_management.models import InventoryProducts
-from .serializers import ChannelSerializer, AmazonSerializer, AmazonProductSerializer
-from .models import Channel
+from .serializers import ChannelSerializer, AmazonSerializer, AmazonProductSerializer, AmazonCategoriesSerializer
+from .models import Channel, AmazonCategories
 from inventory.models import AmazonProduct, Images, Product
 from tasks import amazon_request_report
 from utils import amz_product_feed, amz_inventory_feed, amz_price_feed, amz_image_feed
-
+from rest_framework import authentication, permissions
 
 # Create your views here.
 
@@ -340,3 +340,8 @@ class ListingProducts(generics.ListCreateAPIView):
         # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class AmazonCategoriesList(generics.ListAPIView):
+    authentication = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated)
+    queryset = AmazonCategories.objects.all()
+    serializer_class = AmazonCategoriesSerializer
