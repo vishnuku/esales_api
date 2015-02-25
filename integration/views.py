@@ -13,8 +13,10 @@ from inventory_management.models import InventoryProducts
 from .serializers import ChannelSerializer, AmazonSerializer, AmazonProductSerializer
 from .models import Channel
 from inventory.models import AmazonProduct, Images, Product
-from tasks import amazon_request_report
+from tasks import amazon_request_report, amazon_get_report_vish
 from utils import amz_product_feed, amz_inventory_feed, amz_price_feed, amz_image_feed
+from rest_framework import generics
+from rest_framework import authentication, permissions
 
 
 # Create your views here.
@@ -149,10 +151,51 @@ def sync(request, pk):
         amz["mid"] = ch.merchant_id
         amz["mpid"] = ch.marketplace_id
         amz["cid"] = pk
+        amz["uid"] = request.user
         ch.sync_status = 1
         ch.save()
-        #amazon_request_report.delay(amz)
+        print request.user;
+        # amazon_request_report.delay(amz)
+        # amazon_get_report_vish(amz, '1111')
         return HttpResponse(status=200)
+
+class Sync(generics.ListCreateAPIView):
+    queryset = AmazonProduct.objects.all()
+    model = AmazonProduct
+    serializer_class = AmazonProductSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+
+    def get(self, request, pk, format=None):
+        """
+
+        :param request:
+        :type request:
+        :param pk:
+        :type pk:
+        :return:
+        :rtype:
+        """
+        amz = {}
+        try:
+            ch = Channel.objects.get(pk=pk)
+        except Channel.DoesNotExist:
+            return HttpResponse(status=404)
+
+        if request.method == 'GET':
+            print 'seofuser', self.request.user
+
+            amz["akey"] = ch.access_key
+            amz["skey"] = ch.secret_key
+            amz["mid"] = ch.merchant_id
+            amz["mpid"] = ch.marketplace_id
+            amz["cid"] = pk
+            amz["uid"] = request.user
+            ch.sync_status = 1
+            ch.save()
+            amazon_request_report.delay(amz)
+            return HttpResponse(status=200)
 
 
 class ListingProducts_original(generics.ListCreateAPIView):
