@@ -137,3 +137,15 @@ class AmazonProduct(models.Model):
     user_id = models.ForeignKey(User)
 
 
+class CSV(models.Model):
+
+    """
+    To hold inventory csv files upload by user.
+    """
+    csv_name = models.FileField(upload_to=settings.MEDIA_ROOT+'csv/%Y-%m-%d', max_length=200)
+    status = models.SmallIntegerField(default=0, blank=True)
+    user = models.ForeignKey(User)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('created',)

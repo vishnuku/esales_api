@@ -6,4 +6,4 @@ build
 ext
 packages
 esales/bootstrap.json
-esales/media
+esales/media/*

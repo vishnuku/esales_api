@@ -3,8 +3,8 @@
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
-from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer
-from .models import Category, Product, Images
+from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer, InventoryCSVSerializer
+from .models import Category, Product, Images, CSV
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
@@ -83,7 +83,7 @@ class ProductImageList(generics.ListCreateAPIView):
         queryset = Images.objects.all()
         product = self.request.QUERY_PARAMS.get('product', None)
         if product is not None:
-            queryset = queryset.filter(inventory_product__id=product)
+            queryset = queryset.filter(product_id=product)
         return queryset
 
     # @csrf_exempt
@@ -124,3 +124,14 @@ class ProductWithImagesDetails(generics.RetrieveAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = Product.objects.all()
     serializer_class = ProductWithImagesSerializer
+
+
+class InventoryProductsViaCSV(generics.ListCreateAPIView):
+    """
+    This class handle Product CSV upload by user for bulk inventory listing.
+    """
+    # authentication_classes = (authentication.TokenAuthentication,)
+
+    queryset = CSV.objects.all()
+    serializer_class = InventoryCSVSerializer
+    permission_classes = (permissions.AllowAny,)

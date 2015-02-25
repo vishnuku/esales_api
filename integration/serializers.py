@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Channel
+from .models import Channel, AmazonCategories
 from inventory.models import AmazonProduct
 
 
@@ -26,3 +26,8 @@ class AmazonProductSerializer(serializers.ModelSerializer):
             'zshop_category1', 'zshop_browse_path', 'zshop_storefront_feature', 'asin1', 'asin2', 'asin3',
             'will_ship_internationally', 'expedited_shipping', 'zshop_boldface', 'product', 'bid_for_featured_placement',
             'add_delete', 'pending_quantity', 'fulfillment_channel')
+
+
+class AmazonCategoriesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AmazonCategories
