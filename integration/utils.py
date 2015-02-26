@@ -42,9 +42,9 @@ def amz_product_feed(amz, products):
 
         spid = etree.SubElement(prod, 'StandardProductID')
         sptype = etree.SubElement(spid, 'Type')
-        sptype.text = "UPC"
+        sptype.text = product['ucodetype']
         sptypeval = etree.SubElement(spid, 'Value')
-        sptypeval.text = product['upc']
+        sptypeval.text = product['ucodevalue']
 
         prodtaxcode = etree.SubElement(prod, 'ProductTaxCode')
         prodtaxcode.text = 'A_GEN_NOTAX'
