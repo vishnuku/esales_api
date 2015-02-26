@@ -2,8 +2,8 @@
 .idea
 build
 .sencha
-.idea
 ext
 packages
 esales/bootstrap.json
-esales/media/*
+media/*
+esales_api/settings_local.py

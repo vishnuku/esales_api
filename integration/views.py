@@ -317,7 +317,7 @@ class ListingProducts(generics.ListCreateAPIView):
         amz["mid"] = ch.merchant_id
         amz["mpid"] = ch.marketplace_id
         print request.data
-        data = JSONParser().parse(request)
+        data = request.data
         ps = request.POST.getlist('pids')
 
         if not ps:
@@ -328,14 +328,15 @@ class ListingProducts(generics.ListCreateAPIView):
             p_obj = InventoryProducts.objects.get(id=int(p))
             pr['sku'] = p_obj.product_sku
             pr['title'] = p_obj.name
-            pr['brand'] = "Iphone tampered glass"
-            pr['desc'] = "Sample description iphone tampered glass"
-            pr['bulletpoint1'] = "Bullet Pount sample"
-            pr['bulletpoint2'] = "Bullet Pointt sample"
+            pr['brand'] = p_obj.brand
+            pr['desc'] = p_obj.desc
+            pr['bulletpoint1'] = p_obj.info
+            pr['bulletpoint2'] = p_obj.info
             pr['MSRP'] = p_obj.retail_price
-            pr['manufacturer'] = 'zuang ho'
-            pr['itemtype'] = 'cell-phone-accessories'
-            pr['upc'] = '0863670007140'
+            pr['manufacturer'] = p_obj.manufacturer
+            pr['itemtype'] = p_obj.category.name
+            pr['ucodetype'] = p_obj.ucodetype
+            pr['ucodevalue'] = p_obj.ucodevalue
             pr['qnty'] = p_obj.stock_value
             pr['ffl'] = "1"
             pr['imgtype'] = "Main" #Alternate/Swatch
