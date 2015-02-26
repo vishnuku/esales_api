@@ -3,7 +3,8 @@
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
-from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer, InventoryCSVSerializer
+from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
+    InventoryCSVSerializer
 from .models import Category, Product, Images, CSV
 from rest_framework import generics
 from rest_framework.response import Response

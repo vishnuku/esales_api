@@ -218,7 +218,7 @@ class ListingProducts_original(generics.ListCreateAPIView):
         #     data = {"success": "true"}
         #     return Response(data, status=status.HTTP_200_OK)
         #create product feed
-        ch = Channel.objects.get(pk=1)
+        ch = Channel.objects.get(pk=3)
         amz["akey"] = ch.access_key
         amz["skey"] = ch.secret_key
         amz["mid"] = ch.merchant_id
@@ -316,8 +316,7 @@ class ListingProducts(generics.ListCreateAPIView):
         amz["skey"] = ch.secret_key
         amz["mid"] = ch.merchant_id
         amz["mpid"] = ch.marketplace_id
-        print request.data
-        data = request.data
+        data = JSONParser().parse(request)
         ps = request.POST.getlist('pids')
 
         if not ps:
@@ -325,19 +324,19 @@ class ListingProducts(generics.ListCreateAPIView):
         ps = [ps]
         for p in ps:
             pr = {}
-            p_obj = InventoryProducts.objects.get(id=int(p))
-            pr['sku'] = p_obj.product_sku
+            p_obj = Product.objects.get(id=int(p))
+            pr['sku'] = p_obj.sku
             pr['title'] = p_obj.name
             pr['brand'] = p_obj.brand
             pr['desc'] = p_obj.desc
-            pr['bulletpoint1'] = p_obj.info
-            pr['bulletpoint2'] = p_obj.info
+            pr['bulletpoint1'] = p_obj.bullet_point
+            pr['bulletpoint2'] = p_obj.bullet_point
             pr['MSRP'] = p_obj.retail_price
             pr['manufacturer'] = p_obj.manufacturer
             pr['itemtype'] = p_obj.category.name
             pr['ucodetype'] = p_obj.ucodetype
             pr['ucodevalue'] = p_obj.ucodevalue
-            pr['qnty'] = p_obj.stock_value
+            pr['qnty'] = p_obj.stock
             pr['ffl'] = "1"
             pr['imgtype'] = "Main" #Alternate/Swatch
             pr['imgloc'] = "http://example.com" #Alternate/Swatch

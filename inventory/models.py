@@ -43,11 +43,11 @@ class Product(models.Model):
     TODO: Restructure as per standarrd
     """
     name = models.CharField(max_length=255, blank=False)
-    brand = models.CharField(max_length=255, blank=True)
-    desc = models.CharField(max_length=255, blank=True)
-    info = models.CharField(max_length=255, blank=True)
-    manufacturer = models.CharField(max_length=255, choices=UCODETYPE, blank=True)
-    ucodetype = models.CharField(max_length=255, blank=True)
+    brand = models.CharField(max_length=255, blank=True, null=True)
+    desc = models.TextField(blank=True, null=True)
+    bullet_point = models.TextField(blank=True, null=True)
+    manufacturer = models.CharField(max_length=255, blank=True)
+    ucodetype = models.CharField(max_length=255, blank=True, choices=UCODETYPE)
     ucodevalue = models.CharField(max_length=255, blank=True)
     purchase_price = models.FloatField()
     retail_price = models.FloatField()
