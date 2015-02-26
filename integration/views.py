@@ -179,7 +179,7 @@ class ListingProducts_original(generics.ListCreateAPIView):
         amz["skey"] = ch.secret_key
         amz["mid"] = ch.merchant_id
         amz["mpid"] = ch.marketplace_id
-        print request.data
+
         data = JSONParser().parse(request)
         ps = request.POST.getlist('pids')
 
