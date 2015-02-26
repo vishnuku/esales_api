@@ -272,10 +272,9 @@ class ListingProducts(generics.ListCreateAPIView):
         amz["skey"] = ch.secret_key
         amz["mid"] = ch.merchant_id
         amz["mpid"] = ch.marketplace_id
-        print request.data
         data = request.data
         ps = request.POST.getlist('pids')
-
+        print data
         if not ps:
             ps = data['pids']
         ps = [ps]
