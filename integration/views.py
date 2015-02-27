@@ -311,7 +311,7 @@ class ListingProducts(generics.ListCreateAPIView):
         #     data = {"success": "true"}
         #     return Response(data, status=status.HTTP_200_OK)
         #create product feed
-        ch = ChannelIntegration.objects.get(pk=1)
+        ch = Channel.objects.get(pk=3)
         amz["akey"] = ch.access_key
         amz["skey"] = ch.secret_key
         amz["mid"] = ch.merchant_id
@@ -336,7 +336,7 @@ class ListingProducts(generics.ListCreateAPIView):
             pr['itemtype'] = p_obj.category.name
             pr['ucodetype'] = p_obj.ucodetype
             pr['ucodevalue'] = p_obj.ucodevalue
-            pr['qnty'] = p_obj.stock
+            pr['qnty'] = 100
             pr['ffl'] = "1"
             pr['imgtype'] = "Main" #Alternate/Swatch
             pr['imgloc'] = "http://example.com" #Alternate/Swatch
