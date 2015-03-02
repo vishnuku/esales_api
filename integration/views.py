@@ -145,7 +145,6 @@ def sync(request, pk):
         return HttpResponse(status=404)
 
     if request.method == 'GET':
-        print ch
         amz["akey"] = ch.access_key
         amz["skey"] = ch.secret_key
         amz["mid"] = ch.merchant_id
@@ -154,7 +153,6 @@ def sync(request, pk):
         amz["uid"] = request.user
         ch.sync_status = 1
         ch.save()
-        print request.user;
         # amazon_request_report.delay(amz)
         # amazon_get_report_vish(amz, '1111')
         return HttpResponse(status=200)
@@ -184,7 +182,6 @@ class Sync(generics.ListCreateAPIView):
             return HttpResponse(status=404)
 
         if request.method == 'GET':
-            print 'seofuser', self.request.user
 
             amz["akey"] = ch.access_key
             amz["skey"] = ch.secret_key
@@ -311,7 +308,7 @@ class ListingProducts(generics.ListCreateAPIView):
         #     data = {"success": "true"}
         #     return Response(data, status=status.HTTP_200_OK)
         #create product feed
-        ch = Channel.objects.get(pk=3)
+        ch = Channel.objects.get(pk=chid)
         amz["akey"] = ch.access_key
         amz["skey"] = ch.secret_key
         amz["mid"] = ch.merchant_id
@@ -321,7 +318,7 @@ class ListingProducts(generics.ListCreateAPIView):
 
         if not ps:
             ps = data['pids']
-        ps = [ps]
+        #ps = [ps]
         for p in ps:
             pr = {}
             p_obj = Product.objects.get(id=int(p))
