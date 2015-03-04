@@ -157,13 +157,16 @@ def sync(request, pk):
         # amazon_get_report_vish(amz, '1111')
         return HttpResponse(status=200)
 
-class Sync(generics.ListCreateAPIView):
+
+class InventorySync(generics.ListCreateAPIView):
+    """
+    Doc String
+    """
     queryset = AmazonProduct.objects.all()
     model = AmazonProduct
     serializer_class = AmazonProductSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
-
 
     def get(self, request, pk, format=None):
         """
@@ -191,7 +194,46 @@ class Sync(generics.ListCreateAPIView):
             amz["uid"] = request.user
             ch.sync_status = 1
             ch.save()
-            amazon_request_report.delay(amz)
+            amazon_request_report.delay(amz, '_GET_MERCHANT_LISTINGS_DATA_')
+            return HttpResponse(status=200)
+
+
+class OrderSync(generics.ListCreateAPIView):
+    """
+    Doc String
+    """
+    queryset = AmazonProduct.objects.all()
+    model = AmazonProduct
+    serializer_class = AmazonProductSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, pk, format=None):
+        """
+
+        :param request:
+        :type request:
+        :param pk:
+        :type pk:
+        :return:
+        :rtype:
+        """
+        amz = {}
+        try:
+            ch = Channel.objects.get(pk=pk)
+        except Channel.DoesNotExist:
+            return HttpResponse(status=404)
+
+        if request.method == 'GET':
+            amz["akey"] = ch.access_key
+            amz["skey"] = ch.secret_key
+            amz["mid"] = ch.merchant_id
+            amz["mpid"] = ch.marketplace_id
+            amz["cid"] = pk
+            amz["uid"] = request.user
+            ch.sync_status = 1
+            ch.save()
+            amazon_request_report.delay(amz, '_GET_ORDERS_DATA_')
             return HttpResponse(status=200)
 
 
