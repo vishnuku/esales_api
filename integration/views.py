@@ -208,7 +208,7 @@ class OrderSync(generics.ListCreateAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
-    def get(self, request, pk, format=None):
+    def post(self, request, pk, format=None):
         """
 
         :param request:
@@ -224,17 +224,60 @@ class OrderSync(generics.ListCreateAPIView):
         except Channel.DoesNotExist:
             return HttpResponse(status=404)
 
-        if request.method == 'GET':
-            amz["akey"] = ch.access_key
-            amz["skey"] = ch.secret_key
-            amz["mid"] = ch.merchant_id
-            amz["mpid"] = ch.marketplace_id
-            amz["cid"] = pk
-            amz["uid"] = request.user
-            ch.sync_status = 1
-            ch.save()
-            amazon_request_report.delay(amz, '_GET_ORDERS_DATA_')
-            return HttpResponse(status=200)
+        amz["akey"] = ch.access_key
+        amz["skey"] = ch.secret_key
+        amz["mid"] = ch.merchant_id
+        amz["mpid"] = ch.marketplace_id
+        amz["cid"] = pk
+        amz["uid"] = request.user
+        ch.sync_status = 1
+        ch.save()
+        amazon_request_report.delay(amz, '_GET_ORDERS_DATA_')
+        return HttpResponse(status=200)
+
+    def get(self, request, pk):
+        """
+
+        :param request:
+        :type request:
+        """
+        amz = {}
+        orders = []
+        try:
+            ch = Channel.objects.get(pk=pk)
+        except Channel.DoesNotExist:
+            return HttpResponse(status=404)
+
+        ch = Channel.objects.get(pk=pk)
+        amz["akey"] = ch.access_key
+        amz["skey"] = ch.secret_key
+        amz["mid"] = ch.merchant_id
+        amz["mpid"] = ch.marketplace_id
+
+        #TODO: Change the createdafter to some meaningful value
+
+        con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
+        rr = con.list_orders(MarketplaceId=[str(amz["mpid"])], CreatedAfter='2015-01-31T00:00:00Z')
+
+        for order in rr.ListOrdersResult.Orders.Order:
+            tmp_address = {}
+            tmp_order = {}
+            tmp_address['name'] = rr.ListOrdersResult.Orders.Order[0].ShippingAddress.Name
+            tmp_address['city'] = rr.ListOrdersResult.Orders.Order[0].ShippingAddress.City
+            tmp_address['country'] = rr.ListOrdersResult.Orders.Order[0].ShippingAddress.CountryCode
+            tmp_address['state'] = rr.ListOrdersResult.Orders.Order[0].ShippingAddress.StateOrRegion
+            tmp_address['add1'] = rr.ListOrdersResult.Orders.Order[0].ShippingAddress.AddressLine1
+            tmp_address['postalcode'] = rr.ListOrdersResult.Orders.Order[0].ShippingAddress.PostalCode
+            tmp_address['phone'] = rr.ListOrdersResult.Orders.Order[0].ShippingAddress.Phone
+
+            tmp_order['address'] = tmp_address
+            tmp_order['name'] = rr.ListOrdersResult.Orders.Order[0].BuyerName
+            tmp_order['email'] = rr.ListOrdersResult.Orders.Order[0].BuyerEmail
+            tmp_order['ordertype'] = rr.ListOrdersResult.Orders.Order[0].OrderType
+
+            orders.append(tmp_order)
+
+        return JSONResponse(orders)
 
 
 class ListingProducts_original(generics.ListCreateAPIView):
