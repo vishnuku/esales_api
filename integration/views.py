@@ -258,7 +258,7 @@ class OrderSync(generics.ListCreateAPIView):
 
         con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
         rr = con.list_orders(MarketplaceId=[str(amz["mpid"])], CreatedAfter='2015-01-31T00:00:00Z')
-
+        print rr
         for order in rr.ListOrdersResult.Orders.Order:
             tmp_address = {}
             tmp_order = {}
@@ -274,6 +274,12 @@ class OrderSync(generics.ListCreateAPIView):
             tmp_order['name'] = rr.ListOrdersResult.Orders.Order[0].BuyerName
             tmp_order['email'] = rr.ListOrdersResult.Orders.Order[0].BuyerEmail
             tmp_order['ordertype'] = rr.ListOrdersResult.Orders.Order[0].OrderType
+            tmp_order['amazonorderid'] = rr.ListOrdersResult.Orders.Order[0].AmazonOrderId
+            tmp_order['purchasedate'] = rr.ListOrdersResult.Orders.Order[0].PurchaseDate
+            tmp_order['lastupdatedate'] = rr.ListOrdersResult.Orders.Order[0].LastUpdateDate
+            tmp_order['numberofitemsshipped'] = rr.ListOrdersResult.Orders.Order[0].NumberOfItemsShipped
+            tmp_order['numberofitemsunshipped'] = rr.ListOrdersResult.Orders.Order[0].NumberOfItemsUnshipped
+            tmp_order['paymentmethod'] = rr.ListOrdersResult.Orders.Order[0].PaymentMethod
 
             orders.append(tmp_order)
 
