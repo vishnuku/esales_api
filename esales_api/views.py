@@ -17,8 +17,7 @@ class ObtainAuthTokenCustom(ObtainAuthToken):
         try:
             token = Token.objects.get(user=user)
             token.delete()
-            token, created = Token.objects.get_or_create(user=user)
-        except:
+        finally:
             token, created = Token.objects.get_or_create(user=user)
 
         return Response({'token': token.key})
