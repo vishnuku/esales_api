@@ -1,9 +1,4 @@
 *.pyc
 .idea
-build
-.sencha
-ext
-packages
-esales/bootstrap.json
 media/*
 esales_api/settings_local.py
