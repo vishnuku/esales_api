@@ -19,7 +19,7 @@ urlpatterns = [
     url(r'^inventory/amazon/(?P<pk>[0-9]+)/$', views.inventory),
     # url(r'^inventory/sync/(?P<pk>[0-9]+)/$', views.sync),
     url(r'^inventory/sync/(?P<pk>[0-9]+)/$', views.InventorySync.as_view(), name='sync_view'),
-    url(r'^order/sync/(?P<pk>[0-9]+)/$', views.OrderSync.as_view(), name='sync_view'),
+        url(r'^order/sync/(?P<pk>[0-9]+)/$', views.OrderSync.as_view(), name='sync_view'),
 
     url(r'^listing/(?P<chid>[0-9]+)/sync/(?P<synid>[0-9]+)/$', views.sync),
     url(r'^listing/(?P<chid>[0-9]+)/sync/$', views.sync),
