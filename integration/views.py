@@ -258,28 +258,28 @@ class OrderSync(generics.ListCreateAPIView):
 
         con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
         rr = con.list_orders(MarketplaceId=[str(amz["mpid"])], CreatedAfter='2015-01-31T00:00:00Z')
-        print rr
+
         for order in rr.ListOrdersResult.Orders.Order:
             tmp_address = {}
             tmp_order = {}
-            tmp_address['name'] = rr.ListOrdersResult.Orders.Order[0].ShippingAddress.Name
-            tmp_address['city'] = rr.ListOrdersResult.Orders.Order[0].ShippingAddress.City
-            tmp_address['country'] = rr.ListOrdersResult.Orders.Order[0].ShippingAddress.CountryCode
-            tmp_address['state'] = rr.ListOrdersResult.Orders.Order[0].ShippingAddress.StateOrRegion
-            tmp_address['add1'] = rr.ListOrdersResult.Orders.Order[0].ShippingAddress.AddressLine1
-            tmp_address['postalcode'] = rr.ListOrdersResult.Orders.Order[0].ShippingAddress.PostalCode
-            tmp_address['phone'] = rr.ListOrdersResult.Orders.Order[0].ShippingAddress.Phone
+            tmp_address['name'] = order.ShippingAddress.Name
+            tmp_address['city'] = order.ShippingAddress.City
+            tmp_address['country'] = order.ShippingAddress.CountryCode
+            tmp_address['state'] = order.ShippingAddress.StateOrRegion
+            tmp_address['add1'] = order.ShippingAddress.AddressLine1
+            tmp_address['postalcode'] = order.ShippingAddress.PostalCode
+            tmp_address['phone'] = order.ShippingAddress.Phone
 
             tmp_order['address'] = tmp_address
-            tmp_order['name'] = rr.ListOrdersResult.Orders.Order[0].BuyerName
-            tmp_order['email'] = rr.ListOrdersResult.Orders.Order[0].BuyerEmail
-            tmp_order['ordertype'] = rr.ListOrdersResult.Orders.Order[0].OrderType
-            tmp_order['amazonorderid'] = rr.ListOrdersResult.Orders.Order[0].AmazonOrderId
-            tmp_order['purchasedate'] = rr.ListOrdersResult.Orders.Order[0].PurchaseDate
-            tmp_order['lastupdatedate'] = rr.ListOrdersResult.Orders.Order[0].LastUpdateDate
-            tmp_order['numberofitemsshipped'] = rr.ListOrdersResult.Orders.Order[0].NumberOfItemsShipped
-            tmp_order['numberofitemsunshipped'] = rr.ListOrdersResult.Orders.Order[0].NumberOfItemsUnshipped
-            tmp_order['paymentmethod'] = rr.ListOrdersResult.Orders.Order[0].PaymentMethod
+            tmp_order['name'] = order.BuyerName
+            tmp_order['email'] = order.BuyerEmail
+            tmp_order['ordertype'] = order.OrderType
+            tmp_order['amazonorderid'] = order.AmazonOrderId
+            tmp_order['purchasedate'] = order.PurchaseDate
+            tmp_order['lastupdatedate'] = order.LastUpdateDate
+            tmp_order['numberofitemsshipped'] = order.NumberOfItemsShipped
+            tmp_order['numberofitemsunshipped'] = order.NumberOfItemsUnshipped
+            tmp_order['paymentmethod'] = order.PaymentMethod
 
             orders.append(tmp_order)
 
