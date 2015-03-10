@@ -4,13 +4,13 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
-    InventoryCSVSerializer
-from .models import Category, Product, Images, CSV
+    InventoryCSVSerializer, ChannelCategorySerializer
+from .models import Category, Product, Images, CSV, ChannelCategory
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
-
 from rest_framework import authentication, permissions
+
 
 class JSONResponse(HttpResponse):
 
@@ -136,3 +136,18 @@ class InventoryProductsViaCSV(generics.ListCreateAPIView):
     queryset = CSV.objects.all()
     serializer_class = InventoryCSVSerializer
     permission_classes = (permissions.AllowAny,)
+
+
+class ChannelCategoryList(generics.ListAPIView):
+    """
+    List all the categories
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated, )
+    queryset = ChannelCategory.objects.all()
+    serializer_class = ChannelCategorySerializer
+
+    def get(self, request, *args, **kwargs):
+        print 'Get called'
+        queryset = ChannelCategory.objects
+        return self.list(request, *args, **kwargs)

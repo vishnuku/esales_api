@@ -161,3 +161,23 @@ class CSV(models.Model):
 
     class Meta:
         ordering = ('created',)
+
+
+class ChannelCategory(MPTTModel):
+    """
+    Models for category of the product
+    """
+    node_id = models.BigIntegerField(blank=False)
+    node_path = models.CharField(max_length=200, blank=False)
+    item_type_keyword = models.CharField(max_length=200, blank=False)
+    channel = models.CharField(max_length=20, blank=False)
+    status = models.SmallIntegerField(default=0)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True, auto_now_add=True)
+    created_by = models.ForeignKey(User, related_name='created_by_channel_category')
+    updated_by = models.ForeignKey(User, related_name='updated_by_channel_category')
+    user = models.ForeignKey(User)
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
+
+    def __unicode__(self):
+        return '%s' % self.node_path
