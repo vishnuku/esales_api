@@ -1,6 +1,7 @@
 import os
 from django.conf import settings
 from django.db import models
+from json_field import JSONField
 from mptt.models import MPTTModel, TreeForeignKey
 from django.contrib.auth.models import User
 from integration.models import Channel
@@ -78,7 +79,7 @@ class Images(models.Model):
     updated = models.DateTimeField(auto_now=True, auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='created_by_user_images')
     updated_by = models.ForeignKey(User, related_name='updated_by_user_images')
-    user_id = models.ForeignKey(User)
+    user = models.ForeignKey(User)
 
     class Meta:
         ordering = ('created',)
@@ -107,7 +108,7 @@ class Sync(models.Model):
     updated = models.DateTimeField(auto_now=True, auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='created_by_user_sync')
     updated_by = models.ForeignKey(User, related_name='updated_by_user_sync')
-    user_id = models.ForeignKey(User)
+    user = models.ForeignKey(User)
 
 
 class AmazonProduct(models.Model):
@@ -146,7 +147,7 @@ class AmazonProduct(models.Model):
     updated = models.DateTimeField(auto_now=True, auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='created_by_user_amzp')
     updated_by = models.ForeignKey(User, related_name='updated_by_user_amzp')
-    user_id = models.ForeignKey(User)
+    user = models.ForeignKey(User)
 
 
 class CSV(models.Model):
@@ -181,3 +182,48 @@ class ChannelCategory(MPTTModel):
 
     def __unicode__(self):
         return '%s' % self.node_path
+
+
+class AmazonOrders(models.Model):
+    """
+    Doc
+    """
+    amazonorderid = models.CharField(blank=False, null=True, max_length=50)
+    buyername = models.CharField(blank=False, null=True, max_length=50)
+    buyeremail = models.EmailField(blank=False, null=True)
+    ordertype = models.CharField(blank=False, null=True, max_length=50)
+    numberofitemsshipped = models.SmallIntegerField(null=True)
+    numberofitemsunshipped = models.SmallIntegerField(null=True)
+    paymentmethod = models.CharField(blank=False, null=True, max_length=50)
+    orderstatus = models.CharField(blank=False, null=True, max_length=50)
+    saleschannel = models.CharField(blank=False, null=True, max_length=50)
+    saleschannel = models.CharField(blank=False, null=True, max_length=50)
+    amount = models.CharField(blank=False, null=True, max_length=50)
+    marketplaceid = models.CharField(blank=False, null=True, max_length=50)
+    marketplaceid = models.CharField(blank=False, null=True, max_length=50)
+    fulfillmentchannel = models.CharField(blank=False, null=True, max_length=50)
+    shipservicelevel = models.CharField(blank=False, null=True, max_length=50)
+    address = JSONField()
+    purchasedate = models.DateTimeField()
+    lastupdatedate = models.DateTimeField()
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True, auto_now_add=True)
+    created_by = models.ForeignKey(User, related_name='created_by_amazonorders')
+    updated_by = models.ForeignKey(User, related_name='updated_by_amazonorders')
+    user = models.ForeignKey(User)
+
+    def create_from_dict(self, data={}):
+        """
+
+        :param data:
+        :type data:
+        :return:
+        :rtype:
+        """
+        for k, v in data:
+            self.k = v
+
+        self.save()
+
+    def __unicode__(self):
+        return '%s' % self.amazonorderid
