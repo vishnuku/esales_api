@@ -2,15 +2,16 @@
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from mptt.forms import TreeNodeChoiceField
 from rest_framework.renderers import JSONRenderer
 from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
-    InventoryCSVSerializer
-from .models import Category, Product, Images, CSV
+    InventoryCSVSerializer, ChannelCategorySerializer
+from .models import Category, Product, Images, CSV, ChannelCategory
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
-
 from rest_framework import authentication, permissions
+
 
 class JSONResponse(HttpResponse):
 
@@ -136,3 +137,28 @@ class InventoryProductsViaCSV(generics.ListCreateAPIView):
     queryset = CSV.objects.all()
     serializer_class = InventoryCSVSerializer
     permission_classes = (permissions.AllowAny,)
+
+
+class ChannelCategoryList(generics.ListAPIView):
+    """
+    List all the categories
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated, )
+    serializer_class = ChannelCategorySerializer
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned purchases to a given user,
+        by filtering against a `username` query parameter in the URL.
+        """
+        queryset = ChannelCategory.objects.all()
+
+        if 'catid' in self.kwargs:
+            queryset = queryset.filter(channel=self.kwargs['channel'], level=self.kwargs['level'], parent_id=self.kwargs['catid'])
+        elif 'level' in self.kwargs:
+            queryset = queryset.filter(channel=self.kwargs['channel'], level=self.kwargs['level'])
+        else:
+            queryset = queryset.filter(channel=self.kwargs['channel'], level=0)
+
+        return queryset

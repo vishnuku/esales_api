@@ -3,7 +3,7 @@ from __future__ import absolute_import
 from boto.mws.connection import MWSConnection
 from celery import shared_task
 from .models import Channel
-from inventory.models import AmazonProduct, Product, Category
+from inventory.models import AmazonProduct, Product, Category, AmazonOrders
 
 
 @shared_task
@@ -118,8 +118,8 @@ def inventory_process_report(amz, rr):
         print row
         # crete or get category
         c, cr = Category.objects.get_or_create(name=row[13],
-                                               defaults={'user_id': amz['uid'], 'created_by_id': amz['uid'],
-                                                         'updated_by_id': amz['uid']})
+                                               defaults={'user': amz['uid'], 'created_by': amz['uid'],
+                                                         'updated_by': amz['uid']})
         # chek if product is in local inventory
         price = 0
         barcode = 0
@@ -144,7 +144,7 @@ def inventory_process_report(amz, rr):
                           zshop_boldface=row[21], bid_for_featured_placement=row[23],
                           add_delete=row[24], pending_quantity=row[25], fulfillment_channel=row[26],
                           channel_id=amz['cid'], product=p,
-                          user_id=amz['uid'], created_by_id=amz['uid'].id, updated_by_id=amz['uid'].id)
+                          user=amz['uid'], created_by=amz['uid'].id, updated_by=amz['uid'].id)
         dir(d)
         type(d)
         d.save()
@@ -155,6 +155,84 @@ def inventory_process_report(amz, rr):
         channel.save()
 
     return True
+
+@shared_task
+def amazon_get_order_live(amz, datefrom=None):
+    """
+
+    :param amz:
+    :type amz:
+    :param datefrom:
+    :type datefrom:
+    :return:
+    :rtype:
+    """
+    datefrom = '2015-02-20T00:00:00Z'
+    orders = []
+
+    con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
+    rr = con.list_orders(MarketplaceId=[str(amz["mpid"])], CreatedAfter=datefrom)
+
+    for order in rr.ListOrdersResult.Orders.Order:
+        tmp_address = {}
+        tmp_order = {}
+        if order.ShippingAddress is not None:
+            address = order.ShippingAddress
+            tmp_address['name'] = address.Name if hasattr(address, 'Name') else ''
+            tmp_address['city'] = address.City if hasattr(address, 'City') else ''
+            tmp_address['country'] = address.CountryCode if hasattr(address, 'CountryCode') else ''
+            tmp_address['state'] = address.StateOrRegion if hasattr(address, 'StateOrRegion') else ''
+            tmp_address['add1'] = address.AddressLine1 if hasattr(address, 'AddressLine1') else ''
+            tmp_address['postalcode'] = address.PostalCode if hasattr(address, 'PostalCode') else ''
+            tmp_address['phone'] = address.Phone if hasattr(address, 'Phone') else ''
+
+        tmp_order['address'] = tmp_address
+        tmp_order['buyername'] = order.BuyerName if hasattr(order, 'BuyerName') else ''
+        tmp_order['buyeremail'] = order.BuyerEmail if hasattr(order, 'BuyerEmail') else ''
+        tmp_order['ordertype'] = order.OrderType if hasattr(order, 'OrderType') else ''
+        tmp_order['amazonorderid'] = order.AmazonOrderId if hasattr(order, 'AmazonOrderId') else ''
+        tmp_order['purchasedate'] = order.PurchaseDate if hasattr(order, 'PurchaseDate') else ''
+        tmp_order['lastupdatedate'] = order.LastUpdateDate if hasattr(order, 'LastUpdateDate') else ''
+        tmp_order['numberofitemsshipped'] = order.NumberOfItemsShipped if hasattr(order, 'NumberOfItemsShipped') else ''
+        tmp_order['numberofitemsunshipped'] = order.NumberOfItemsUnshipped if hasattr(order,
+                                                                                      'NumberOfItemsUnshipped') else ''
+        tmp_order['paymentmethod'] = order.PaymentMethod if hasattr(order, 'PaymentMethod') else ''
+        tmp_order['orderstatus'] = order.OrderStatus if hasattr(order, 'OrderStatus') else ''
+        tmp_order['saleschannel'] = order.SalesChannel if hasattr(order, 'SalesChannel') else ''
+        tmp_order['amount'] = order.OrderTotal if hasattr(order, 'OrderTotal') else ''
+        tmp_order['marketplaceid'] = order.MarketplaceId if hasattr(order, 'MarketplaceId') else ''
+        tmp_order['fulfillmentchannel'] = order.FulfillmentChannel if hasattr(order, 'FulfillmentChannel') else ''
+        tmp_order['shipservicelevel'] = order.ShipServiceLevel if hasattr(order, 'ShipServiceLevel') else ''
+
+        orders.append(tmp_order)
+        t = tmp_order
+        try:
+            amzorder = AmazonOrders.objects.get(amazonorderid=t['amazonorderid'])
+            if str(amzorder.orderstatus) != str(t['orderstatus']):
+                for k in t.keys():
+                    if k not in ('created_by', 'amazonorderid'):
+                        setattr(amzorder, k, t[k])
+
+                amzorder.save()
+        except AmazonOrders.DoesNotExist:
+            '''
+            amzorder = AmazonOrders.objects.create(address=t['address'],buyername=t['buyername'],buyeremail=t['buyeremail'],ordertype=t['ordertype'],
+                           amazonorderid=t['amazonorderid'],purchasedate=t['purchasedate'],
+                           lastupdatedate=t['lastupdatedate'],numberofitemsshipped=t['numberofitemsshipped'],
+                           numberofitemsunshipped=t['numberofitemsunshipped'],
+                           paymentmethod=t['paymentmethod'],orderstatus=t['orderstatus'],saleschannel=t['saleschannel'],amount=t['amount'],
+                           marketplaceid=t['marketplaceid'],fulfillmentchannel=t['fulfillmentchannel'],shipservicelevel=t['shipservicelevel'],
+                           user=amz['uid'], created_by=amz['uid'], updated_by=amz['uid'])
+            '''
+            amzorder = AmazonOrders()
+            for k in t.keys():
+                setattr(amzorder, k, t[k])
+
+            amzorder.user = amz['uid']
+            amzorder.created_by = amz['uid']
+            amzorder.updated_by = amz['uid']
+
+            amzorder.save()
 
 
 '''

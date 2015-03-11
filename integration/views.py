@@ -10,10 +10,10 @@ from rest_framework import status
 from channel_integration.models import ChannelIntegration
 from inventory.serializers import ImageSerializer
 from inventory_management.models import InventoryProducts
-from .serializers import ChannelSerializer, AmazonSerializer, AmazonProductSerializer
+from .serializers import ChannelSerializer, AmazonSerializer, AmazonProductSerializer, AmazonOrdersSerializer
 from .models import Channel
-from inventory.models import AmazonProduct, Images, Product
-from tasks import amazon_request_report, amazon_get_report_vish
+from inventory.models import AmazonProduct, Images, Product, AmazonOrders
+from tasks import amazon_request_report, amazon_get_order_live
 from utils import amz_product_feed, amz_inventory_feed, amz_price_feed, amz_image_feed
 from rest_framework import generics
 from rest_framework import authentication, permissions
@@ -202,10 +202,11 @@ class OrderSync(generics.ListCreateAPIView):
     """
     Doc String
     """
-    queryset = AmazonProduct.objects.all()
-    model = AmazonProduct
-    serializer_class = AmazonProductSerializer
+    queryset = AmazonOrders.objects.all()
+    model = AmazonOrders
+    serializer_class = AmazonOrdersSerializer
     authentication_classes = (authentication.TokenAuthentication,)
+    # permission_classes = (permissions.AllowAny,)
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, pk, format=None):
@@ -230,60 +231,11 @@ class OrderSync(generics.ListCreateAPIView):
         amz["mpid"] = ch.marketplace_id
         amz["cid"] = pk
         amz["uid"] = request.user
-        ch.sync_status = 1
-        ch.save()
-        amazon_request_report.delay(amz, '_GET_ORDERS_DATA_')
+        # ch.sync_status = 1
+        # ch.save()
+        #TODO set for date
+        amazon_get_order_live.delay(amz)
         return HttpResponse(status=200)
-
-    def get(self, request, pk):
-        """
-
-        :param request:
-        :type request:
-        """
-        amz = {}
-        orders = []
-        try:
-            ch = Channel.objects.get(pk=pk)
-        except Channel.DoesNotExist:
-            return HttpResponse(status=404)
-
-        ch = Channel.objects.get(pk=pk)
-        amz["akey"] = ch.access_key
-        amz["skey"] = ch.secret_key
-        amz["mid"] = ch.merchant_id
-        amz["mpid"] = ch.marketplace_id
-
-        #TODO: Change the createdafter to some meaningful value
-
-        con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
-        rr = con.list_orders(MarketplaceId=[str(amz["mpid"])], CreatedAfter='2015-01-31T00:00:00Z')
-        print rr
-        for order in rr.ListOrdersResult.Orders.Order:
-            tmp_address = {}
-            tmp_order = {}
-            tmp_address['name'] = rr.ListOrdersResult.Orders.Order[0].ShippingAddress.Name
-            tmp_address['city'] = rr.ListOrdersResult.Orders.Order[0].ShippingAddress.City
-            tmp_address['country'] = rr.ListOrdersResult.Orders.Order[0].ShippingAddress.CountryCode
-            tmp_address['state'] = rr.ListOrdersResult.Orders.Order[0].ShippingAddress.StateOrRegion
-            tmp_address['add1'] = rr.ListOrdersResult.Orders.Order[0].ShippingAddress.AddressLine1
-            tmp_address['postalcode'] = rr.ListOrdersResult.Orders.Order[0].ShippingAddress.PostalCode
-            tmp_address['phone'] = rr.ListOrdersResult.Orders.Order[0].ShippingAddress.Phone
-
-            tmp_order['address'] = tmp_address
-            tmp_order['name'] = rr.ListOrdersResult.Orders.Order[0].BuyerName
-            tmp_order['email'] = rr.ListOrdersResult.Orders.Order[0].BuyerEmail
-            tmp_order['ordertype'] = rr.ListOrdersResult.Orders.Order[0].OrderType
-            tmp_order['amazonorderid'] = rr.ListOrdersResult.Orders.Order[0].AmazonOrderId
-            tmp_order['purchasedate'] = rr.ListOrdersResult.Orders.Order[0].PurchaseDate
-            tmp_order['lastupdatedate'] = rr.ListOrdersResult.Orders.Order[0].LastUpdateDate
-            tmp_order['numberofitemsshipped'] = rr.ListOrdersResult.Orders.Order[0].NumberOfItemsShipped
-            tmp_order['numberofitemsunshipped'] = rr.ListOrdersResult.Orders.Order[0].NumberOfItemsUnshipped
-            tmp_order['paymentmethod'] = rr.ListOrdersResult.Orders.Order[0].PaymentMethod
-
-            orders.append(tmp_order)
-
-        return JSONResponse(orders)
 
 
 class ListingProducts_original(generics.ListCreateAPIView):

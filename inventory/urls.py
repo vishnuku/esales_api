@@ -10,5 +10,8 @@ urlpatterns = [
     url(r'^inventory/image/(?P<pk>[0-9]+)/$', views.ProductImageDetails.as_view(), name='inventory_image'),
     url(r'^inventory/product/images/$', views.ProductWithImagesList.as_view(), name="inventory_product_images"),
     url(r'^inventory/product/image/(?P<pk>[0-9]+)/$', views.ProductWithImagesDetails.as_view(), name='inventory_product_image'),
-    url(r'^inventory/csv/$', views.InventoryProductsViaCSV.as_view(), name='inventory_csv')
+    url(r'^inventory/csv/$', views.InventoryProductsViaCSV.as_view(), name='inventory_csv'),
+    url(r'^inventory/channel/categories/(?P<channel>[a-zA-Z]+)/(?P<level>[0-9]+)/$', views.ChannelCategoryList.as_view(), name="inventory_channel_categories"),
+    url(r'^inventory/channel/categories/(?P<channel>[a-zA-Z]+)/(?P<level>[0-9]+)/(?P<catid>[0-9]+)/$', views.ChannelCategoryList.as_view(), name="inventory_channel_categories"),
+    url(r'^inventory/channel/category/(?P<pk>[0-9]+)/$', views.CategoryDetails.as_view(), name='inventory_channel_category'),
 ]
