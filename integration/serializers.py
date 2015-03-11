@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Channel, AmazonCategories
-from inventory.models import AmazonProduct
+from inventory.models import AmazonProduct, AmazonOrders
 
 
 class ChannelSerializer(serializers.ModelSerializer):
@@ -31,3 +31,7 @@ class AmazonProductSerializer(serializers.ModelSerializer):
 class AmazonCategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = AmazonCategories
+
+class AmazonOrdersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AmazonOrders

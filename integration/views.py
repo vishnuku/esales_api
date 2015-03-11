@@ -10,7 +10,7 @@ from rest_framework import status
 from channel_integration.models import ChannelIntegration
 from inventory.serializers import ImageSerializer
 from inventory_management.models import InventoryProducts
-from .serializers import ChannelSerializer, AmazonSerializer, AmazonProductSerializer
+from .serializers import ChannelSerializer, AmazonSerializer, AmazonProductSerializer, AmazonOrdersSerializer
 from .models import Channel
 from inventory.models import AmazonProduct, Images, Product, AmazonOrders
 from tasks import amazon_request_report, amazon_get_order_live
@@ -204,10 +204,10 @@ class OrderSync(generics.ListCreateAPIView):
     """
     queryset = AmazonOrders.objects.all()
     model = AmazonOrders
-    serializer_class = AmazonProductSerializer
+    serializer_class = AmazonOrdersSerializer
     authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.AllowAny,)
-    # permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, pk, format=None):
         """
@@ -233,7 +233,7 @@ class OrderSync(generics.ListCreateAPIView):
         amz["uid"] = request.user
         # ch.sync_status = 1
         # ch.save()
-
+        #TODO set for date
         amazon_get_order_live.delay(amz)
         return HttpResponse(status=200)
 

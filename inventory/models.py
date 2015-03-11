@@ -212,18 +212,7 @@ class AmazonOrders(models.Model):
     updated_by = models.ForeignKey(User, related_name='updated_by_amazonorders')
     user = models.ForeignKey(User)
 
-    def create_from_dict(self, data={}):
-        """
 
-        :param data:
-        :type data:
-        :return:
-        :rtype:
-        """
-        for k, v in data:
-            self.k = v
+    def __str__(self):
+        return self.amazonorderid
 
-        self.save()
-
-    def __unicode__(self):
-        return '%s' % self.amazonorderid

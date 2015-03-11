@@ -18,3 +18,4 @@ lxml==3.4.2
 django-oauth2-provider
 django-filter
 #oauth2_provider
+django-json-field==0.5.7

@@ -149,5 +149,6 @@ class ChannelCategoryList(generics.ListAPIView):
 
     def get(self, request, *args, **kwargs):
         print 'Get called'
-        queryset = ChannelCategory.objects
+        ch = ChannelCategory.objects
+        dir(ch)
         return self.list(request, *args, **kwargs)

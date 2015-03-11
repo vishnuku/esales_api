@@ -118,8 +118,8 @@ def inventory_process_report(amz, rr):
         print row
         # crete or get category
         c, cr = Category.objects.get_or_create(name=row[13],
-                                               defaults={'user_id': amz['uid'], 'created_by_id': amz['uid'],
-                                                         'updated_by_id': amz['uid']})
+                                               defaults={'user': amz['uid'], 'created_by': amz['uid'],
+                                                         'updated_by': amz['uid']})
         # chek if product is in local inventory
         price = 0
         barcode = 0
@@ -144,7 +144,7 @@ def inventory_process_report(amz, rr):
                           zshop_boldface=row[21], bid_for_featured_placement=row[23],
                           add_delete=row[24], pending_quantity=row[25], fulfillment_channel=row[26],
                           channel_id=amz['cid'], product=p,
-                          user_id=amz['uid'], created_by_id=amz['uid'].id, updated_by_id=amz['uid'].id)
+                          user=amz['uid'], created_by=amz['uid'].id, updated_by=amz['uid'].id)
         dir(d)
         type(d)
         d.save()
@@ -156,7 +156,7 @@ def inventory_process_report(amz, rr):
 
     return True
 
-
+@shared_task
 def amazon_get_order_live(amz, datefrom=None):
     """
 
@@ -197,19 +197,42 @@ def amazon_get_order_live(amz, datefrom=None):
         tmp_order['numberofitemsunshipped'] = order.NumberOfItemsUnshipped if hasattr(order,
                                                                                       'NumberOfItemsUnshipped') else ''
         tmp_order['paymentmethod'] = order.PaymentMethod if hasattr(order, 'PaymentMethod') else ''
-        tmp_order['orderstatus'] = order.PaymentMethod if hasattr(order, 'OrderStatus') else ''
-        tmp_order['saleschannel'] = order.PaymentMethod if hasattr(order, 'SalesChannel') else ''
-        tmp_order['amount'] = order.PaymentMethod if hasattr(order, 'OrderTotal') else ''
-        tmp_order['marketplaceid'] = order.PaymentMethod if hasattr(order, 'MarketplaceId') else ''
-        tmp_order['fulfillmentchannel'] = order.PaymentMethod if hasattr(order, 'FulfillmentChannel') else ''
-        tmp_order['fulfillmentchannel'] = order.PaymentMethod if hasattr(order, 'FulfillmentChannel') else ''
-        tmp_order['shipservicelevel'] = order.PaymentMethod if hasattr(order, 'ShipServiceLevel') else ''
+        tmp_order['orderstatus'] = order.OrderStatus if hasattr(order, 'OrderStatus') else ''
+        tmp_order['saleschannel'] = order.SalesChannel if hasattr(order, 'SalesChannel') else ''
+        tmp_order['amount'] = order.OrderTotal if hasattr(order, 'OrderTotal') else ''
+        tmp_order['marketplaceid'] = order.MarketplaceId if hasattr(order, 'MarketplaceId') else ''
+        tmp_order['fulfillmentchannel'] = order.FulfillmentChannel if hasattr(order, 'FulfillmentChannel') else ''
+        tmp_order['shipservicelevel'] = order.ShipServiceLevel if hasattr(order, 'ShipServiceLevel') else ''
 
         orders.append(tmp_order)
+        t = tmp_order
+        try:
+            amzorder = AmazonOrders.objects.get(amazonorderid=t['amazonorderid'])
+            if str(amzorder.orderstatus) != str(t['orderstatus']):
+                for k in t.keys():
+                    if k not in ('created_by', 'amazonorderid'):
+                        setattr(amzorder, k, t[k])
 
-        amz = AmazonOrders.create_from_dict(tmp_order)
+                amzorder.save()
+        except AmazonOrders.DoesNotExist:
+            '''
+            amzorder = AmazonOrders.objects.create(address=t['address'],buyername=t['buyername'],buyeremail=t['buyeremail'],ordertype=t['ordertype'],
+                           amazonorderid=t['amazonorderid'],purchasedate=t['purchasedate'],
+                           lastupdatedate=t['lastupdatedate'],numberofitemsshipped=t['numberofitemsshipped'],
+                           numberofitemsunshipped=t['numberofitemsunshipped'],
+                           paymentmethod=t['paymentmethod'],orderstatus=t['orderstatus'],saleschannel=t['saleschannel'],amount=t['amount'],
+                           marketplaceid=t['marketplaceid'],fulfillmentchannel=t['fulfillmentchannel'],shipservicelevel=t['shipservicelevel'],
+                           user=amz['uid'], created_by=amz['uid'], updated_by=amz['uid'])
+            '''
+            amzorder = AmazonOrders()
+            for k in t.keys():
+                setattr(amzorder, k, t[k])
 
-    return orders
+            amzorder.user = amz['uid']
+            amzorder.created_by = amz['uid']
+            amzorder.updated_by = amz['uid']
+
+            amzorder.save()
 
 
 '''
