@@ -2,6 +2,7 @@
 from boto.mws.connection import MWSConnection
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from mptt.forms import TreeNodeChoiceField
 from rest_framework import generics, permissions
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
@@ -418,7 +419,7 @@ class ListingProducts(generics.ListCreateAPIView):
         print prfeedxml
         print imfeedxml
         print request.POST
-
+        TreeNodeChoiceField()
         data = {"success": "true"}
         return Response(data, status=status.HTTP_200_OK)
         # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
