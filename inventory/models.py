@@ -1,9 +1,11 @@
 import os
+
 from django.conf import settings
 from django.db import models
 from json_field import JSONField
 from mptt.models import MPTTModel, TreeForeignKey
 from django.contrib.auth.models import User
+
 from integration.models import Channel
 
 
@@ -188,31 +190,42 @@ class AmazonOrders(models.Model):
     """
     Doc
     """
-    amazonorderid = models.CharField(blank=False, null=True, max_length=50)
+    amazonorderid = models.CharField(blank=False, null=True, max_length=50, db_index=True)
     buyername = models.CharField(blank=False, null=True, max_length=50)
     buyeremail = models.EmailField(blank=False, null=True)
-    ordertype = models.CharField(blank=False, null=True, max_length=50)
+    ordertype = models.CharField(blank=False, null=True, max_length=50, db_index=True)
     numberofitemsshipped = models.SmallIntegerField(null=True)
     numberofitemsunshipped = models.SmallIntegerField(null=True)
     paymentmethod = models.CharField(blank=False, null=True, max_length=50)
     orderstatus = models.CharField(blank=False, null=True, max_length=50)
-    saleschannel = models.CharField(blank=False, null=True, max_length=50)
-    saleschannel = models.CharField(blank=False, null=True, max_length=50)
+    saleschannel = models.CharField(blank=False, null=True, max_length=50, db_index=True)
     amount = models.CharField(blank=False, null=True, max_length=50)
-    marketplaceid = models.CharField(blank=False, null=True, max_length=50)
-    marketplaceid = models.CharField(blank=False, null=True, max_length=50)
+    marketplaceid = models.CharField(blank=False, null=True, max_length=50, db_index=True)
     fulfillmentchannel = models.CharField(blank=False, null=True, max_length=50)
     shipservicelevel = models.CharField(blank=False, null=True, max_length=50)
     address = JSONField()
-    purchasedate = models.DateTimeField()
-    lastupdatedate = models.DateTimeField()
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True, auto_now_add=True)
+    purchasedate = models.DateTimeField(db_index=True)
+    lastupdatedate = models.DateTimeField(db_index=True)
+    created = models.DateTimeField(auto_now_add=True, db_index=True)
+    updated = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
     created_by = models.ForeignKey(User, related_name='created_by_amazonorders')
     updated_by = models.ForeignKey(User, related_name='updated_by_amazonorders')
     user = models.ForeignKey(User)
 
+    def create_from_dict(self, data, exempt=()):
+        """
+
+        :param data:
+        :type data:
+        :param exception:
+        :type exception:
+        :return:
+        :rtype:
+        """
+        for k in data.keys():
+            if k not in exempt:
+                setattr(self, k, data[k])
 
     def __str__(self):
-        return self.amazonorderid
+        return '%s' % self.amazonorderid
 

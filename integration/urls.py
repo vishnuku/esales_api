@@ -9,7 +9,9 @@
 # ]
 
 from django.conf.urls import url
+
 import views
+
 
 urlpatterns = [
     url(r'^inventory/channels/$', views.channels, name='cahnnels'),

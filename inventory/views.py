@@ -1,16 +1,11 @@
-#from django.shortcuts import render
-
 from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-from mptt.forms import TreeNodeChoiceField
 from rest_framework.renderers import JSONRenderer
+from rest_framework import generics
+from rest_framework import authentication, permissions
+
 from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
     InventoryCSVSerializer, ChannelCategorySerializer
 from .models import Category, Product, Images, CSV, ChannelCategory
-from rest_framework import generics
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework import authentication, permissions
 
 
 class JSONResponse(HttpResponse):

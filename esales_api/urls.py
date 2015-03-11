@@ -1,10 +1,12 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.contrib.auth.models import User
 from rest_framework import serializers, viewsets, routers
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
+
 from .views import obtain_auth_token
+
 
 # Serializers define the API representation.
 class UserSerializer(serializers.HyperlinkedModelSerializer):

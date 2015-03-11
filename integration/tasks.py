@@ -1,7 +1,10 @@
 from __future__ import absolute_import
 
+from datetime import datetime, timedelta
+
 from boto.mws.connection import MWSConnection
 from celery import shared_task
+
 from .models import Channel
 from inventory.models import AmazonProduct, Product, Category, AmazonOrders
 
@@ -167,8 +170,9 @@ def amazon_get_order_live(amz, datefrom=None):
     :return:
     :rtype:
     """
-    datefrom = '2015-02-20T00:00:00Z'
     orders = []
+    if not datefrom:
+        datefrom = (datetime.now().replace(microsecond=0) + timedelta(days=-7)).isoformat()+'Z'
 
     con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
     rr = con.list_orders(MarketplaceId=[str(amz["mpid"])], CreatedAfter=datefrom)
@@ -209,75 +213,12 @@ def amazon_get_order_live(amz, datefrom=None):
         try:
             amzorder = AmazonOrders.objects.get(amazonorderid=t['amazonorderid'])
             if str(amzorder.orderstatus) != str(t['orderstatus']):
-                for k in t.keys():
-                    if k not in ('created_by', 'amazonorderid'):
-                        setattr(amzorder, k, t[k])
-
+                amzorder.create_from_dict(t, ('created_by', 'amazonorderid'))
                 amzorder.save()
         except AmazonOrders.DoesNotExist:
-            '''
-            amzorder = AmazonOrders.objects.create(address=t['address'],buyername=t['buyername'],buyeremail=t['buyeremail'],ordertype=t['ordertype'],
-                           amazonorderid=t['amazonorderid'],purchasedate=t['purchasedate'],
-                           lastupdatedate=t['lastupdatedate'],numberofitemsshipped=t['numberofitemsshipped'],
-                           numberofitemsunshipped=t['numberofitemsunshipped'],
-                           paymentmethod=t['paymentmethod'],orderstatus=t['orderstatus'],saleschannel=t['saleschannel'],amount=t['amount'],
-                           marketplaceid=t['marketplaceid'],fulfillmentchannel=t['fulfillmentchannel'],shipservicelevel=t['shipservicelevel'],
-                           user=amz['uid'], created_by=amz['uid'], updated_by=amz['uid'])
-            '''
             amzorder = AmazonOrders()
-            for k in t.keys():
-                setattr(amzorder, k, t[k])
-
+            amzorder.create_from_dict(t)
             amzorder.user = amz['uid']
             amzorder.created_by = amz['uid']
             amzorder.updated_by = amz['uid']
-
             amzorder.save()
-
-
-'''
-Below methods are not used
-TODO: Remove if required
-
-'''
-
-
-@shared_task
-def amazon_get_report_vish(amz, rid):
-    """
-
-    :param amz:
-    :type amz:
-    :param rid:
-    :type rid:
-    :return:
-    :rtype:
-    """
-    con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
-    rr = con.get_report(ReportId=rid)
-
-
-@shared_task
-def amazon_add_product(amz, products):
-    """
-
-    :param amz:
-    :type amz:
-    :param products:
-    :type products:
-    :return:
-    :rtype:
-    """
-
-    pass
-    con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
-    # rr = con.request_report(ReportType=rtype)
-    # rid = rr.RequestReportResult.ReportRequestInfo.ReportRequestId
-
-@shared_task
-def amazon_update_product(amz, products):
-    pass
-
-@shared_task
-def amazon_delete_product():
-    pass
