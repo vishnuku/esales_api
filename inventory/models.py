@@ -1,9 +1,11 @@
 import os
+
 from django.conf import settings
 from django.db import models
 from json_field import JSONField
 from mptt.models import MPTTModel, TreeForeignKey
 from django.contrib.auth.models import User
+
 from integration.models import Channel
 
 

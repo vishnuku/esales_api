@@ -1,8 +1,10 @@
 from __future__ import absolute_import
 
+from datetime import datetime, timedelta
+
 from boto.mws.connection import MWSConnection
 from celery import shared_task
-import datetime
+
 from .models import Channel
 from inventory.models import AmazonProduct, Product, Category, AmazonOrders
 
@@ -170,7 +172,7 @@ def amazon_get_order_live(amz, datefrom=None):
     """
     orders = []
     if not datefrom:
-        datefrom = (datetime.now().replace(microsecond=0) + datetime.timedelta(days=-7)).isoformat()+'Z'
+        datefrom = (datetime.now().replace(microsecond=0) + timedelta(days=-7)).isoformat()+'Z'
 
     con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
     rr = con.list_orders(MarketplaceId=[str(amz["mpid"])], CreatedAfter=datefrom)

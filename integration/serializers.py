@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from .models import Channel, AmazonCategories
 from inventory.models import AmazonProduct, AmazonOrders
 

@@ -1,10 +1,11 @@
 from django.http import HttpResponse
 from rest_framework.renderers import JSONRenderer
+from rest_framework import generics
+from rest_framework import authentication, permissions
+
 from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
     InventoryCSVSerializer, ChannelCategorySerializer
 from .models import Category, Product, Images, CSV, ChannelCategory
-from rest_framework import generics
-from rest_framework import authentication, permissions
 
 
 class JSONResponse(HttpResponse):

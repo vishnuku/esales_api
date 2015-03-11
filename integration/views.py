@@ -3,21 +3,19 @@ from boto.mws.connection import MWSConnection
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from mptt.forms import TreeNodeChoiceField
-from rest_framework import generics, permissions
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework import status
-from channel_integration.models import ChannelIntegration
-from inventory.serializers import ImageSerializer
-from inventory_management.models import InventoryProducts
-from .serializers import ChannelSerializer, AmazonSerializer, AmazonProductSerializer, AmazonOrdersSerializer
-from .models import Channel
-from inventory.models import AmazonProduct, Images, Product, AmazonOrders
-from tasks import amazon_request_report, amazon_get_order_live
-from utils import amz_product_feed, amz_inventory_feed, amz_price_feed, amz_image_feed
 from rest_framework import generics
 from rest_framework import authentication, permissions
+
+from .serializers import ChannelSerializer, AmazonProductSerializer, AmazonOrdersSerializer
+from .models import Channel
+from inventory.models import AmazonProduct, Product, AmazonOrders
+from tasks import amazon_request_report, amazon_get_order_live
+from utils import amz_product_feed, amz_inventory_feed, amz_price_feed, amz_image_feed
+
 
 
 # Create your views here.
@@ -236,7 +234,8 @@ class OrderSync(generics.ListCreateAPIView):
         # ch.save()
         #TODO set for date
         amazon_get_order_live.delay(amz)
-        return HttpResponse(status=200)
+        data = {"success": "true"}
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class ListingProducts_original(generics.ListCreateAPIView):
