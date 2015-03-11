@@ -217,10 +217,8 @@ def amazon_get_order_live(amz, datefrom=None):
                 amzorder.save()
         except AmazonOrders.DoesNotExist:
             amzorder = AmazonOrders()
-            amzorder.create_from_dict(t, ('created_by', 'amazonorderid'))
-
+            amzorder.create_from_dict(t)
             amzorder.user = amz['uid']
             amzorder.created_by = amz['uid']
             amzorder.updated_by = amz['uid']
-
             amzorder.save()
