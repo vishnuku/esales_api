@@ -2,6 +2,7 @@
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from mptt.forms import TreeNodeChoiceField
 from rest_framework.renderers import JSONRenderer
 from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
     InventoryCSVSerializer, ChannelCategorySerializer
@@ -144,11 +145,20 @@ class ChannelCategoryList(generics.ListAPIView):
     """
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated, )
-    queryset = ChannelCategory.objects.all()
     serializer_class = ChannelCategorySerializer
 
-    def get(self, request, *args, **kwargs):
-        print 'Get called'
-        ch = ChannelCategory.objects
-        dir(ch)
-        return self.list(request, *args, **kwargs)
+    def get_queryset(self):
+        """
+        Optionally restricts the returned purchases to a given user,
+        by filtering against a `username` query parameter in the URL.
+        """
+        queryset = ChannelCategory.objects.all()
+
+        if 'catid' in self.kwargs:
+            queryset = queryset.filter(channel=self.kwargs['channel'], level=self.kwargs['level'], parent_id=self.kwargs['catid'])
+        elif 'level' in self.kwargs:
+            queryset = queryset.filter(channel=self.kwargs['channel'], level=self.kwargs['level'])
+        else:
+            queryset = queryset.filter(channel=self.kwargs['channel'], level=0)
+
+        return queryset
