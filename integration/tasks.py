@@ -127,7 +127,7 @@ def inventory_process_report(amz, rr):
         barcode = 0
         print amz['uid']
         p, created = Product.objects.get_or_create(sku=row[3], defaults={'name': row[0], 'retail_price': row[4],
-                                                                         'user_id': amz['uid'].id,
+                                                                         'user': amz['uid'].id,
                                                                          'created_by_id': amz['uid'].id,
                                                                          'updated_by_id': amz['uid'].id,
                                                                          'purchase_price': price, 'retail_price': price,
@@ -252,7 +252,7 @@ def csv_insert(instance):
             product.category_id=row[12]
             # product.created_by_id=row[13]
             # product.updated_by_id=row[14]
-            # product.user_id=row[15]
+            # product.user=row[15]
 
             product.brand=row[16]
             product.desc=row[17]

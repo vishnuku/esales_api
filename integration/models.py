@@ -31,7 +31,7 @@ class Channel(models.Model):
     updated = models.DateTimeField(auto_now=True, auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='created_by_user_channel', default=1)
     updated_by = models.ForeignKey(User, related_name='updated_by_user_channel', default=1)
-    user_id = models.ForeignKey(User, default=1)
+    user = models.ForeignKey(User, default=1)
 
     class Meta:
         ordering = ('created',)
