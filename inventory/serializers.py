@@ -61,8 +61,17 @@ class ChannelCategorySerializer(serializers.ModelSerializer):
         model = ChannelCategory
 
 
+class ChannelCategoryForConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ChannelCategory
+        fields = ('id', 'node_path')
+
+
 class ProductListingConfiguratorSerializer(serializers.ModelSerializer):
+    category1_details = ChannelCategoryForConfigSerializer(source='category1', read_only=True)
+    category2_details = ChannelCategoryForConfigSerializer(source='category2', read_only=True)
+
     class Meta:
         model = ProductListingConfigurator
-        fields = ('id', 'name','marketplace','marketplace_domain','category1','category2','category3',
-                  'status', 'created')
+        fields = ('id', 'name', 'marketplace', 'marketplace_domain', 'category1', 'category2',
+                  'category3', 'status', 'created', 'category1_details', 'category2_details')
