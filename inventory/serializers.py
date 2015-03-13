@@ -21,7 +21,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = ('id', 'name', 'brand', 'desc', 'bullet_point', 'manufacturer', 'ucodetype', 'ucodevalue',
                   'purchase_price', 'retail_price', 'tax_price', 'sku', 'barcode', 'stock', 'minimum_stock_level',
-                  'category', 'meta_data', 'origin', 'status', 'created')
+                  'category', 'meta_data', 'origin', 'created')
 
 
 class ImageSerializer(serializers.ModelSerializer):
