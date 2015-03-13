@@ -19,6 +19,9 @@ class ProductSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Product
+        fields = ('id', 'name', 'brand', 'desc', 'bullet_point', 'manufacturer', 'ucodetype', 'ucodevalue',
+                  'purchase_price', 'retail_price', 'tax_price', 'sku', 'barcode', 'stock', 'minimum_stock_level',
+                  'category', 'meta_data', 'origin', 'status', 'created')
 
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -50,6 +53,7 @@ class UserSerializer(serializers.ModelSerializer):
 class InventoryCSVSerializer(serializers.ModelSerializer):
     class Meta:
         model = CSV
+        fields = ('id', 'name', 'status', 'created')
 
 
 class ChannelCategorySerializer(serializers.ModelSerializer):
@@ -60,4 +64,5 @@ class ChannelCategorySerializer(serializers.ModelSerializer):
 class ProductListingConfiguratorSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductListingConfigurator
-        fields = ('id', 'name','marketplace','marketplace_domain','category1','category2','category3', 'status', 'created')
+        fields = ('id', 'name','marketplace','marketplace_domain','category1','category2','category3',
+                  'status', 'created')

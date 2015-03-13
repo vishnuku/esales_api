@@ -150,6 +150,7 @@ class AmazonProduct(models.Model):
     updated_by = models.ForeignKey(User, related_name='updated_by_user_amzp')
     user = models.ForeignKey(User)
 
+
 def validate_file_extension(value):
     if not value.name.endswith('.csv'):
         raise ValidationError(u'File type not supported')
@@ -159,13 +160,17 @@ class CSV(models.Model):
     """
     To hold inventory csv files upload by user.
     """
-    csv_name = models.FileField(upload_to=settings.MEDIA_ROOT+'csv/%Y-%m-%d', max_length=200, validators=[validate_file_extension])
-    status = models.SmallIntegerField(default=0, blank=True)
-    user = models.ForeignKey(User)
+    name = models.FileField(upload_to=settings.MEDIA_ROOT+'csv/%Y-%m-%d', max_length=200, validators=[validate_file_extension])
+    status = models.SmallIntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True, auto_now_add=True)
+    created_by = models.ForeignKey(User, related_name='created_by_csv')
+    updated_by = models.ForeignKey(User, related_name='updated_by_csv')
+    user = models.ForeignKey(User)
 
     class Meta:
         ordering = ('created',)
+
 
 class ChannelCategory(MPTTModel):
     """
@@ -239,14 +244,14 @@ class ProductListingConfigurator(models.Model):
     name = models.CharField(max_length=255, blank=False)
     marketplace = models.CharField(max_length=255, blank=False)
     marketplace_domain = models.CharField(max_length=255, blank=False)
-    category1 = models.CharField(max_length=255, blank=False)
-    category2 = models.CharField(max_length=255, blank=False)
+    category1 = models.ForeignKey(ChannelCategory, related_name='category1_product_listing_conf')
+    category2 = models.ForeignKey(ChannelCategory, related_name='category2_product_listing_conf')
     category3 = models.CharField(max_length=255, blank=False)
-    status = models.CharField(max_length=255, blank=False)
+    status = models.SmallIntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True, auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name='created_by_product_listing_conf')
-    updated_by = models.ForeignKey(User, related_name='updated_by_product_listing_conf')
+    created_by = models.ForeignKey(User, related_name='created_by_product_listing_conf1')
+    updated_by = models.ForeignKey(User, related_name='updated_by_product_listing_conf2')
     user = models.ForeignKey(User)
 
     def __str__(self):
