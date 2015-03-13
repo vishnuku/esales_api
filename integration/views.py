@@ -18,6 +18,7 @@ from utils import amz_product_feed, amz_inventory_feed, amz_price_feed, amz_imag
 
 
 
+
 # Create your views here.
 
 class JSONResponse(HttpResponse):
@@ -205,7 +206,6 @@ class OrderSync(generics.ListCreateAPIView):
     model = AmazonOrders
     serializer_class = AmazonOrdersSerializer
     authentication_classes = (authentication.TokenAuthentication,)
-    # permission_classes = (permissions.AllowAny,)
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, pk, format=None):

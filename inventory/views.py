@@ -4,8 +4,8 @@ from rest_framework import generics
 from rest_framework import authentication, permissions
 
 from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
-    InventoryCSVSerializer, ChannelCategorySerializer
-from .models import Category, Product, Images, CSV, ChannelCategory
+    InventoryCSVSerializer, ChannelCategorySerializer, ProductListingConfiguratorSerializer
+from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator
 
 
 class JSONResponse(HttpResponse):
@@ -112,6 +112,9 @@ class ProductWithImagesList(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductWithImagesSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+
 
 class ProductWithImagesDetails(generics.RetrieveAPIView):
     """
@@ -132,6 +135,14 @@ class InventoryProductsViaCSV(generics.ListCreateAPIView):
     queryset = CSV.objects.all()
     serializer_class = InventoryCSVSerializer
     permission_classes = (permissions.AllowAny,)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+
+    #TODO: overrided default post method
+    def post(self, request, *args, **kwargs):
+        x = super(InventoryProductsViaCSV, self).post(request, *args, **kwargs)
+        return x
 
 
 class ChannelCategoryList(generics.ListAPIView):
@@ -157,3 +168,27 @@ class ChannelCategoryList(generics.ListAPIView):
             queryset = queryset.filter(channel=self.kwargs['channel'], level=0)
 
         return queryset
+
+
+
+class ProductListingConfiguratorList(generics.ListCreateAPIView):
+    """
+    List all the ProductListingConfigurator
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = ProductListingConfigurator.objects.all()
+    serializer_class = ProductListingConfiguratorSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+
+
+class ProductListingConfiguratorDetails(generics.RetrieveUpdateDestroyAPIView):
+    """
+    List Product details
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = ProductListingConfigurator.objects.all()
+    serializer_class = ProductListingConfiguratorSerializer
