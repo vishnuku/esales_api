@@ -1,5 +1,5 @@
 from django.conf.urls import url
-
+import receivers
 import views
 
 
@@ -16,4 +16,6 @@ urlpatterns = [
     url(r'^inventory/channel/categories/(?P<channel>[a-zA-Z]+)/(?P<level>[0-9]+)/$', views.ChannelCategoryList.as_view(), name="inventory_channel_categories"),
     url(r'^inventory/channel/categories/(?P<channel>[a-zA-Z]+)/(?P<level>[0-9]+)/(?P<catid>[0-9]+)/$', views.ChannelCategoryList.as_view(), name="inventory_channel_categories"),
     url(r'^inventory/channel/category/(?P<pk>[0-9]+)/$', views.CategoryDetails.as_view(), name='inventory_channel_category'),
+    url(r'^inventory/product/configs/$', views.ProductListingConfiguratorList.as_view(), name="inventory_product_listing_configurator"),
+    url(r'^inventory/product/config/(?P<pk>[0-9]+)/$', views.ProductListingConfiguratorDetails.as_view(), name='inventory_product_listing_configurators'),
 ]

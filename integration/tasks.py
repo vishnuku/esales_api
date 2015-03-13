@@ -1,5 +1,4 @@
-from __future__ import absolute_import
-
+import csv
 from datetime import datetime, timedelta
 
 from boto.mws.connection import MWSConnection
@@ -49,8 +48,8 @@ def amazon_get_report_list(amz, rid, rtype='_GET_MERCHANT_LISTINGS_DATA_'):
 
     if rr.GetReportRequestListResult.ReportRequestInfo[0].ReportProcessingStatus == '_DONE_':
         rid = rr.GetReportRequestListResult.ReportRequestInfo[0].GeneratedReportId
-        # amazon_get_report.apply_async((amz, rid))
-        amazon_get_report_vish.apply_async((amz, rid))
+        amazon_get_report.apply_async((amz, rid))
+        # amazon_get_report_vish.apply_async((amz, rid))
         pass
     elif rr.GetReportRequestListResult.ReportRequestInfo[0].ReportProcessingStatus == '_DONE_NO_DATA_':
         pass
@@ -222,3 +221,53 @@ def amazon_get_order_live(amz, datefrom=None):
             amzorder.created_by = amz['uid']
             amzorder.updated_by = amz['uid']
             amzorder.save()
+
+
+@shared_task
+def csv_insert(instance):
+    '''
+
+    :param instance:
+    :return:
+    '''
+    f = open(str(instance.csv_name),'rU')
+    reader = csv.reader(f)
+    header = next(reader)
+    error_list = []
+    for row in reader:
+        try:
+            product = Product()
+            product.name = row[0]
+            product.purchase_price=row[1]
+            product.retail_price=row[2]
+            product.tax_price=row[3]
+            product.sku=row[4]
+            product.barcode=row[5]
+            product.stock=row[6]
+            product.minimum_stock_level=row[7]
+            product.meta_data=row[8]
+            product.origin=row[9]
+            # product.created=row[10]
+            # product.updated=row[11]
+            product.category_id=row[12]
+            # product.created_by_id=row[13]
+            # product.updated_by_id=row[14]
+            # product.user_id=row[15]
+
+            product.brand=row[16]
+            product.desc=row[17]
+            product.manufacturer=row[18]
+            product.ucodetype=row[19]
+            product.ucodevalue=row[20]
+            product.bullet_point=row[21]
+
+            # product.created=now(
+            # product.updated=row[11]
+            product.created_by=instance.user
+            product.updated_by=instance.user
+            product.user=instance.user
+            product.save()
+            print 'Created', product.id
+        except Exception as e:
+            print(e)
+            error_list.append(e[1])

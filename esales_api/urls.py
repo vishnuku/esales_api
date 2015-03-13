@@ -8,6 +8,7 @@ from django.conf.urls.static import static
 from .views import obtain_auth_token
 
 
+
 # Serializers define the API representation.
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
