@@ -64,13 +64,15 @@ def amz_product_feed(amz, products):
         MSRP.text = str(product['MSRP'])
         manufacturer = etree.SubElement(descdata, 'Manufacturer')
         manufacturer.text = product['manufacturer']
-        temtype = etree.SubElement(descdata, 'ItemType')
-        temtype.text = product['itemtype']
+
+        for item in product['itemtypes']:
+            itemtype = etree.SubElement(descdata, 'ItemType')
+            itemtype.text = item
 
         pdata = etree.SubElement(prod, 'ProductData')
-        pcat = etree.SubElement(pdata, 'Wireless')
+        pcat = etree.SubElement(pdata, product['pdata'])
         ptype = etree.SubElement(pcat, 'ProductType')
-        ptype = etree.SubElement(ptype, 'WirelessAccessories')
+        ptype = etree.SubElement(ptype, product['ptype'])
 
     feedstring = etree.tostring(feed)
     feedstring.replace("<AmazonEnvelope>", '<AmazonEnvelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn- envelope.xsd">')

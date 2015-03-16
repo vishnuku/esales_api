@@ -12,7 +12,7 @@ from rest_framework import authentication, permissions
 
 from .serializers import ChannelSerializer, AmazonProductSerializer, AmazonOrdersSerializer
 from .models import Channel
-from inventory.models import AmazonProduct, Product, AmazonOrders
+from inventory.models import AmazonProduct, Product, AmazonOrders, ProductListingConfigurator, ChannelCategory
 from tasks import amazon_request_report, amazon_get_order_live
 from utils import amz_product_feed, amz_inventory_feed, amz_price_feed, amz_image_feed
 
@@ -343,25 +343,42 @@ class ListingProducts(generics.ListCreateAPIView):
     ]
 
     def post(self, request, chid, format=None):
+        """
+
+        :param request:
+        :type request:
+        :param chid:
+        :type chid:
+        :param format:
+        :type format:
+        :return:
+        :rtype:
+        """
         amz = {}
         products = []
-        serializer = AmazonProductSerializer(data=request.data)
-        # if serializer.is_valid():
-        #     # serializer.save()
-        #     data = {"success": "true"}
-        #     return Response(data, status=status.HTTP_200_OK)
-        #create product feed
+        data = JSONParser().parse(request)
+        ps = data['pids']
+        cfid = data['configurator_id']
+        try:
+            cf_obj = ProductListingConfigurator.objects.get(int(cfid))
+        except:
+            raise "Configuratator error"
+
+        itemtypes = []
+
+        for cid in cf_obj.category3.item_type_keyword[1:-1].split(','):
+            try:
+                obj = ChannelCategory.objects.get(pk=int(cid))
+                itemtypes.append(obj.item_type_keyword)
+            except:
+                pass
+
         ch = Channel.objects.get(pk=chid)
         amz["akey"] = ch.access_key
         amz["skey"] = ch.secret_key
         amz["mid"] = ch.merchant_id
         amz["mpid"] = ch.marketplace_id
-        data = JSONParser().parse(request)
-        ps = request.POST.getlist('pids')
 
-        if not ps:
-            ps = data['pids']
-        #ps = [ps]
         for p in ps:
             pr = {}
             p_obj = Product.objects.get(id=int(p))
@@ -380,6 +397,9 @@ class ListingProducts(generics.ListCreateAPIView):
             pr['ffl'] = "1"
             pr['imgtype'] = "Main" #Alternate/Swatch
             pr['imgloc'] = "http://example.com" #Alternate/Swatch
+            pr['pdata'] = cf_obj.category1.item_type_keyword
+            pr['ptype'] = cf_obj.category2.item_type_keyword
+            pr['itemtypes'] = itemtypes
 
             products.append(pr)
 
