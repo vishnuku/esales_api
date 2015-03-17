@@ -196,6 +196,7 @@ class AmazonOrders(models.Model):
     """
     Doc
     """
+    amazonproduct = models.CharField(blank=True, null=True, max_length=50)
     amazonorderid = models.CharField(blank=False, null=True, max_length=50, db_index=True)
     buyername = models.CharField(blank=False, null=True, max_length=50)
     buyeremail = models.EmailField(blank=False, null=True)

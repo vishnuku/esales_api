@@ -357,16 +357,20 @@ class ListingProducts(generics.ListCreateAPIView):
         amz = {}
         products = []
         data = JSONParser().parse(request)
+        print data
         ps = data['pids']
         cfid = data['configurator_id']
+        print "cfid: ", cfid
         try:
-            cf_obj = ProductListingConfigurator.objects.get(int(cfid))
-        except:
-            raise "Configuratator error"
-
+            cf_obj = ProductListingConfigurator.objects.get(pk=int(cfid))
+        except Exception as e:
+            # raise "Configuratator error"
+            print "cf ex", e
+            pass
+        print cf_obj
         itemtypes = []
 
-        for cid in cf_obj.category3.item_type_keyword[1:-1].split(','):
+        for cid in cf_obj.category3[1:-1].split(','):
             try:
                 obj = ChannelCategory.objects.get(pk=int(cid))
                 itemtypes.append(obj.item_type_keyword)
@@ -438,7 +442,6 @@ class ListingProducts(generics.ListCreateAPIView):
         print prfeedxml
         print imfeedxml
         print request.POST
-        TreeNodeChoiceField()
         data = {"success": "true"}
         return Response(data, status=status.HTTP_200_OK)
         # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

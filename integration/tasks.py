@@ -127,9 +127,9 @@ def inventory_process_report(amz, rr):
         barcode = 0
         print amz['uid']
         p, created = Product.objects.get_or_create(sku=row[3], defaults={'name': row[0], 'retail_price': row[4],
-                                                                         'user': amz['uid'].id,
-                                                                         'created_by_id': amz['uid'].id,
-                                                                         'updated_by_id': amz['uid'].id,
+                                                                         'user': amz['uid'],
+                                                                         'created_by': amz['uid'],
+                                                                         'updated_by': amz['uid'],
                                                                          'purchase_price': price, 'retail_price': price,
                                                                          'tax_price': price, 'sku': row[3],
                                                                          'barcode': barcode, 'stock': price,
@@ -146,7 +146,7 @@ def inventory_process_report(amz, rr):
                           zshop_boldface=row[21], bid_for_featured_placement=row[23],
                           add_delete=row[24], pending_quantity=row[25], fulfillment_channel=row[26],
                           channel_id=amz['cid'], product=p,
-                          user=amz['uid'], created_by=amz['uid'].id, updated_by=amz['uid'].id)
+                          user=amz['uid'], created_by=amz['uid'], updated_by=amz['uid'])
         dir(d)
         type(d)
         d.save()
@@ -157,6 +157,8 @@ def inventory_process_report(amz, rr):
         channel.save()
 
     return True
+
+
 
 @shared_task
 def amazon_get_order_live(amz, datefrom=None):
@@ -207,13 +209,15 @@ def amazon_get_order_live(amz, datefrom=None):
         tmp_order['fulfillmentchannel'] = order.FulfillmentChannel if hasattr(order, 'FulfillmentChannel') else ''
         tmp_order['shipservicelevel'] = order.ShipServiceLevel if hasattr(order, 'ShipServiceLevel') else ''
 
-        orders.append(tmp_order)
+
         t = tmp_order
         try:
             amzorder = AmazonOrders.objects.get(amazonorderid=t['amazonorderid'])
             if str(amzorder.orderstatus) != str(t['orderstatus']):
                 amzorder.create_from_dict(t, ('created_by', 'amazonorderid'))
                 amzorder.save()
+                # orders.append(amzorder)
+                amazon_get_order_live_details.apply_async((amz, amzorder.id))
         except AmazonOrders.DoesNotExist:
             amzorder = AmazonOrders()
             amzorder.create_from_dict(t)
@@ -221,6 +225,32 @@ def amazon_get_order_live(amz, datefrom=None):
             amzorder.created_by = amz['uid']
             amzorder.updated_by = amz['uid']
             amzorder.save()
+            amazon_get_order_live_details.apply_async((amz, amzorder.id))
+
+    #Call this task to update product id
+    # if len(orders>0):
+    #     amazon_get_order_live_details.apply_async((amz, orders), countdown=60)
+
+
+@shared_task
+def amazon_get_order_live_details(amz, orderid):
+    order = AmazonOrders.objects.get(pk=orderid)
+    con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
+    rr = con.list_order_items(AmazonOrderId=order.amazonorderid)
+    # rr.ListOrderItemsResult.OrderItems.OrderItem[0].ASIN
+    item_list = []
+    for item in rr.ListOrderItemsResult.OrderItems.OrderItem:
+        try:
+            item_obj = AmazonProduct.objects.get(seller_sku=item.SellerSKU)
+            item_list.append(str(item_obj.id))
+        except AmazonProduct.DoesNotExist:
+            print 'From AmazonProduct.DoesNotExist', item.SellerSKU
+            pass
+
+    order.amazonproduct = ",".join(item_list)
+    print order
+    order.save()
+
 
 
 @shared_task

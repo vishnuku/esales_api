@@ -163,10 +163,12 @@ class ChannelCategoryList(generics.ListAPIView):
         if 'catid' in self.kwargs:
             queryset = queryset.filter(channel=self.kwargs['channel'], level=self.kwargs['level'], parent_id=self.kwargs['catid'])
         elif 'level' in self.kwargs:
+            print 'level',self.kwargs['level']
             queryset = queryset.filter(channel=self.kwargs['channel'], level=self.kwargs['level'])
         else:
             queryset = queryset.filter(channel=self.kwargs['channel'], level=0)
 
+        print queryset.query
         return queryset
 
 
