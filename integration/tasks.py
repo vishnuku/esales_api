@@ -5,7 +5,7 @@ from boto.mws.connection import MWSConnection
 from celery import shared_task
 
 from .models import Channel
-from inventory.models import AmazonProduct, Product, Category, AmazonOrders
+from inventory.models import Product, Category, AmazonOrders, ProductOrder
 
 
 @shared_task
@@ -139,27 +139,30 @@ def inventory_process_report(amz, rr):
                                                              'sku': row[3],
                                                              'retail_price': row[4],
                                                              'stock_quantity': row[5],
-                                                             'pending_quantity':row[25],
-                                                             'image_url':row[7],
-                                                             'shipping_fee':row[10],
-                                                             'will_ship_internationally':row[19],
-                                                             'expedited_shipping':row[20],
-                                                             'category_id':c.id,
-                                                             'field1':row[6],
-                                                             'field2':row[16],
-                                                             'field3':row[17],
-                                                             'field4':row[18],
-                                                             'field5':row[11],
-                                                             'field6':row[12],
-                                                             'field7':row[9],
-                                                             'field8':row[2],
-                                                             'field9':row[8],
-                                                             'channel':amz['cid'],
-                                                             'created_by':amz['uid'],
-                                                             'updated_by':amz['uid'],
-                                                             'user':amz['uid'],
-                                                             'misc_data':tmp_misc_data
+                                                             'pending_quantity': row[25],
+                                                             'image_url': row[7],
+                                                             'shipping_fee': row[10],
+                                                             'will_ship_internationally': row[19],
+                                                             'expedited_shipping': row[20],
+                                                             'category_id': c.id,
+                                                             'field1': row[6],
+                                                             'field2': row[16],
+                                                             'field3': row[17],
+                                                             'field4': row[18],
+                                                             'field5': row[11],
+                                                             'field6': row[12],
+                                                             'field7': row[9],
+                                                             'field8': row[2],
+                                                             'field9': row[8],
+                                                             'channel': amz['cid'],
+                                                             'created_by': amz['uid'],
+                                                             'updated_by': amz['uid'],
+                                                             'user': amz['uid'],
+                                                             'misc_data': tmp_misc_data
                                                             })
+        if not created:
+            p.stock_quantity = int(row[5])
+            p.save()
 
         # d = AmazonProduct(item_name=row[0], item_description=row[1], listing_id=row[2], seller_sku=row[3],
         #                   price=row[4], quantity=row[5], open_date=row[6], image_url=row[7],
@@ -241,7 +244,7 @@ def amazon_get_order_live(amz, datefrom=None):
                 amzorder.create_from_dict(t, ('created_by', 'amazonorderid'))
                 amzorder.save()
                 # orders.append(amzorder)
-                amazon_get_order_live_details.apply_async((amz, amzorder.id))
+                amazon_get_order_live_details.apply_async((amz, amzorder.id, order.OrderStatus))
         except AmazonOrders.DoesNotExist:
             amzorder = AmazonOrders()
             amzorder.create_from_dict(t)
@@ -249,7 +252,7 @@ def amazon_get_order_live(amz, datefrom=None):
             amzorder.created_by = amz['uid']
             amzorder.updated_by = amz['uid']
             amzorder.save()
-            amazon_get_order_live_details.apply_async((amz, amzorder.id))
+            amazon_get_order_live_details.apply_async((amz, amzorder.id, order.OrderStatus))
 
     #Call this task to update product id
     # if len(orders>0):
@@ -257,19 +260,33 @@ def amazon_get_order_live(amz, datefrom=None):
 
 
 @shared_task
-def amazon_get_order_live_details(amz, orderid):
+def amazon_get_order_live_details(amz, orderid, orderstatus):
     order = AmazonOrders.objects.get(pk=orderid)
     con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
     rr = con.list_order_items(AmazonOrderId=order.amazonorderid)
     # rr.ListOrderItemsResult.OrderItems.OrderItem[0].ASIN
     item_list = []
+    item_obj = 0
     for item in rr.ListOrderItemsResult.OrderItems.OrderItem:
         try:
             item_obj = Product.objects.get(sku=item.SellerSKU)
             item_list.append(str(item_obj.id))
+
+
+            if(item.QuantityShipped > 0):
+                item_obj.sold_quantity += int(item.QuantityShipped)
+                item_obj.save()
+
+                #Insert to product order
+                productorder = ProductOrder(product_id=item_obj.id, amazonorders_id=orderid, quantity=item.QuantityShipped,
+                                            status=orderstatus, message='',
+                                            user=amz['uid'], created_by=amz['uid'], updated_by=amz['uid'])
+                productorder.save()
+
         except Product.DoesNotExist:
             print 'From Product.DoesNotExist', item.SellerSKU
             pass
+
 
     order.amazonproduct = ",".join(item_list)
     print order
@@ -315,8 +332,6 @@ def csv_insert(instance):
             product.ucodevalue=row[20]
             product.bullet_point=row[21]
 
-            # product.created=now(
-            # product.updated=row[11]
             product.created_by=instance.user
             product.updated_by=instance.user
             product.user=instance.user
