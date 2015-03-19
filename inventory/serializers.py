@@ -10,7 +10,7 @@ class CategorySerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Category
-        fields = ('id', 'name', 'status', 'created')
+        fields = ('id', 'name', 'status', 'created_on')
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -19,9 +19,9 @@ class ProductSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Product
-        fields = ('id', 'name', 'brand', 'desc', 'bullet_point', 'manufacturer', 'ucodetype', 'ucodevalue',
-                  'purchase_price', 'retail_price', 'tax_price', 'sku', 'barcode', 'stock', 'minimum_stock_level',
-                  'category', 'meta_data', 'origin', 'created')
+        fields = ('id', 'name', 'brand', 'description', 'bullet_point', 'manufacturer', 'ucodetype', 'ucodevalue',
+                  'purchase_price', 'retail_price', 'tax_price', 'sku', 'barcode', 'stock_quantity', 'min_stock_quantity',
+                  'sold_quantity', 'category', 'channel', 'meta_data', 'misc_data', 'origin', 'created_on')
 
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -41,7 +41,7 @@ class ProductWithImagesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ('id', 'sku', 'name', 'purchase_price', 'retail_price', 'tax_price', 'meta_data',
-                  'category', 'barcode', 'stock', 'minimum_stock_level', 'user', 'created',
+                  'category', 'barcode', 'stock', 'minimum_stock_level', 'user', 'created_on',
                   'images')
 
 
@@ -53,7 +53,7 @@ class UserSerializer(serializers.ModelSerializer):
 class InventoryCSVSerializer(serializers.ModelSerializer):
     class Meta:
         model = CSV
-        fields = ('id', 'name', 'status', 'created')
+        fields = ('id', 'name', 'status', 'created_on')
 
 
 class ChannelCategorySerializer(serializers.ModelSerializer):
@@ -74,4 +74,4 @@ class ProductListingConfiguratorSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductListingConfigurator
         fields = ('id', 'name', 'marketplace', 'marketplace_domain', 'category1', 'category2',
-                  'category3', 'status', 'created', 'category1_details', 'category2_details')
+                  'category3', 'status', 'created_on', 'category1_details', 'category2_details')
