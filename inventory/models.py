@@ -318,3 +318,36 @@ class ProductListingConfigurator(models.Model):
 
     def __str__(self):
         return '%s' % self.name
+
+
+class Warehouse(models.Model):
+    name = models.CharField(max_length=105, blank=False)
+    address = models.CharField(max_length=255, blank=True)
+    town = models.CharField(max_length=105, blank=True)
+    country = models.CharField(max_length=105, blank=True)
+    status = models.SmallIntegerField(default=0)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
+    created_by = models.ForeignKey(User, related_name='created_by_warehouse')
+    updated_by = models.ForeignKey(User, related_name='updated_by_warehouse')
+    user = models.ForeignKey(User)
+
+    def __str__(self):
+        return '%s' % self.name
+
+
+class WarehouseProduct(models.Model):
+    product = models.ForeignKey(Product)
+    warehouse = models.ForeignKey(Warehouse)
+    stock_quantity = models.IntegerField(default=0)
+    min_stock_quantity = models.IntegerField(default=0)
+    sold_quantity = models.IntegerField(default=0)
+    status = models.SmallIntegerField(default=0)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
+    created_by = models.ForeignKey(User, related_name='created_by_warehouse_product')
+    updated_by = models.ForeignKey(User, related_name='updated_by_warehouse_product')
+    user = models.ForeignKey(User)
+
+    def __str__(self):
+        return '%s' % self.name

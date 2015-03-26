@@ -6,6 +6,7 @@ from celery import shared_task
 
 from .models import Channel
 from inventory.models import Product, Category, AmazonOrders, ProductOrder
+from rest_framework.renderers import JSONRenderer
 
 
 @shared_task
@@ -163,20 +164,6 @@ def inventory_process_report(amz, rr):
         if not created:
             p.stock_quantity = int(row[5])
             p.save()
-
-        # d = AmazonProduct(item_name=row[0], item_description=row[1], listing_id=row[2], seller_sku=row[3],
-        #                   price=row[4], quantity=row[5], open_date=row[6], image_url=row[7],
-        #                   item_is_marketplace=row[8], product_id_type=row[9], zshop_shipping_fee=row[10],
-        #                   item_note=row[11], item_condition=row[12], zshop_category1=row[13],
-        #                   zshop_browse_path=row[14], zshop_storefront_feature=row[15], asin1=row[16], asin2=row[17],
-        #                   asin3=row[18], will_ship_internationally=row[19], expedited_shipping=row[20],
-        #                   zshop_boldface=row[21], bid_for_featured_placement=row[23],
-        #                   add_delete=row[24], pending_quantity=row[25], fulfillment_channel=row[26],
-        #                   channel_id=amz['cid'], product=p,
-        #                   user=amz['uid'], created_by=amz['uid'], updated_by=amz['uid'])
-        # dir(d)
-        # type(d)
-        # d.save()
 
         # Update status to completed in ChannelIntegration
         channel = Channel.objects.get(pk=amz['cid'])
