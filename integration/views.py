@@ -10,7 +10,7 @@ from rest_framework import status
 from rest_framework import generics
 from rest_framework import authentication, permissions
 
-from .serializers import ChannelSerializer, AmazonProductSerializer, AmazonOrdersSerializer
+from .serializers import ChannelSerializer, AmazonProductSerializer, AmazonOrdersSerializer, AmazonOrdersSerializerWithOneASINPic
 from .models import Channel
 from inventory.models import AmazonProduct, Product, AmazonOrders, ProductListingConfigurator, ChannelCategory
 from tasks import amazon_request_report, amazon_get_order_live
@@ -204,7 +204,7 @@ class OrderSync(generics.ListCreateAPIView):
     """
     queryset = AmazonOrders.objects.all()
     model = AmazonOrders
-    serializer_class = AmazonOrdersSerializer
+    serializer_class = AmazonOrdersSerializerWithOneASINPic
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 

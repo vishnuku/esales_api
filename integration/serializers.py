@@ -1,7 +1,7 @@
 from rest_framework import serializers
-
+from rest_framework.renderers import JSONRenderer
 from .models import Channel
-from inventory.models import AmazonProduct, AmazonOrders
+from inventory.models import AmazonProduct, AmazonOrders, Images
 
 
 class ChannelSerializer(serializers.ModelSerializer):
@@ -28,7 +28,32 @@ class AmazonProductSerializer(serializers.ModelSerializer):
             'will_ship_internationally', 'expedited_shipping', 'zshop_boldface', 'product', 'bid_for_featured_placement',
             'add_delete', 'pending_quantity', 'fulfillment_channel')
 
+'''
 
+'''
 class AmazonOrdersSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = AmazonOrders
+
+
+class AmazonOrdersSerializerWithOneASINPic(serializers.ModelSerializer):
+    address = serializers.SerializerMethodField('return_json_address')
+    product_pic = serializers.SerializerMethodField('return_order_product_pic')
+
+    def return_json_address(self, AmazonOrders):
+        #print foo
+        return AmazonOrders.address
+
+    def return_order_product_pic(self, AmazonOrders):
+        pictures = Images.objects.filter(product_id=AmazonOrders.amazonproduct)
+        if len(pictures) > 0:
+            return str(pictures[0].image)
+        else:
+            return str('NA')
+
+    class Meta:
+        model = AmazonOrders
+        fields = ('id', 'amazonorderid', 'buyername', 'buyeremail', 'ordertype', 'numberofitemsshipped', 'numberofitemsunshipped',
+                  'numberofitemsunshipped', 'orderstatus', 'saleschannel', 'amount', 'marketplaceid', 'fulfillmentchannel',
+                  'shipservicelevel', 'purchasedate', 'lastupdatedate', 'created_on', 'address', 'amazonproduct', 'product_pic', 'paymentmethod')
