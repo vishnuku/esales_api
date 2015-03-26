@@ -18,4 +18,8 @@ urlpatterns = [
     url(r'^inventory/channel/category/(?P<pk>[0-9]+)/$', views.CategoryDetails.as_view(), name='inventory_channel_category'),
     url(r'^inventory/product/configs/$', views.ProductListingConfiguratorList.as_view(), name="inventory_product_listing_configurator"),
     url(r'^inventory/product/config/(?P<pk>[0-9]+)/$', views.ProductListingConfiguratorDetails.as_view(), name='inventory_product_listing_configurators'),
+    url(r'^inventory/warehouses/$', views.WarehouseList.as_view(), name="inventory_warehouse"),
+    url(r'^inventory/warehouse/(?P<pk>[0-9]+)/$', views.WarehouseDetails.as_view(), name='inventory_warehouse'),
+    url(r'^inventory/warehouse/products/$', views.WarehouseProductList.as_view(), name="inventory_warehouse_product"),
+    url(r'^inventory/warehouse/product/(?P<pk>[0-9]+)/$', views.WarehouseProductDetails.as_view(), name='inventory_warehouse_product'),
 ]

@@ -4,8 +4,10 @@ from rest_framework import generics
 from rest_framework import authentication, permissions
 
 from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
-    InventoryCSVSerializer, ChannelCategorySerializer, ProductListingConfiguratorSerializer
-from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator
+    InventoryCSVSerializer, ChannelCategorySerializer, ProductListingConfiguratorSerializer, WarehouseSerializer, \
+    WarehouseProductSerializer
+from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, \
+    WarehouseProduct
 
 
 class JSONResponse(HttpResponse):
@@ -194,3 +196,49 @@ class ProductListingConfiguratorDetails(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = ProductListingConfigurator.objects.all()
     serializer_class = ProductListingConfiguratorSerializer
+
+
+class WarehouseList(generics.ListCreateAPIView):
+    """
+    List all the ProductListingConfigurator
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = Warehouse.objects.all()
+    serializer_class = WarehouseSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+
+
+class WarehouseDetails(generics.RetrieveUpdateDestroyAPIView):
+    """
+    List Product details
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = Warehouse.objects.all()
+    serializer_class = WarehouseSerializer
+
+
+class WarehouseProductList(generics.ListCreateAPIView):
+    """
+    List all the ProductListingConfigurator
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = WarehouseProduct.objects.all()
+    serializer_class = WarehouseProductSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+
+
+class WarehouseProductDetails(generics.RetrieveUpdateDestroyAPIView):
+    """
+    List Product details
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = WarehouseProduct.objects.all()
+    serializer_class = WarehouseProductSerializer
