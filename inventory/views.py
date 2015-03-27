@@ -5,9 +5,9 @@ from rest_framework import authentication, permissions
 
 from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
     InventoryCSVSerializer, ChannelCategorySerializer, ProductListingConfiguratorSerializer, WarehouseSerializer, \
-    WarehouseProductSerializer
+    WarehouseProductSerializer, WarehouseBinSerializer
 from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, \
-    WarehouseProduct
+    WarehouseProduct, WarehouseBin
 
 
 class JSONResponse(HttpResponse):
@@ -221,24 +221,24 @@ class WarehouseDetails(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = WarehouseSerializer
 
 
-class WarehouseProductList(generics.ListCreateAPIView):
+class WarehouseBinList(generics.ListCreateAPIView):
     """
     List all the ProductListingConfigurator
     """
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
-    queryset = WarehouseProduct.objects.all()
-    serializer_class = WarehouseProductSerializer
+    queryset = WarehouseBin.objects.all()
+    serializer_class = WarehouseBinSerializer
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
 
 
-class WarehouseProductDetails(generics.RetrieveUpdateDestroyAPIView):
+class WarehouseBinDetails(generics.RetrieveUpdateDestroyAPIView):
     """
     List Product details
     """
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
-    queryset = WarehouseProduct.objects.all()
-    serializer_class = WarehouseProductSerializer
+    queryset = WarehouseBin.objects.all()
+    serializer_class = WarehouseBinSerializer

@@ -78,6 +78,7 @@ class Product(models.Model):
     field9 = models.CharField(max_length=50, blank=True, null=True)
     field10 = models.CharField(max_length=50, blank=True, null=True)
     misc_data = JSONField()
+    warehouse = JSONField()
     channel = models.CharField(max_length=50, blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
@@ -336,12 +337,9 @@ class Warehouse(models.Model):
         return '%s' % self.name
 
 
-class WarehouseProduct(models.Model):
-    product = models.ForeignKey(Product)
+class WarehouseBin(models.Model):
     warehouse = models.ForeignKey(Warehouse)
-    stock_quantity = models.IntegerField(default=0)
-    min_stock_quantity = models.IntegerField(default=0)
-    sold_quantity = models.IntegerField(default=0)
+    name = models.CharField(max_length=105, blank=False)
     status = models.SmallIntegerField(default=0)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
