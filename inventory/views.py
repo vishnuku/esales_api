@@ -165,7 +165,6 @@ class ChannelCategoryList(generics.ListAPIView):
         if 'catid' in self.kwargs:
             queryset = queryset.filter(channel=self.kwargs['channel'], level=self.kwargs['level'], parent_id=self.kwargs['catid'])
         elif 'level' in self.kwargs:
-            print 'level',self.kwargs['level']
             queryset = queryset.filter(channel=self.kwargs['channel'], level=self.kwargs['level'])
         else:
             queryset = queryset.filter(channel=self.kwargs['channel'], level=0)
@@ -232,6 +231,20 @@ class WarehouseBinList(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned purchases to a given user,
+        by filtering against a `username` query parameter in the URL.
+        """
+        queryset = WarehouseBin.objects.all()
+
+        if 'warehouse' in self.kwargs:
+            queryset = queryset.filter(warehouse=self.kwargs['warehouse'])
+
+        print queryset.query
+        return queryset
+
 
 
 class WarehouseBinDetails(generics.RetrieveUpdateDestroyAPIView):
