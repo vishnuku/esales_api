@@ -5,9 +5,9 @@ from rest_framework import authentication, permissions
 
 from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
     InventoryCSVSerializer, ChannelCategorySerializer, ProductListingConfiguratorSerializer, WarehouseSerializer, \
-    WarehouseProductSerializer, WarehouseBinSerializer
+    WarehouseBinSerializer
 from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, \
-    WarehouseProduct, WarehouseBin
+    WarehouseBin
 
 
 class JSONResponse(HttpResponse):

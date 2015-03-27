@@ -20,6 +20,6 @@ urlpatterns = [
     url(r'^inventory/product/config/(?P<pk>[0-9]+)/$', views.ProductListingConfiguratorDetails.as_view(), name='inventory_product_listing_configurators'),
     url(r'^inventory/warehouses/$', views.WarehouseList.as_view(), name="inventory_warehouse"),
     url(r'^inventory/warehouse/(?P<pk>[0-9]+)/$', views.WarehouseDetails.as_view(), name='inventory_warehouse'),
-    url(r'^inventory/warehouse/products/$', views.WarehouseProductList.as_view(), name="inventory_warehouse_product"),
-    url(r'^inventory/warehouse/product/(?P<pk>[0-9]+)/$', views.WarehouseProductDetails.as_view(), name='inventory_warehouse_product'),
+    url(r'^inventory/warehouse/bin/$', views.WarehouseBinList.as_view(), name="inventory_warehouse_product"),
+    url(r'^inventory/warehouse/bin/(?P<pk>[0-9]+)/$', views.WarehouseBinDetails.as_view(), name='inventory_warehouse_product'),
 ]

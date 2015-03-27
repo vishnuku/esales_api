@@ -1,8 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, \
-    WarehouseProduct, WarehouseBin
+from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, WarehouseBin
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -87,4 +86,4 @@ class WarehouseSerializer(serializers.ModelSerializer):
 class WarehouseBinSerializer(serializers.ModelSerializer):
     class Meta:
         model = WarehouseBin
-        fields = ('id', 'name', 'warehouse', 'user')
+        fields = ('id', 'name', 'warehouse')
