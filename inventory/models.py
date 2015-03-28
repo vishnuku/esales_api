@@ -338,7 +338,11 @@ class Warehouse(models.Model):
 
 
 class WarehouseBin(models.Model):
-    warehouse = models.ForeignKey(Warehouse)
+    warehouse = models.ForeignKey(Warehouse, default=1)
+    product = models.ForeignKey(Product, default=1)
+    stock_quantity = models.IntegerField(default=0)
+    min_stock_quantity = models.IntegerField(default=0)
+    sold_quantity = models.IntegerField(default=0)
     name = models.CharField(max_length=105, blank=False)
     status = models.SmallIntegerField(default=0)
     created_on = models.DateTimeField(auto_now_add=True)
