@@ -338,8 +338,8 @@ class Warehouse(models.Model):
 
 
 class WarehouseBin(models.Model):
-    warehouse = models.ForeignKey(Warehouse, default=1)
-    product = models.ForeignKey(Product, default=1)
+    warehouse = models.ForeignKey(Warehouse)
+    product = models.ForeignKey(Product, blank=True, null=True)
     stock_quantity = models.IntegerField(default=0)
     min_stock_quantity = models.IntegerField(default=0)
     sold_quantity = models.IntegerField(default=0)
