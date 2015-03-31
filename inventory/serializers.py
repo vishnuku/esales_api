@@ -86,4 +86,4 @@ class WarehouseSerializer(serializers.ModelSerializer):
 class WarehouseBinSerializer(serializers.ModelSerializer):
     class Meta:
         model = WarehouseBin
-        fields = ('id', 'name', 'warehouse')
+        fields = ('id', 'name', 'warehouse', 'stock_quantity', 'sold_quantity')
