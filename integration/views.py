@@ -10,7 +10,8 @@ from rest_framework import status
 from rest_framework import generics
 from rest_framework import authentication, permissions
 
-from .serializers import ChannelSerializer, AmazonProductSerializer, AmazonOrdersSerializer, AmazonOrdersSerializerWithOneASINPic
+from .serializers import ChannelSerializer, AmazonProductSerializer, AmazonOrdersSerializer, \
+    AmazonOrdersSerializerWithOneASINPic
 from .models import Channel
 from inventory.models import AmazonProduct, Product, AmazonOrders, ProductListingConfigurator, ChannelCategory
 from tasks import amazon_request_report, amazon_get_order_live
@@ -445,3 +446,15 @@ class ListingProducts(generics.ListCreateAPIView):
         data = {"success": "true"}
         return Response(data, status=status.HTTP_200_OK)
         # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class InventoryOrder(generics.ListAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    serializer_class = AmazonOrdersSerializerWithOneASINPic
+
+    def get_queryset(self):
+        queryset = AmazonOrders.objects.all()
+        queryset = queryset.filter(id=self.kwargs['pk'])
+        return queryset

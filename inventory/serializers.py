@@ -85,6 +85,7 @@ class WarehouseSerializer(serializers.ModelSerializer):
 
 class WarehouseBinSerializer(serializers.ModelSerializer):
     warehouse_detail = WarehouseSerializer(source='warehouse', read_only=True)
+
     class Meta:
         model = WarehouseBin
         fields = ('id', 'name', 'warehouse', 'stock_quantity', 'sold_quantity', 'min_stock_quantity', 'product', 'warehouse_detail')

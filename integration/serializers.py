@@ -57,3 +57,5 @@ class AmazonOrdersSerializerWithOneASINPic(serializers.ModelSerializer):
         fields = ('id', 'amazonorderid', 'buyername', 'buyeremail', 'ordertype', 'numberofitemsshipped', 'numberofitemsunshipped',
                   'numberofitemsunshipped', 'orderstatus', 'saleschannel', 'amount', 'marketplaceid', 'fulfillmentchannel',
                   'shipservicelevel', 'purchasedate', 'lastupdatedate', 'created_on', 'address', 'amazonproduct', 'product_pic', 'paymentmethod')
+
+
