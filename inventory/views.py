@@ -242,7 +242,9 @@ class WarehouseBinList(generics.ListCreateAPIView):
         if 'warehouse' in self.kwargs:
             queryset = queryset.filter(warehouse=self.kwargs['warehouse'])
 
-        print queryset.query
+        elif 'product' in self.kwargs:
+            queryset = queryset.filter(product=self.kwargs['product'])
+
         return queryset
 
 
@@ -255,3 +257,4 @@ class WarehouseBinDetails(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = WarehouseBin.objects.all()
     serializer_class = WarehouseBinSerializer
+

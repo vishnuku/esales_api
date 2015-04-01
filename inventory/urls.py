@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^inventory/warehouses/$', views.WarehouseList.as_view(), name="inventory_warehouse"),
     url(r'^inventory/warehouse/(?P<pk>[0-9]+)/$', views.WarehouseDetails.as_view(), name='inventory_warehouse'),
     url(r'^inventory/warehouse/bins/$', views.WarehouseBinList.as_view(), name="inventory_warehouse_product"),
-    url(r'^inventory/warehouse/bins/(?P<warehouse>[0-9]+)/$', views.WarehouseBinList.as_view(), name='inventory_warehouse_product'),
+    url(r'^inventory/warehouse/bins/warehouse/(?P<warehouse>[0-9]+)/$', views.WarehouseBinList.as_view(), name='inventory_warehouse_product'),
+    url(r'^inventory/warehouse/bins/product/(?P<product>[0-9]+)/$', views.WarehouseBinList.as_view(), name='inventory_warehouse_product'),
     url(r'^inventory/warehouse/bin/(?P<pk>[0-9]+)/$', views.WarehouseBinDetails.as_view(), name='inventory_warehouse_product'),
 ]
