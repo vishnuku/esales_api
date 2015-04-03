@@ -5,9 +5,9 @@ from rest_framework import authentication, permissions
 
 from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
     InventoryCSVSerializer, ChannelCategorySerializer, ProductListingConfiguratorSerializer, WarehouseSerializer, \
-    WarehouseBinSerializer
+    WarehouseBinSerializer, ProductOrderSerializer
 from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, \
-    WarehouseBin
+    WarehouseBin, ProductOrder
 
 
 class JSONResponse(HttpResponse):
@@ -257,4 +257,39 @@ class WarehouseBinDetails(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = WarehouseBin.objects.all()
     serializer_class = WarehouseBinSerializer
+
+
+class ProductOrderList(generics.ListCreateAPIView):
+    """
+    List all the ProductListingConfigurator
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = ProductOrder.objects.all()
+    serializer_class = ProductOrderSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned purchases to a given user,
+        by filtering against a `username` query parameter in the URL.
+        """
+        queryset = ProductOrder.objects.all()
+
+        if 'order' in self.kwargs:
+            queryset = queryset.filter(amazonorders=self.kwargs['order'])
+
+        return queryset
+
+
+class ProductOrderDetails(generics.RetrieveUpdateDestroyAPIView):
+    """
+    List Product details
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = ProductOrder.objects.all()
+    serializer_class = ProductOrderSerializer
 

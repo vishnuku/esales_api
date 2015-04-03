@@ -265,9 +265,17 @@ def amazon_get_order_live_details(amz, orderid, orderstatus):
                 item_obj.save()
 
                 #Insert to product order
-                productorder = ProductOrder(product_id=item_obj.id, amazonorders_id=orderid, quantity=item.QuantityShipped,
-                                            status=orderstatus, message='',
-                                            user=amz['uid'], created_by=amz['uid'], updated_by=amz['uid'])
+                # productorder = ProductOrder(product_id=item_obj.id, amazonorders_id=orderid, quantity=item.QuantityShipped,
+                #                             status=orderstatus, message='',
+                #                                             user=amz['uid'], created_by=amz['uid'], updated_by=amz['uid'])
+                productorder, created = ProductOrder.objects.get_or_create(product_id=item_obj.id, amazonorders_id=orderid,
+                                                                   defaults={'quantity': item.QuantityShipped,
+                                                                             'status': orderstatus,
+                                                                             'message': '',
+                                                                             'user': amz['uid'],
+                                                                             'created_by': amz['uid'],
+                                                                             'updated_by': amz['uid']})
+
                 productorder.save()
 
         except Product.DoesNotExist:

@@ -286,19 +286,6 @@ class AmazonOrders(models.Model):
         return '%s' % self.amazonorderid
 
 
-class ProductOrder(models.Model):
-    product = models.ForeignKey(Product)
-    amazonorders = models.ForeignKey(AmazonOrders)
-    quantity = models.IntegerField(default=0)
-    status = models.CharField(max_length=20, blank=True, default='')
-    message = models.CharField(max_length=50, blank=True, default='')
-    created_on = models.DateTimeField(auto_now_add=True)
-    updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name='created_by_product_order')
-    updated_by = models.ForeignKey(User, related_name='updated_by_product_order')
-    user = models.ForeignKey(User)
-
-
 class ProductListingConfigurator(models.Model):
     """Extra information for product configuration
 
@@ -353,3 +340,20 @@ class WarehouseBin(models.Model):
 
     def __str__(self):
         return '%s' % self.name
+
+
+class ProductOrder(models.Model):
+    product = models.ForeignKey(Product)
+    amazonorders = models.ForeignKey(AmazonOrders)
+    warehousebin = models.ForeignKey(WarehouseBin, blank=True, null=True)
+    quantity = models.IntegerField(default=0)
+    status = models.CharField(max_length=20, blank=True, default='')
+    message = models.CharField(max_length=50, blank=True, default='')
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
+    created_by = models.ForeignKey(User, related_name='created_by_product_order')
+    updated_by = models.ForeignKey(User, related_name='updated_by_product_order')
+    user = models.ForeignKey(User)
+
+    class Meta:
+        unique_together = ('product', 'amazonorders')

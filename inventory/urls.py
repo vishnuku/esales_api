@@ -24,4 +24,7 @@ urlpatterns = [
     url(r'^inventory/warehouse/bins/warehouse/(?P<warehouse>[0-9]+)/$', views.WarehouseBinList.as_view(), name='inventory_warehouse_product'),
     url(r'^inventory/warehouse/bins/product/(?P<product>[0-9]+)/$', views.WarehouseBinList.as_view(), name='inventory_warehouse_product'),
     url(r'^inventory/warehouse/bin/(?P<pk>[0-9]+)/$', views.WarehouseBinDetails.as_view(), name='inventory_warehouse_product'),
+    url(r'^inventory/product/orders/$', views.ProductOrderList.as_view(), name='inventory_product_order'),
+    url(r'^inventory/product/order/(?P<pk>[0-9]+)/$', views.ProductOrderDetails.as_view(), name='inventory_product_order'),
+    url(r'^inventory/product/order/order/(?P<order>[0-9]+)/$', views.ProductOrderList.as_view(), name='inventory_warehouse_product'),
 ]

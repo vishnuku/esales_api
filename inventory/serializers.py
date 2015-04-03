@@ -1,7 +1,9 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from integration.serializers import AmazonOrdersSerializerWithOneASINPic
 
-from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, WarehouseBin
+from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, WarehouseBin, \
+    ProductOrder
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -89,4 +91,14 @@ class WarehouseBinSerializer(serializers.ModelSerializer):
     class Meta:
         model = WarehouseBin
         fields = ('id', 'name', 'warehouse', 'stock_quantity', 'sold_quantity', 'min_stock_quantity', 'product', 'warehouse_detail')
+
+
+class ProductOrderSerializer(serializers.ModelSerializer):
+    products = ProductWithImagesSerializer(source='product',read_only=True)
+    amazonorder = AmazonOrdersSerializerWithOneASINPic(source='amazonorders',read_only=True)
+    warehousebins = WarehouseBinSerializer(source='warehousebin',read_only=True)
+
+    class Meta:
+        model = ProductOrder
+        fields = ('id', 'products', 'amazonorder', 'warehousebins', 'quantity', 'status')
 
