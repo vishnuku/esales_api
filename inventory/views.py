@@ -240,7 +240,8 @@ class WarehouseBinList(generics.ListCreateAPIView):
         queryset = WarehouseBin.objects.all()
 
         if 'warehouse' in self.kwargs:
-            queryset = queryset.filter(warehouse=self.kwargs['warehouse'])
+            queryset = queryset.filter(warehouse=self.kwargs['warehouse']).exclude(product__isnull=False)
+
 
         elif 'product' in self.kwargs:
             queryset = queryset.filter(product=self.kwargs['product'])
