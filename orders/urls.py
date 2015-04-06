@@ -1,8 +1,8 @@
 from django.conf.urls import url
-#import receivers
 import views
 
 
 urlpatterns = [
-    url(r'^inventory/categories/$', views.CategoryList.as_view(), name="inventory_categories"),
+    url(r'^orders/$', views.OrderList.as_view(), name="inventory_orders"),
+    url(r'^order/(?P<pk>[0-9]+)/$', views.OrderDetails.as_view(), name='inventory_order'),
 ]

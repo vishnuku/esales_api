@@ -344,7 +344,7 @@ class WarehouseBin(models.Model):
 
 class ProductOrder(models.Model):
     product = models.ForeignKey(Product)
-    amazonorders = models.ForeignKey(AmazonOrders)
+    amazonorders = models.ForeignKey(AmazonOrders, related_name='productorder')
     warehousebin = models.ForeignKey(WarehouseBin, blank=True, null=True)
     quantity = models.IntegerField(default=0)
     status = models.CharField(max_length=20, blank=True, default='')
@@ -357,3 +357,6 @@ class ProductOrder(models.Model):
 
     class Meta:
         unique_together = ('product', 'amazonorders')
+
+    def __unicode__(self):
+        return '%s' % self.product.name

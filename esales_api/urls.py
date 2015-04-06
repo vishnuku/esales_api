@@ -37,6 +37,7 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^', include('integration.urls')),
     url(r'^', include('inventory.urls')),
+    url(r'^', include('orders.urls')),
     url(r'^api-token-auth/', obtain_auth_token),
     # url(r'^', include('channel_integration.urls')),
     # url(r'^', include('inventory_management.urls'))

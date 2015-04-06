@@ -95,26 +95,29 @@ class WarehouseBinSerializer(serializers.ModelSerializer):
 
 class ProductOrderSerializer(serializers.ModelSerializer):
     products = ProductWithImagesSerializer(source='product',read_only=True)
-    amazonorder = AmazonOrdersSerializerWithOneASINPic(source='amazonorders',read_only=True)
     warehousebins = WarehouseBinSerializer(source='warehousebin',read_only=True)
 
     class Meta:
         model = ProductOrder
-        fields = ('id', 'products', 'amazonorder', 'warehousebins', 'quantity', 'status', 'warehousebin')
+        fields = ('id', 'products', 'warehousebins', 'quantity', 'status', 'warehousebin')
 
 
 class ProductOrderSerializer2(serializers.ModelSerializer):
     class Meta:
         model = ProductOrder
 
-
 class OrderProductSerializer(serializers.ModelSerializer):
-    order_product = serializers.SerializerMethodField('get_order_products')
+    productorder = ProductOrderSerializer(many=True, read_only=True)
 
-    def get_order_products(self, AmazonOrders):
-        op = ProductOrder.objects.filter(amazonorders = AmazonOrders.id)
-        return str(op)
+    # tracks = serializers.SlugRelatedField(
+    #         many=True,
+    #         read_only=True,
+    #         slug_field='title'
+    #      )
+    # AmazonOrdersSerializer
+
 
     class Meta:
         model = AmazonOrders
-        fields = ('id', 'amazonorderid', 'order_product')
+        fields = ('id', 'amazonorderid', 'buyername', 'productorder')
+        depth = 1
