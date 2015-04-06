@@ -5,9 +5,9 @@ from rest_framework import authentication, permissions
 
 from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
     InventoryCSVSerializer, ChannelCategorySerializer, ProductListingConfiguratorSerializer, WarehouseSerializer, \
-    WarehouseBinSerializer, ProductOrderSerializer
+    WarehouseBinSerializer, ProductOrderSerializer, OrderProductSerializer
 from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, \
-    WarehouseBin, ProductOrder
+    WarehouseBin, ProductOrder, AmazonOrders
 
 
 class JSONResponse(HttpResponse):
@@ -299,3 +299,9 @@ class ProductOrderDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = ProductOrder.objects.all()
     serializer_class = ProductOrderSerializer
 
+
+class OrderProductDetails(generics.RetrieveAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = AmazonOrders.objects.all()
+    serializer_class = OrderProductSerializer

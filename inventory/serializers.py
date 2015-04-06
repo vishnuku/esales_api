@@ -3,7 +3,7 @@ from rest_framework import serializers
 from integration.serializers import AmazonOrdersSerializerWithOneASINPic
 
 from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, WarehouseBin, \
-    ProductOrder
+    ProductOrder, AmazonOrders
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -102,3 +102,19 @@ class ProductOrderSerializer(serializers.ModelSerializer):
         model = ProductOrder
         fields = ('id', 'products', 'amazonorder', 'warehousebins', 'quantity', 'status', 'warehousebin')
 
+
+class ProductOrderSerializer2(serializers.ModelSerializer):
+    class Meta:
+        model = ProductOrder
+
+
+class OrderProductSerializer(serializers.ModelSerializer):
+    order_product = serializers.SerializerMethodField('get_order_products')
+
+    def get_order_products(self, AmazonOrders):
+        op = ProductOrder.objects.filter(amazonorders = AmazonOrders.id)
+        return str(op)
+
+    class Meta:
+        model = AmazonOrders
+        fields = ('id', 'amazonorderid', 'order_product')
