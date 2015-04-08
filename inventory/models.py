@@ -341,6 +341,9 @@ class WarehouseBin(models.Model):
     def __str__(self):
         return '%s' % self.name
 
+    class Meta:
+        unique_together = ('warehouse','name')
+
 
 class ProductOrder(models.Model):
     product = models.ForeignKey(Product)

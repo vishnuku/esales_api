@@ -28,5 +28,5 @@ urlpatterns = [
     url(r'^inventory/product/orders/$', views.ProductOrderList.as_view(), name='inventory_product_order'),
     url(r'^inventory/product/order/(?P<pk>[0-9]+)/$', views.ProductOrderDetails.as_view(), name='inventory_product_order'),
     url(r'^inventory/product/order/order/(?P<order>[0-9]+)/$', views.ProductOrderList.as_view(), name='inventory_warehouse_product'),
-    url(r'^inventory/product/order/order2/(?P<pk>[0-9]+)/$', views.OrderProductDetails.as_view(), name='inventory_order_product_details'),
+    #url(r'^inventory/product/order/order2/(?P<pk>[0-9]+)/$', views.OrderProductDetails.as_view(), name='inventory_order_product_details'),
 ]
