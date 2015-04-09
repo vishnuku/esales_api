@@ -5,9 +5,9 @@ from rest_framework import authentication, permissions
 
 from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
     InventoryCSVSerializer, ChannelCategorySerializer, ProductListingConfiguratorSerializer, WarehouseSerializer, \
-    WarehouseBinSerializer, ProductOrderSerializer, OrderProductSerializer
+    WarehouseBinSerializer, ProductOrderSerializer, OrderProductSerializer, BundleProductSerializer
 from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, \
-    WarehouseBin, ProductOrder, AmazonOrders
+    WarehouseBin, ProductOrder, AmazonOrders, Product_Bundle
 
 
 class JSONResponse(HttpResponse):
@@ -305,3 +305,24 @@ class OrderProductDetails(generics.RetrieveAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = AmazonOrders.objects.all()
     serializer_class = OrderProductSerializer
+
+
+class BundleProductList(generics.ListCreateAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = Product_Bundle.objects.all()
+    serializer_class = BundleProductSerializer
+
+    def get_queryset(self):
+        queryset = Product_Bundle.objects.all()
+        if 'product' in self.kwargs:
+            queryset = queryset.filter(product=self.kwargs['product'])
+
+        return queryset
+
+
+class BundleProductDetails(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = Product_Bundle.objects.all()
+    serializer_class = BundleProductSerializer

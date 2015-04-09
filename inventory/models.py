@@ -13,6 +13,12 @@ UCODETYPE = (
     ('UPC', 'UPC'),
     ('EAN', 'EAN'),
 )
+PRODUCTTYPE = (
+    ('1', 'Normal'),
+    ('2', 'Bundle'),
+    ('3', 'Variation Parent'),
+
+)
 
 class Category(MPTTModel):
     """
@@ -80,6 +86,7 @@ class Product(models.Model):
     misc_data = JSONField()
     warehouse = JSONField()
     channel = models.CharField(max_length=50, blank=True, null=True)
+    product_type = models.CharField(max_length=5, blank=True, choices=PRODUCTTYPE, default=1)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='created_by_user_product')
@@ -363,3 +370,15 @@ class ProductOrder(models.Model):
 
     def __unicode__(self):
         return '%s' % self.product.name
+
+
+class Product_Bundle(models.Model):
+    product = models.ForeignKey(Product, related_name='product_product')
+    item = models.ForeignKey(Product, related_name='item_product')
+    price = models.FloatField()
+    qty = models.SmallIntegerField()
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
+    created_by = models.ForeignKey(User, related_name='created_by_product_bundle')
+    updated_by = models.ForeignKey(User, related_name='updated_by_product_bundle')
+    user = models.ForeignKey(User)
