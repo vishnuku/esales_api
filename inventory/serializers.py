@@ -124,8 +124,8 @@ class OrderProductSerializer(serializers.ModelSerializer):
 
 
 class BundleProductSerializer(serializers.ModelSerializer):
-    items = ProductSerializer(source='item')
+    items = ProductSerializer(source='item', read_only=True)
 
     class Meta:
         model = Product_Bundle
-        fields = ('id', 'price', 'qty', 'items')
+        fields = ('price', 'qty', 'item', 'product', 'items')

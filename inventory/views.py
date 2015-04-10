@@ -8,6 +8,7 @@ from .serializers import CategorySerializer, ProductSerializer, ImageSerializer,
     WarehouseBinSerializer, ProductOrderSerializer, OrderProductSerializer, BundleProductSerializer
 from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, \
     WarehouseBin, ProductOrder, AmazonOrders, Product_Bundle
+from rest_framework_bulk import ListBulkCreateUpdateDestroyAPIView
 
 
 class JSONResponse(HttpResponse):
@@ -64,7 +65,6 @@ class ProductList(generics.ListCreateAPIView):
                 queryset = queryset.filter(name__icontains=name)
             elif sku is not None:
                 queryset = queryset.filter(sku=sku)
-            print queryset.query
             return queryset
 
 
@@ -321,12 +321,14 @@ class OrderProductDetails(generics.RetrieveAPIView):
     queryset = AmazonOrders.objects.all()
     serializer_class = OrderProductSerializer
 
-
-class BundleProductList(generics.ListCreateAPIView):
+class BundleProductList(ListBulkCreateUpdateDestroyAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
     queryset = Product_Bundle.objects.all()
     serializer_class = BundleProductSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
 
     def get_queryset(self):
         queryset = Product_Bundle.objects.all()
@@ -334,6 +336,27 @@ class BundleProductList(generics.ListCreateAPIView):
             queryset = queryset.filter(product=self.kwargs['product'])
 
         return queryset
+
+#
+# class BundleProductList(generics.ListCreateAPIView):
+#     authentication_classes = (authentication.TokenAuthentication,)
+#     permission_classes = (permissions.IsAuthenticated,)
+#     queryset = Product_Bundle.objects.all()
+#     serializer_class = BundleProductSerializer
+#
+#     def get_queryset(self):
+#         queryset = Product_Bundle.objects.all()
+#         if 'product' in self.kwargs:
+#             queryset = queryset.filter(product=self.kwargs['product'])
+#
+#         return queryset
+#
+#     def perform_create(self, serializer):
+#         serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+#
+#
+#
+
 
 
 class BundleProductDetails(generics.RetrieveUpdateDestroyAPIView):

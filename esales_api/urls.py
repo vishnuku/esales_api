@@ -23,7 +23,10 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 # Routers provide a way of automatically determining the URL conf.
-router = routers.DefaultRouter()
+# router = routers.DefaultRouter()
+from rest_framework_bulk.routes import BulkRouter
+router = BulkRouter()
+
 router.register(r'users', UserViewSet)
 
 

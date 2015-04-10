@@ -19,3 +19,4 @@ django-oauth2-provider
 django-filter
 #oauth2_provider
 django-json-field==0.5.7
+djangorestframework-bulk==0.2
