@@ -47,11 +47,26 @@ class ProductList(generics.ListCreateAPIView):
     """
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
-    queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+
+    def get_queryset(self):
+            """
+            Optionally restricts the returned purchases to a given user,
+            by filtering against a `username` query parameter in the URL.
+            """
+            queryset = Product.objects.all()
+            name = self.request.QUERY_PARAMS.get('name', None)
+            sku = self.request.QUERY_PARAMS.get('sku', None)
+            if name is not None:
+                queryset = queryset.filter(name__icontains=name)
+            elif sku is not None:
+                queryset = queryset.filter(sku=sku)
+            print queryset.query
+            return queryset
+
 
 
 class ProductDetails(generics.RetrieveUpdateDestroyAPIView):
