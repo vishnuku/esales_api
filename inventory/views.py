@@ -2,6 +2,8 @@ from django.http import HttpResponse
 from rest_framework.renderers import JSONRenderer
 from rest_framework import generics
 from rest_framework import authentication, permissions
+from rest_framework.response import Response
+from rest_framework.status import HTTP_202_ACCEPTED, HTTP_400_BAD_REQUEST
 
 from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
     InventoryCSVSerializer, ChannelCategorySerializer, ProductListingConfiguratorSerializer, WarehouseSerializer, \
@@ -336,27 +338,6 @@ class BundleProductList(ListBulkCreateUpdateDestroyAPIView):
             queryset = queryset.filter(product=self.kwargs['product'])
 
         return queryset
-
-#
-# class BundleProductList(generics.ListCreateAPIView):
-#     authentication_classes = (authentication.TokenAuthentication,)
-#     permission_classes = (permissions.IsAuthenticated,)
-#     queryset = Product_Bundle.objects.all()
-#     serializer_class = BundleProductSerializer
-#
-#     def get_queryset(self):
-#         queryset = Product_Bundle.objects.all()
-#         if 'product' in self.kwargs:
-#             queryset = queryset.filter(product=self.kwargs['product'])
-#
-#         return queryset
-#
-#     def perform_create(self, serializer):
-#         serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
-#
-#
-#
-
 
 
 class BundleProductDetails(generics.RetrieveUpdateDestroyAPIView):

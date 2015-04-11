@@ -382,3 +382,6 @@ class Product_Bundle(models.Model):
     created_by = models.ForeignKey(User, related_name='created_by_product_bundle')
     updated_by = models.ForeignKey(User, related_name='updated_by_product_bundle')
     user = models.ForeignKey(User)
+
+    class Meta:
+        unique_together = ('product', 'item')
