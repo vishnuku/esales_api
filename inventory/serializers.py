@@ -128,4 +128,4 @@ class BundleProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product_Bundle
-        fields = ('price', 'qty', 'item', 'product', 'items')
+        fields = ('id', 'price', 'qty', 'item', 'product', 'items')

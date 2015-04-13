@@ -10,7 +10,7 @@ from .serializers import CategorySerializer, ProductSerializer, ImageSerializer,
     WarehouseBinSerializer, ProductOrderSerializer, OrderProductSerializer, BundleProductSerializer
 from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, \
     WarehouseBin, ProductOrder, AmazonOrders, Product_Bundle
-from rest_framework_bulk import ListBulkCreateUpdateDestroyAPIView
+from rest_framework_bulk import ListBulkCreateUpdateDestroyAPIView, ListCreateBulkUpdateAPIView
 
 
 class JSONResponse(HttpResponse):
@@ -323,7 +323,6 @@ class OrderProductDetails(generics.RetrieveAPIView):
     queryset = AmazonOrders.objects.all()
     serializer_class = OrderProductSerializer
 
-
 class BundleProductList(ListBulkCreateUpdateDestroyAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
@@ -332,6 +331,10 @@ class BundleProductList(ListBulkCreateUpdateDestroyAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+        product = Product.objects.get(pk=serializer.data[0]['product'])
+        product.product_type = 2
+        product.save()
+
 
     def get_queryset(self):
         queryset = Product_Bundle.objects.all()
@@ -340,21 +343,12 @@ class BundleProductList(ListBulkCreateUpdateDestroyAPIView):
 
         return queryset
 
-    def post(self, request, *args, **kwargs):
-        for it in self.request.data:
-           serializer = BundleProductSerializer(it)
-           if serializer.is_valid():
-               serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
-
     def patch(self, request, *args, **kwargs):
         for it in self.request.data:
             obj = Product_Bundle.objects.get(pk=it['id'])
             obj.price = it['price']
             obj.qty = it['qty']
             obj.save()
-
-
-
 
 
 class BundleProductDetails(generics.RetrieveUpdateDestroyAPIView):

@@ -30,7 +30,7 @@ urlpatterns = [
     url(r'^inventory/product/order/order/(?P<order>[0-9]+)/$', views.ProductOrderList.as_view(), name='inventory_warehouse_product'),
     #url(r'^inventory/product/order/order2/(?P<pk>[0-9]+)/$', views.OrderProductDetails.as_view(), name='inventory_order_product_details'),
     url(r'^inventory/bundles/$', views.BundleProductList.as_view(), name='inventory_bundle_products'),
-    url(r'^inventory/bundle/(?P<pk>[0-9]+)/$', views.BundleProductDetails.as_view(), name='inventory_bundle_product'),
+    # url(r'^inventory/bundle/(?P<pk>[0-9]+)/$', views.BundleProductDetails.as_view(), name='inventory_bundle_product'),
     url(r'^inventory/bundle/product/(?P<product>[0-9]+)/$', views.BundleProductList.as_view(), name='inventory_bundle_product_product'),
 
 ]
