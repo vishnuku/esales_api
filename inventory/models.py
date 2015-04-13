@@ -13,6 +13,7 @@ UCODETYPE = (
     ('UPC', 'UPC'),
     ('EAN', 'EAN'),
 )
+
 PRODUCTTYPE = (
     ('1', 'Normal'),
     ('2', 'Bundle'),

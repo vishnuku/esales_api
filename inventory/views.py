@@ -323,6 +323,7 @@ class OrderProductDetails(generics.RetrieveAPIView):
     queryset = AmazonOrders.objects.all()
     serializer_class = OrderProductSerializer
 
+
 class BundleProductList(ListBulkCreateUpdateDestroyAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
@@ -338,6 +339,22 @@ class BundleProductList(ListBulkCreateUpdateDestroyAPIView):
             queryset = queryset.filter(product=self.kwargs['product'])
 
         return queryset
+
+    def post(self, request, *args, **kwargs):
+        for it in self.request.data:
+           serializer = BundleProductSerializer(it)
+           if serializer.is_valid():
+               serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+
+    def patch(self, request, *args, **kwargs):
+        for it in self.request.data:
+            obj = Product_Bundle.objects.get(pk=it['id'])
+            obj.price = it['price']
+            obj.qty = it['qty']
+            obj.save()
+
+
+
 
 
 class BundleProductDetails(generics.RetrieveUpdateDestroyAPIView):
