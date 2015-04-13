@@ -3,7 +3,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework import generics
 from rest_framework import authentication, permissions
 from rest_framework.response import Response
-from rest_framework.status import HTTP_202_ACCEPTED, HTTP_400_BAD_REQUEST
+from rest_framework import status
 
 from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
     InventoryCSVSerializer, ChannelCategorySerializer, ProductListingConfiguratorSerializer, WarehouseSerializer, \
@@ -349,6 +349,8 @@ class BundleProductList(ListBulkCreateUpdateDestroyAPIView):
             obj.price = it['price']
             obj.qty = it['qty']
             obj.save()
+        data = {'success':'true'}
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class BundleProductDetails(generics.RetrieveUpdateDestroyAPIView):
