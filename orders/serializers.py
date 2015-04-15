@@ -24,5 +24,5 @@ class AmazonOrdersSerializer(serializers.ModelSerializer):
         model = AmazonOrders
         fields = ('id', 'amazonorderid', 'buyername', 'buyername', 'buyeremail', 'ordertype', 'numberofitemsshipped', 'numberofitemsunshipped',
                   'paymentmethod', 'orderstatus', 'saleschannel', 'amount', 'marketplaceid', 'fulfillmentchannel',
-                  'shipservicelevel', 'address',  'product_pic', 'purchasedate')
+                  'shipservicelevel', 'address',  'product_pic', 'purchasedate', 'lastupdatedate', 'amazonproduct')
         depth = 1

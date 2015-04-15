@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
 from rest_framework import authentication, permissions
-from inventory.models import AmazonOrders
+from inventory.models import AmazonOrders, ProductOrder
 from orders.serializers import AmazonOrdersSerializer
 
 
@@ -32,7 +32,19 @@ class OrderList(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
-
+        amazonproducts = self.request.data['amazonproducts'] if self.request.data['amazonproducts'] else ''
+        if len(amazonproducts) > 0 :
+            for product in amazonproducts :
+                print(product)
+                productorder, created = ProductOrder.objects.get_or_create(product_id=product,
+                                                                           amazonorders_id=serializer.data['id'],
+                                                                   defaults={'quantity': '1',
+                                                                             'status': 'Unshipped',
+                                                                             'message': '',
+                                                                             'user': self.request.user,
+                                                                             'created_by': self.request.user,
+                                                                             'updated_by': self.request.user})
+                productorder.save()
 
 
 
