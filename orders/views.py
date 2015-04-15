@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework.renderers import JSONRenderer
@@ -7,7 +8,7 @@ from rest_framework import status
 from rest_framework import generics
 from rest_framework import authentication, permissions
 from inventory.models import AmazonOrders, ProductOrder
-from orders.serializers import AmazonOrdersSerializer
+from orders import serializers
 
 
 # Create your views here.
@@ -25,17 +26,21 @@ class JSONResponse(HttpResponse):
 class OrderList(generics.ListCreateAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = AmazonOrdersSerializer
+    # serializer_class = AmazonOrdersSerializer
 
     queryset = AmazonOrders.objects.all()
     model = AmazonOrders
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return serializers.AmazonOrdersSerializerPost
+        return serializers.AmazonOrdersSerializerList
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
         amazonproducts = self.request.data['amazonproducts'] if self.request.data['amazonproducts'] else ''
         if len(amazonproducts) > 0 :
             for product in amazonproducts :
-                print(product)
                 productorder, created = ProductOrder.objects.get_or_create(product_id=product,
                                                                            amazonorders_id=serializer.data['id'],
                                                                    defaults={'quantity': '1',
@@ -55,4 +60,4 @@ class OrderDetails(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
     queryset = AmazonOrders.objects.all()
-    serializer_class = AmazonOrdersSerializer
+    serializer_class = serializers.AmazonOrdersSerializerList

@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             name='Channel',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('marketplace', models.PositiveSmallIntegerField(choices=[(1, b'Amazon'), (2, b'ebay'), (3, b'mkt1'), (4, b'mkt2')])),
+                ('marketplace', models.PositiveSmallIntegerField(default=1, choices=[(1, b'Amazon'), (2, b'ebay'), (3, b'mkt1'), (4, b'mkt2')])),
                 ('name', models.CharField(default=b'', max_length=100, blank=True)),
                 ('site', models.CharField(default=b'', max_length=100, blank=True)),
                 ('merchant_id', models.CharField(default=b'', max_length=100, blank=True)),
@@ -28,9 +28,9 @@ class Migration(migrations.Migration):
                 ('status', models.BooleanField(default=True, verbose_name='Is Enabled')),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('updated', models.DateTimeField(auto_now=True, auto_now_add=True)),
-                ('created_by', models.ForeignKey(related_name='created_by_user_channel', to=settings.AUTH_USER_MODEL)),
-                ('updated_by', models.ForeignKey(related_name='updated_by_user_channel', to=settings.AUTH_USER_MODEL)),
-                ('user_id', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('created_by', models.ForeignKey(related_name='created_by_user_channel', default=1, to=settings.AUTH_USER_MODEL)),
+                ('updated_by', models.ForeignKey(related_name='updated_by_user_channel', default=1, to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(default=1, to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'ordering': ('created',),

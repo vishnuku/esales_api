@@ -1,8 +1,10 @@
+from __future__ import unicode_literals
+import collections
 import os
 
 from django.conf import settings
 from django.db import models
-from json_field import JSONField
+from jsonfield import JSONField
 from mptt.models import MPTTModel, TreeForeignKey
 from django.contrib.auth.models import User
 from rest_framework.exceptions import ValidationError
@@ -267,7 +269,7 @@ class AmazonOrders(models.Model):
     marketplaceid = models.CharField(blank=False, null=True, max_length=50, db_index=True)
     fulfillmentchannel = models.CharField(blank=False, null=True, max_length=50)
     shipservicelevel = models.CharField(blank=False, null=True, max_length=50)
-    address = JSONField(blank=True, null=True)
+    address = JSONField(load_kwargs={'object_pairs_hook': collections.OrderedDict}, dump_kwargs={"ensure_ascii": True})
     purchasedate = models.DateTimeField(db_index=True, blank=True, null=True)
     lastupdatedate = models.DateTimeField(db_index=True, blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True, db_index=True)
@@ -275,6 +277,11 @@ class AmazonOrders(models.Model):
     created_by = models.ForeignKey(User, related_name='created_by_amazonorders')
     updated_by = models.ForeignKey(User, related_name='updated_by_amazonorders')
     user = models.ForeignKey(User)
+
+    @property
+    def get_address(self):
+        # import json
+        return self.address
 
     def create_from_dict(self, data, exempt=()):
         """
