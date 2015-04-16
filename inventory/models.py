@@ -1,10 +1,9 @@
-from __future__ import unicode_literals
 import collections
 import os
 
 from django.conf import settings
 from django.db import models
-from json_field import JSONField
+from jsonfield import JSONField
 from mptt.models import MPTTModel, TreeForeignKey
 from django.contrib.auth.models import User
 from rest_framework.exceptions import ValidationError
@@ -20,7 +19,6 @@ PRODUCTTYPE = (
     ('1', 'Normal'),
     ('2', 'Bundle'),
     ('3', 'Variation Parent'),
-
 )
 
 class Category(MPTTModel):
@@ -256,7 +254,7 @@ class AmazonOrders(models.Model):
     Doc
     """
     amazonproduct = models.CharField(blank=True, null=True, max_length=50)
-    amazonorderid = models.CharField(blank=False, null=True, max_length=50, db_index=True,unique=True)
+    amazonorderid = models.CharField(blank=False, null=True, max_length=50, db_index=True)
     buyername = models.CharField(blank=False, null=True, max_length=50)
     buyeremail = models.EmailField(blank=False, null=True)
     ordertype = models.CharField(blank=False, null=True, max_length=50, db_index=True)
@@ -269,7 +267,7 @@ class AmazonOrders(models.Model):
     marketplaceid = models.CharField(blank=False, null=True, max_length=50, db_index=True)
     fulfillmentchannel = models.CharField(blank=False, null=True, max_length=50)
     shipservicelevel = models.CharField(blank=False, null=True, max_length=50)
-    address = JSONField(null=True)
+    address = JSONField()
     purchasedate = models.DateTimeField(db_index=True, blank=True, null=True)
     lastupdatedate = models.DateTimeField(db_index=True, blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True, db_index=True)
