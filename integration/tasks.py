@@ -120,55 +120,59 @@ def inventory_process_report(amz, rr):
         row = r.split("\t")
         print row
         # crete or get category
-        c, cr = Category.objects.get_or_create(name=row[13],
-                                               defaults={'user': amz['uid'], 'created_by': amz['uid'],
-                                                         'updated_by': amz['uid']})
+        try:
+            c, cr = Category.objects.get_or_create(name=row[13],
+                                                   defaults={'user': amz['uid'], 'created_by': amz['uid'],
+                                                             'updated_by': amz['uid']})
 
-        tmp_misc_data = {}
-        tmp_misc_data['add_delete'] = row[24],
-        tmp_misc_data['fulfillment_channel'] = row[26],
-        tmp_misc_data['bid_for_featured_placement'] = row[23],
-        tmp_misc_data['zshop_category1'] = row[13],
-        tmp_misc_data['zshop_browse_path'] = row[14],
-        tmp_misc_data['zshop_storefront_feature'] = row[15],
-        tmp_misc_data['zshop_boldface'] = row[21]
+            tmp_misc_data = {}
+            tmp_misc_data['add_delete'] = row[24],
+            tmp_misc_data['fulfillment_channel'] = row[26],
+            tmp_misc_data['bid_for_featured_placement'] = row[23],
+            tmp_misc_data['zshop_category1'] = row[13],
+            tmp_misc_data['zshop_browse_path'] = row[14],
+            tmp_misc_data['zshop_storefront_feature'] = row[15],
+            tmp_misc_data['zshop_boldface'] = row[21]
 
 
-        p, created = Product.objects.get_or_create(sku=row[3],
-                                                   defaults={'name': row[0],
-                                                             'description': row[1],
-                                                             'sku': row[3],
-                                                             'retail_price': row[4],
-                                                             'stock_quantity': row[5],
-                                                             'pending_quantity': row[25],
-                                                             'image_url': row[7],
-                                                             'shipping_fee': row[10],
-                                                             'will_ship_internationally': row[19],
-                                                             'expedited_shipping': row[20],
-                                                             'category_id': c.id,
-                                                             'field1': row[6],
-                                                             'field2': row[16],
-                                                             'field3': row[17],
-                                                             'field4': row[18],
-                                                             'field5': row[11],
-                                                             'field6': row[12],
-                                                             'field7': row[9],
-                                                             'field8': row[2],
-                                                             'field9': row[8],
-                                                             'channel': amz['cid'],
-                                                             'created_by': amz['uid'],
-                                                             'updated_by': amz['uid'],
-                                                             'user': amz['uid'],
-                                                             'misc_data': tmp_misc_data
-                                                            })
-        if not created:
-            p.stock_quantity = int(row[5])
-            p.save()
+            p, created = Product.objects.get_or_create(sku=row[3],
+                                                       defaults={'name': row[0],
+                                                                 'description': row[1],
+                                                                 'sku': row[3],
+                                                                 'retail_price': row[4],
+                                                                 'stock_quantity': row[5],
+                                                                 'pending_quantity': row[25],
+                                                                 'image_url': row[7],
+                                                                 'shipping_fee': row[10],
+                                                                 'will_ship_internationally': row[19],
+                                                                 'expedited_shipping': row[20],
+                                                                 'category_id': c.id,
+                                                                 'field1': row[6],
+                                                                 'field2': row[16],
+                                                                 'field3': row[17],
+                                                                 'field4': row[18],
+                                                                 'field5': row[11],
+                                                                 'field6': row[12],
+                                                                 'field7': row[9],
+                                                                 'field8': row[2],
+                                                                 'field9': row[8],
+                                                                 'channel': amz['cid'],
+                                                                 'created_by': amz['uid'],
+                                                                 'updated_by': amz['uid'],
+                                                                 'user': amz['uid'],
+                                                                 'misc_data': tmp_misc_data
+                                                                })
+            if not created:
+                p.stock_quantity = int(row[5])
+                p.save()
 
-        # Update status to completed in ChannelIntegration
-        channel = Channel.objects.get(pk=amz['cid'])
-        channel.sync_status = 1
-        channel.save()
+            # Update status to completed in ChannelIntegration
+            channel = Channel.objects.get(pk=amz['cid'])
+            channel.sync_status = 1
+            channel.save()
+        except Exception as e:
+            print 'Exception while product creation',e.message
+            pass
 
     return True
 
