@@ -4,7 +4,7 @@ import os
 
 from django.conf import settings
 from django.db import models
-from jsonfield import JSONField
+from json_field import JSONField
 from mptt.models import MPTTModel, TreeForeignKey
 from django.contrib.auth.models import User
 from rest_framework.exceptions import ValidationError
@@ -256,7 +256,7 @@ class AmazonOrders(models.Model):
     Doc
     """
     amazonproduct = models.CharField(blank=True, null=True, max_length=50)
-    amazonorderid = models.CharField(blank=False, null=True, max_length=50, db_index=True)
+    amazonorderid = models.CharField(blank=False, null=True, max_length=50, db_index=True,unique=True)
     buyername = models.CharField(blank=False, null=True, max_length=50)
     buyeremail = models.EmailField(blank=False, null=True)
     ordertype = models.CharField(blank=False, null=True, max_length=50, db_index=True)
@@ -269,7 +269,7 @@ class AmazonOrders(models.Model):
     marketplaceid = models.CharField(blank=False, null=True, max_length=50, db_index=True)
     fulfillmentchannel = models.CharField(blank=False, null=True, max_length=50)
     shipservicelevel = models.CharField(blank=False, null=True, max_length=50)
-    address = JSONField(load_kwargs={'object_pairs_hook': collections.OrderedDict}, dump_kwargs={"ensure_ascii": True})
+    address = JSONField(null=True)
     purchasedate = models.DateTimeField(db_index=True, blank=True, null=True)
     lastupdatedate = models.DateTimeField(db_index=True, blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True, db_index=True)

@@ -31,18 +31,9 @@ class AmazonOrdersSerializerList(serializers.ModelSerializer):
 
 class AmazonOrdersSerializerPost(serializers.ModelSerializer):
 
-    product_pic = serializers.SerializerMethodField('return_order_product_pic')
-
-    def return_order_product_pic(self, AmazonOrders):
-        pictures = Images.objects.filter(product_id=AmazonOrders.amazonproduct)
-        if len(pictures) > 0:
-            return str(pictures[0].image)
-        else:
-            return str('NA')
-
     class Meta:
         model = AmazonOrders
         fields = ('id', 'amazonorderid', 'buyername', 'buyername', 'buyeremail', 'ordertype', 'numberofitemsshipped', 'numberofitemsunshipped',
                   'paymentmethod', 'orderstatus', 'saleschannel', 'amount', 'marketplaceid', 'fulfillmentchannel',
-                  'shipservicelevel', 'address', 'product_pic', 'purchasedate', 'lastupdatedate', 'amazonproduct')
-        depth = 1
+                  'shipservicelevel', 'purchasedate', 'lastupdatedate', 'amazonproduct')
+

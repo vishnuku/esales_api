@@ -12,7 +12,6 @@ MySQL-python==1.2.5
 pytz==2014.10
 redis==2.10.3
 pillow==2.7.0
-PIL==1.1.7
 django-mptt==0.6.1
 lxml==3.4.2
 django-oauth2-provider

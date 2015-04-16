@@ -323,6 +323,7 @@ class OrderProductDetails(generics.RetrieveAPIView):
     queryset = AmazonOrders.objects.all()
     serializer_class = OrderProductSerializer
 
+
 class BundleProductList(ListBulkCreateUpdateDestroyAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
@@ -334,7 +335,6 @@ class BundleProductList(ListBulkCreateUpdateDestroyAPIView):
         product = Product.objects.get(pk=serializer.data[0]['product'])
         product.product_type = 2
         product.save()
-
 
     def get_queryset(self):
         queryset = Product_Bundle.objects.all()

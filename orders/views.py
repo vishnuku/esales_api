@@ -9,8 +9,8 @@ from rest_framework import generics
 from rest_framework import authentication, permissions
 from inventory.models import AmazonOrders, ProductOrder
 from orders import serializers
-
-
+from orders.serializers import AmazonOrdersSerializerPost
+import json
 # Create your views here.
 
 class JSONResponse(HttpResponse):
@@ -18,6 +18,7 @@ class JSONResponse(HttpResponse):
     An HttpResponse that renders its content into JSON.
     """
     def __init__(self, data, **kwargs):
+
         content = JSONRenderer().render(data)
         kwargs['content_type'] = 'application/json'
         super(JSONResponse, self).__init__(content, **kwargs)
@@ -37,7 +38,7 @@ class OrderList(generics.ListCreateAPIView):
         return serializers.AmazonOrdersSerializerList
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+        serializer.save(address=json.dumps(self.request.data['address']), user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
         amazonproducts = self.request.data['amazonproducts'] if self.request.data['amazonproducts'] else ''
         if len(amazonproducts) > 0 :
             for product in amazonproducts :
@@ -50,7 +51,6 @@ class OrderList(generics.ListCreateAPIView):
                                                                              'created_by': self.request.user,
                                                                              'updated_by': self.request.user})
                 productorder.save()
-
 
 
 class OrderDetails(generics.RetrieveUpdateDestroyAPIView):
