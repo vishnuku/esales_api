@@ -1,0 +1,13 @@
+
+##this is for relationship feed
+
+type = 0 = Variation
+       1 = Accesory
+
+
+child_skus = [list of skus]
+parent_skus = parent
+
+rfeedxml = amz_relationship_feed(amz, type, parent_sku, child_skus)
+rr = con.submit_feed(FeedType='_POST_PRODUCT_RELATIONSHIP_DATA_', PurgeAndReplace=True, FeedContent=rfeedxml,
+content_type='text/xml')

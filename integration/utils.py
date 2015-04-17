@@ -5,23 +5,24 @@ from lxml import etree
 def amz_product_feed(amz, products):
     """
 
+    :param amz:
+    :type amz:
+    :param products:
+    :type products:
     :return:
     :rtype:
     """
     feed = etree.Element('AmazonEnvelope')
 
-    # create header
     header = etree.SubElement(feed, 'Header')
     documentver = etree.SubElement(header, 'DocumentVersion')
     documentver.text = "1.01"
     merchantidentifier = etree.SubElement(header, 'MerchantIdentifier')
     merchantidentifier.text = amz['mid']
 
-    #MessageType
     msgtype = etree.SubElement(feed, 'MessageType')
     msgtype.text = 'Product'
 
-    #<PurgeAndReplace>false</PurgeAndReplace>
     purgenreplace = etree.SubElement(feed, 'PurgeAndReplace')
     purgenreplace.text = "false"
 
@@ -86,6 +87,10 @@ def amz_product_feed(amz, products):
 def amz_inventory_feed(amz, products):
     """
 
+    :param amz:
+    :type amz:
+    :param products:
+    :type products:
     :return:
     :rtype:
     """
@@ -135,6 +140,10 @@ def amz_inventory_feed(amz, products):
 def amz_price_feed(amz, products):
     """
 
+    :param amz:
+    :type amz:
+    :param products:
+    :type products:
     :return:
     :rtype:
     """
@@ -175,6 +184,10 @@ def amz_price_feed(amz, products):
 def amz_image_feed(amz, products):
     """
 
+    :param amz:
+    :type amz:
+    :param products:
+    :type products:
     :return:
     :rtype:
     """
@@ -215,3 +228,63 @@ def amz_image_feed(amz, products):
     feedstring = header+feedstring
 
     return feedstring
+
+
+def amz_relationship_feed(amz, type, parent_sku, child_skus):
+    """
+
+    :param amz:
+    :type amz:
+    :param type:
+    :type type:
+    :param parent_sku:
+    :type parent_sku:
+    :param child_skus:
+    :type child_skus:
+    :return:
+    :rtype:
+    """
+
+    RTYPE = {
+        '0': 'Variation',
+        '1': 'Accessory',
+    }
+
+    feed = etree.Element('AmazonEnvelope')
+
+    # create header
+    header = etree.SubElement(feed, 'Header')
+    documentver = etree.SubElement(header, 'DocumentVersion')
+    documentver.text = "1.01"
+    merchantidentifier = etree.SubElement(header, 'MerchantIdentifier')
+    merchantidentifier.text = amz['mid']
+
+    #MessageType
+    msgtype = etree.SubElement(feed, 'MessageType')
+    msgtype.text = 'Relationship'
+
+    msg = etree.SubElement(feed, 'Message')
+
+    msgid = etree.SubElement(msg, 'MessageID')
+    msgid.text = '1'
+
+    optype = etree.SubElement(msg, 'OperationType')
+    optype.text = "Update"
+
+    relationship = etree.SubElement(msg, 'Relationship')
+    parentsku = etree.SubElement(relationship, 'ParentSKU')
+    parentsku.text = str(parent_sku)
+
+    for child_sku in child_skus:
+        relation = etree.SubElement(relationship, 'Relation')
+        c_sku = etree.SubElement(relation, 'SKU')
+        c_sku.text = str(child_sku)
+
+        c_type = etree.SubElement(relation, 'Type')
+        c_type.text = str(RTYPE[str(type)])
+
+    feedstring = etree.tostring(feed)
+    feedstring.replace("<AmazonEnvelope>", '<AmazonEnvelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn- envelope.xsd">')
+    header = '<?xml version="1.0" ?>'
+
+    return header+feedstring

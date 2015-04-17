@@ -15,7 +15,7 @@ from .serializers import ChannelSerializer, AmazonProductSerializer, AmazonOrder
 from .models import Channel
 from inventory.models import AmazonProduct, Product, AmazonOrders, ProductListingConfigurator, ChannelCategory
 from tasks import amazon_request_report, amazon_get_order_live
-from utils import amz_product_feed, amz_inventory_feed, amz_price_feed, amz_image_feed
+from utils import amz_product_feed, amz_inventory_feed, amz_price_feed, amz_image_feed, amz_relationship_feed
 
 
 
@@ -432,8 +432,12 @@ class ListingProducts(generics.ListCreateAPIView):
         print rr.SubmitFeedResult.FeedSubmissionInfo.FeedSubmissionId
         print rr.SubmitFeedResult.FeedSubmissionInfo.FeedProcessingStatus
 
-        # rr = con.submit_feed(FeedType='_POST_PRODUCT_IMAGE_DATA_', PurgeAndReplace=True, FeedContent=pfeedxml,
+        # rr = con.submit_feed(FeedType='_POST_PRODUCT_IMAGE_DATA_', PurgeAndReplace=True, FeedContent=imfeedxml,
         #                      content_type='text/xml')
+
+        # rfeedxml = amz_relationship_feed(amz, type, parent_sku, child_skus)
+        # rr = con.submit_feed(FeedType='_POST_PRODUCT_RELATIONSHIP_DATA_', PurgeAndReplace=True, FeedContent=rfeedxml,
+        # content_type='text/xml')
 
         # print rr
         # print rr.SubmitFeedResult.FeedSubmissionInfo.FeedSubmissionId
