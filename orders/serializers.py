@@ -15,11 +15,12 @@ class AmazonOrdersSerializerList(serializers.ModelSerializer):
         return AmazonOrders.address
 
     def return_order_product_pic(self, AmazonOrders):
-        pictures = Images.objects.filter(product_id=AmazonOrders.amazonproduct)
-        if len(pictures) > 0:
-            return str(pictures[0].image)
-        else:
-            return str('NA')
+        # pictures = Images.objects.filter(product_id=AmazonOrders.amazonproduct)
+        # if len(pictures) > 0:
+        #     return str(pictures[0].image)
+        # else:
+        #     return str('NA')
+        return str('NA')
 
     class Meta:
         model = AmazonOrders
