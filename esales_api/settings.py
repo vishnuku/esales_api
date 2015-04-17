@@ -107,7 +107,7 @@ STATIC_URL = '/static/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = os.path.join(os.path.dirname(__file__), STATIC_URL.strip("/"))
+STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL.strip("/"))
 
 
 MEDIA_ROOT = os.path.dirname(__file__)+'/media/'
