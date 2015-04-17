@@ -31,3 +31,11 @@ INFO: General system information
 WARNING: Information describing a minor problem that has occurred.
 ERROR: Information describing a major problem that has occurred.
 CRITICAL: Information describing a critical problem that has occurred.
+
+
+TODO:
+COmmon connection object for as
+
+con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
+
+

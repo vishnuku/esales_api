@@ -15,7 +15,8 @@ from .serializers import ChannelSerializer, AmazonProductSerializer, AmazonOrder
 from .models import Channel
 from inventory.models import AmazonProduct, Product, AmazonOrders, ProductListingConfigurator, ChannelCategory
 from tasks import amazon_request_report, amazon_get_order_live
-from utils import amz_product_feed, amz_inventory_feed, amz_price_feed, amz_image_feed, amz_relationship_feed
+from utils import amz_product_feed, amz_inventory_feed, amz_price_feed, amz_image_feed, amz_relationship_feed, \
+    get_mes_conn
 
 import logging
 
@@ -296,7 +297,7 @@ class ListingProducts_original(generics.ListCreateAPIView):
         prfeedxml = amz_price_feed(amz, products)
         imfeedxml = amz_image_feed(amz, products)
 
-        # con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
+        # con = get_mes_conn(amz)
         # rr = con.submit_feed(FeedType='_POST_PRODUCT_DATA_', PurgeAndReplace=True, FeedContent=pfeedxml,
         #                      content_type='text/xml')
         #
@@ -413,7 +414,7 @@ class ListingProducts(generics.ListCreateAPIView):
         prfeedxml = amz_price_feed(amz, products)
         imfeedxml = amz_image_feed(amz, products)
 
-        con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
+        con = get_mes_conn(amz)
         rr = con.submit_feed(FeedType='_POST_PRODUCT_DATA_', PurgeAndReplace=True, FeedContent=pfeedxml,
                              content_type='text/xml')
 

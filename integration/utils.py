@@ -1,4 +1,5 @@
 # coding=utf-8
+from boto.mws.connection import MWSConnection
 from lxml import etree
 
 
@@ -288,3 +289,15 @@ def amz_relationship_feed(amz, type, parent_sku, child_skus):
     header = '<?xml version="1.0" ?>'
 
     return header+feedstring
+
+
+def get_mes_conn(amz):
+    """
+
+    :param amz:
+    :type amz:
+    :return:
+    :rtype:
+    """
+
+    return MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
