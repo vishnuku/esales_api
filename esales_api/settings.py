@@ -100,7 +100,16 @@ TASK_SERIALIZER = "json"
 # CELERY_TASK_SERIALIZER = 'json'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
+
 STATIC_URL = '/static/'
+
+# Absolute path to the directory static files should be collected to.
+# Don't put anything in this directory yourself; store your static files
+# in apps' "static/" subdirectories and in STATICFILES_DIRS.
+# Example: "/home/media/media.lawrence.com/static/"
+STATIC_ROOT = os.path.join(os.path.dirname(__file__), STATIC_URL.strip("/"))
+
+
 MEDIA_ROOT = os.path.dirname(__file__)+'/media/'
 MEDIA_URL = '/m/'
 
