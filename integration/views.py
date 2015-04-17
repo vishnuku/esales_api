@@ -17,10 +17,10 @@ from inventory.models import AmazonProduct, Product, AmazonOrders, ProductListin
 from tasks import amazon_request_report, amazon_get_order_live
 from utils import amz_product_feed, amz_inventory_feed, amz_price_feed, amz_image_feed, amz_relationship_feed
 
+import logging
 
+logger = logging.getLogger(__name__)
 
-
-# Create your views here.
 
 class JSONResponse(HttpResponse):
     """
@@ -321,11 +321,11 @@ class ListingProducts_original(generics.ListCreateAPIView):
         # print rr
         # print rr.SubmitFeedResult.FeedSubmissionInfo.FeedSubmissionId
         # print rr.SubmitFeedResult.FeedSubmissionInfo.FeedProcessingStatus
-        print pfeedxml
-        print ifeedxml
-        print prfeedxml
-        print imfeedxml
-        print request.POST
+        # print pfeedxml
+        # print ifeedxml
+        # print prfeedxml
+        # print imfeedxml
+        # print request.POST
 
         data = {"success": "true"}
         return Response(data, status=status.HTTP_200_OK)
@@ -358,15 +358,15 @@ class ListingProducts(generics.ListCreateAPIView):
         amz = {}
         products = []
         data = JSONParser().parse(request)
-        print data
+        # print data
         ps = data['pids']
         cfid = data['configurator_id']
-        print "cfid: ", cfid
+        # print "cfid: ", cfid
         try:
             cf_obj = ProductListingConfigurator.objects.get(pk=int(cfid))
         except Exception as e:
             # raise "Configuratator error"
-            print "cf ex", e
+            # print "cf ex", e
             pass
         print cf_obj
         itemtypes = []
@@ -417,20 +417,20 @@ class ListingProducts(generics.ListCreateAPIView):
         rr = con.submit_feed(FeedType='_POST_PRODUCT_DATA_', PurgeAndReplace=True, FeedContent=pfeedxml,
                              content_type='text/xml')
 
-        print rr.SubmitFeedResult.FeedSubmissionInfo.FeedSubmissionId
-        print rr.SubmitFeedResult.FeedSubmissionInfo.FeedProcessingStatus
+        # print rr.SubmitFeedResult.FeedSubmissionInfo.FeedSubmissionId
+        # print rr.SubmitFeedResult.FeedSubmissionInfo.FeedProcessingStatus
 
         rr = con.submit_feed(FeedType='_POST_INVENTORY_AVAILABILITY_DATA_', PurgeAndReplace=True, FeedContent=ifeedxml,
                              content_type='text/xml')
 
-        print rr.SubmitFeedResult.FeedSubmissionInfo.FeedSubmissionId
-        print rr.SubmitFeedResult.FeedSubmissionInfo.FeedProcessingStatus
+        # print rr.SubmitFeedResult.FeedSubmissionInfo.FeedSubmissionId
+        # print rr.SubmitFeedResult.FeedSubmissionInfo.FeedProcessingStatus
 
         rr = con.submit_feed(FeedType='_POST_PRODUCT_PRICING_DATA_', PurgeAndReplace=True, FeedContent=prfeedxml,
                              content_type='text/xml')
 
-        print rr.SubmitFeedResult.FeedSubmissionInfo.FeedSubmissionId
-        print rr.SubmitFeedResult.FeedSubmissionInfo.FeedProcessingStatus
+        # print rr.SubmitFeedResult.FeedSubmissionInfo.FeedSubmissionId
+        # print rr.SubmitFeedResult.FeedSubmissionInfo.FeedProcessingStatus
 
         # rr = con.submit_feed(FeedType='_POST_PRODUCT_IMAGE_DATA_', PurgeAndReplace=True, FeedContent=imfeedxml,
         #                      content_type='text/xml')
@@ -442,11 +442,11 @@ class ListingProducts(generics.ListCreateAPIView):
         # print rr
         # print rr.SubmitFeedResult.FeedSubmissionInfo.FeedSubmissionId
         # print rr.SubmitFeedResult.FeedSubmissionInfo.FeedProcessingStatus
-        print pfeedxml
-        print ifeedxml
-        print prfeedxml
-        print imfeedxml
-        print request.POST
+        # print pfeedxml
+        # print ifeedxml
+        # print prfeedxml
+        # print imfeedxml
+        # print request.POST
         data = {"success": "true"}
         return Response(data, status=status.HTTP_200_OK)
         # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

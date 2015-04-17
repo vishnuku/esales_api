@@ -11,3 +11,23 @@ parent_skus = parent
 rfeedxml = amz_relationship_feed(amz, type, parent_sku, child_skus)
 rr = con.submit_feed(FeedType='_POST_PRODUCT_RELATIONSHIP_DATA_', PurgeAndReplace=True, FeedContent=rfeedxml,
 content_type='text/xml')
+
+
+
+
+##Important note
+## Kindly use logget instead of all the print statement in the project
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+
+
+logger.error('Something went wrong!')
+
+DEBUG: Low level system information for debugging purposes
+INFO: General system information
+WARNING: Information describing a minor problem that has occurred.
+ERROR: Information describing a major problem that has occurred.
+CRITICAL: Information describing a critical problem that has occurred.
