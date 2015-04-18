@@ -113,8 +113,26 @@ STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL.strip("/"))
 MEDIA_ROOT = os.path.dirname(__file__)+'/media/'
 MEDIA_URL = '/m/'
 
-#IMPORT LOCAL SETTINGS
-#=====================
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
 try:
     from settings_local import *
 except ImportError:
