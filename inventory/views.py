@@ -1,3 +1,4 @@
+import logging
 from django.http import HttpResponse
 from rest_framework.renderers import JSONRenderer
 from rest_framework import generics
@@ -11,6 +12,8 @@ from .serializers import CategorySerializer, ProductSerializer, ImageSerializer,
 from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, \
     WarehouseBin, ProductOrder, AmazonOrders, Product_Bundle
 from rest_framework_bulk import ListBulkCreateUpdateDestroyAPIView, ListCreateBulkUpdateAPIView
+
+logger = logging.getLogger(__name__)
 
 
 class JSONResponse(HttpResponse):
@@ -330,11 +333,18 @@ class BundleProductList(ListBulkCreateUpdateDestroyAPIView):
     queryset = Product_Bundle.objects.all()
     serializer_class = BundleProductSerializer
 
+    def update_bundle_product(self, id, stock_quantity):
+        product = Product.objects.get(pk=id)
+
+        if product:
+            product.product_type = 2
+            product.stock_quantity = stock_quantity
+            product.save()
+            print 'stock_quantity', stock_quantity
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
-        product = Product.objects.get(pk=serializer.data[0]['product'])
-        product.product_type = 2
-        product.save()
+        self.update_bundle_product(self.request.data[0]['product'], self.request.data[0]['bundle_product_qty'])
 
     def get_queryset(self):
         queryset = Product_Bundle.objects.all()
@@ -344,13 +354,19 @@ class BundleProductList(ListBulkCreateUpdateDestroyAPIView):
         return queryset
 
     def patch(self, request, *args, **kwargs):
+
         for it in self.request.data:
             obj = Product_Bundle.objects.get(pk=it['id'])
             obj.price = it['price']
             obj.qty = it['qty']
             obj.save()
-        data = {'success':'true'}
+
+        self.update_bundle_product(self.request.data[0]['product'], self.request.data[0]['bundle_product_qty'])
+
+        data = {'success': 'true'}
         return Response(data, status=status.HTTP_200_OK)
+
+
 
 
 class BundleProductDetails(generics.RetrieveUpdateDestroyAPIView):
