@@ -66,6 +66,10 @@ class ProductList(generics.ListCreateAPIView):
             queryset = Product.objects.all()
             name = self.request.QUERY_PARAMS.get('name', None)
             sku = self.request.QUERY_PARAMS.get('sku', None)
+            type = self.request.QUERY_PARAMS.get('type', None)
+
+            if type is not None:
+                queryset = queryset.filter(product_type=type)
             if name is not None:
                 queryset = queryset.filter(name__icontains=name)
             elif sku is not None:
