@@ -37,13 +37,15 @@ class OrderList(generics.ListCreateAPIView):
         return serializers.AmazonOrdersSerializerList
 
     def perform_create(self, serializer):
-        serializer.save(address=json.dumps(self.request.data['address']), user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+        address = json.dumps(self.request.data['address']);
+        address = json.loads(address)
+        serializer.save(address=address, user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
         amazonproducts = self.request.data['amazonproducts'] if self.request.data['amazonproducts'] else ''
         if len(amazonproducts) > 0 :
             for product in amazonproducts :
                 productorder, created = ProductOrder.objects.get_or_create(product_id=product,
                                                                            amazonorders_id=serializer.data['id'],
-                                                                   defaults={'quantity': '1',
+                                                                            defaults={'quantity': '1',
                                                                              'status': 'Unshipped',
                                                                              'message': '',
                                                                              'user': self.request.user,
