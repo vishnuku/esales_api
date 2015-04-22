@@ -8,7 +8,8 @@ from rest_framework import generics
 from rest_framework import authentication, permissions
 from inventory.models import AmazonOrders, ProductOrder
 from orders import serializers
-from orders.serializers import AmazonOrdersSerializerPost
+from orders.models import Filter
+from orders.serializers import AmazonOrdersSerializerPost, FilterSerializer
 import json
 # Create your views here.
 
@@ -62,3 +63,26 @@ class OrderDetails(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = AmazonOrders.objects.all()
     serializer_class = serializers.AmazonOrdersSerializerList
+
+
+class FilterList(generics.ListCreateAPIView):
+    """
+    List all the categories
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated, )
+    queryset = Filter.objects.all()
+    serializer_class = FilterSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+
+
+class FilterDetails(generics.RetrieveUpdateDestroyAPIView):
+    """
+    List the Filter details
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = Filter.objects.all()
+    serializer_class = FilterSerializer
