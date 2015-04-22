@@ -10,6 +10,7 @@ from inventory.models import AmazonOrders, ProductOrder
 from orders import serializers
 from orders.serializers import AmazonOrdersSerializerPost
 import json
+from inventory.models import Product
 # Create your views here.
 
 class JSONResponse(HttpResponse):
@@ -31,10 +32,18 @@ class OrderList(generics.ListCreateAPIView):
     queryset = AmazonOrders.objects.all()
     model = AmazonOrders
 
+    def manage_inventory_on_order_received(self, order_status, item_id, order_item_qty ):
+        product = Product.objects.get(pk=item_id)
+        if order_status == 'shipped':
+            product.stock_quantity -= order_item_qty
+            product.save()
+
+
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return serializers.AmazonOrdersSerializerPost
         return serializers.AmazonOrdersSerializerList
+
 
     def perform_create(self, serializer):
         address = json.dumps(self.request.data['address']);
@@ -52,6 +61,7 @@ class OrderList(generics.ListCreateAPIView):
                                                                              'created_by': self.request.user,
                                                                              'updated_by': self.request.user})
                 productorder.save()
+
 
 
 class OrderDetails(generics.RetrieveUpdateDestroyAPIView):
