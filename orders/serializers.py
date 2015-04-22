@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 from inventory.models import AmazonOrders, Images
 from inventory.serializers import ProductOrderSerializer
+from orders.models import Filter
 
 
 class AmazonOrdersSerializerList(serializers.ModelSerializer):
@@ -37,3 +38,9 @@ class AmazonOrdersSerializerPost(serializers.ModelSerializer):
                   'paymentmethod', 'orderstatus', 'saleschannel', 'amount', 'marketplaceid', 'fulfillmentchannel',
                   'shipservicelevel', 'purchasedate', 'lastupdatedate', 'amazonproduct')
 
+
+class FilterSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Filter
+        fields = ('id', 'name', 'query', 'parent')

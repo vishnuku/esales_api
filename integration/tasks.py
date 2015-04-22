@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 from boto.mws.connection import MWSConnection
 from celery import shared_task
+from django.contrib.auth.models import User
 
 from .models import Channel
 from inventory.models import Product, Category, AmazonOrders, ProductOrder
@@ -339,3 +340,18 @@ def csv_insert(instance):
         except Exception as e:
             print(e)
             error_list.append(e[1])
+
+
+@shared_task
+def sync_inventory():
+    channels = Channel.objects.filter(status=1)
+
+    for ch in channels:
+        amz = {}
+        amz["akey"] = ch.access_key
+        amz["skey"] = ch.secret_key
+        amz["mid"] = ch.merchant_id
+        amz["mpid"] = ch.marketplace_id
+        amz["cid"] = ch.id
+        amz["uid"] = User.objects.get(pk=1)
+        amazon_request_report.delay(amz, '_GET_MERCHANT_LISTINGS_DATA_')

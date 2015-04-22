@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'rest_framework.authtoken',
     'integration',
     'inventory',
+    'orders',
     'djcelery',
     'mptt',
 )
@@ -116,7 +117,7 @@ MEDIA_URL = '/m/'
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': True,
     'formatters': {
         'verbose': {
             'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
@@ -147,6 +148,16 @@ LOGGING = {
     }
 }
 
+from datetime import timedelta
+
+CELERYBEAT_SCHEDULE = {
+    'add-every-30-seconds': {
+        'task': 'esales_api.tasks.sync_inventory',
+        'schedule': timedelta(seconds=3600),
+    },
+}
+
+CELERY_TIMEZONE = 'UTC'
 
 try:
     from settings_local import *

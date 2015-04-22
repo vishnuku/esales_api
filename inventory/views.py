@@ -344,7 +344,7 @@ class BundleProductList(ListBulkCreateUpdateDestroyAPIView):
             product.product_type = 2
             product.stock_quantity = stock_quantity
             product.save()
-            print 'stock_quantity', stock_quantity
+            logger.debug('Product Bundle updated:')
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
