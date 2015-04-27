@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 from django.conf import settings
+import mptt.fields
 
 
 class Migration(migrations.Migration):
@@ -25,6 +26,7 @@ class Migration(migrations.Migration):
                 ('tree_id', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('level', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('created_by', models.ForeignKey(related_name='created_by_order_filter', to=settings.AUTH_USER_MODEL)),
+                ('parent', mptt.fields.TreeForeignKey(related_name='children', blank=True, to='orders.Filter', null=True)),
                 ('updated_by', models.ForeignKey(related_name='updated_by_order_filter', to=settings.AUTH_USER_MODEL)),
                 ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],

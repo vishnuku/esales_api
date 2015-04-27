@@ -9,7 +9,9 @@ from mptt.models import MPTTModel
 class Filter(MPTTModel):
     name = models.CharField(max_length=20, blank=True, default='', unique=True)
     query = models.CharField(max_length=50, blank=True, default='')
-    parent = TreeForeignKey('self', null=True, blank=True, related_name='%(app_label)s_%(class)s_sub_uom_categories')
+    # parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
+    # parent = TreeForeignKey('self', null=True, blank=True, related_name='%(app_label)s_%(class)s_sub_uom_categories')
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='created_by_order_filter')
