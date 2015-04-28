@@ -65,6 +65,10 @@ class ChildrenSerializer(serializers.ModelSerializer):
 
 class FilterSerializer(serializers.ModelSerializer):
     parent = serializers.PrimaryKeyRelatedField(read_only=True)
+    leaf = serializers.SerializerMethodField('is_leaf')
+
+    def is_leaf(self, Filter):
+        return Filter.is_leaf_node()
 
     def to_representation(self, obj):
             #Add any self-referencing fields here (if not already done)
@@ -74,5 +78,5 @@ class FilterSerializer(serializers.ModelSerializer):
 
     class Meta:
             model = Filter
-            fields = ('id', 'name', 'query', 'parent')
+            fields = ('id', 'name', 'query', 'parent', 'leaf')
 
