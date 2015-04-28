@@ -64,7 +64,7 @@ class ChildrenSerializer(serializers.ModelSerializer):
 #
 
 class FilterSerializer(serializers.ModelSerializer):
-    parent = serializers.PrimaryKeyRelatedField(read_only=True)
+    # parent = serializers.PrimaryKeyRelatedField(read_only=True)
     leaf = serializers.SerializerMethodField('is_leaf')
 
     def is_leaf(self, Filter):
