@@ -4,13 +4,12 @@ from django.contrib.auth.models import User
 # Create your models here.
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
+from jsonfield import JSONField
 
 
 class Filter(MPTTModel):
     name = models.CharField(max_length=20, blank=True, default='', unique=True)
-    query = models.CharField(max_length=50, blank=True, default='')
-    # parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
-    # parent = TreeForeignKey('self', null=True, blank=True, related_name='%(app_label)s_%(class)s_sub_uom_categories')
+    query = JSONField()
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)

@@ -63,9 +63,9 @@ class ChildrenSerializer(serializers.ModelSerializer):
 #                 return FilterSerializer()
 #
 
-class FilterSerializer(serializers.ModelSerializer):
-    # parent = serializers.PrimaryKeyRelatedField(read_only=True)
+class FilterSerializerList(serializers.ModelSerializer):
     leaf = serializers.SerializerMethodField('is_leaf')
+    query = serializers.SerializerMethodField('return_json_query')
 
     def is_leaf(self, Filter):
         return Filter.is_leaf_node()
@@ -73,10 +73,27 @@ class FilterSerializer(serializers.ModelSerializer):
     def to_representation(self, obj):
             #Add any self-referencing fields here (if not already done)
             if 'branches' not in self.fields:
-                self.fields['children'] = FilterSerializer(obj, many=True)
-            return super(FilterSerializer, self).to_representation(obj)
+                self.fields['children'] = FilterSerializerList(obj, many=True)
+            return super(FilterSerializerList, self).to_representation(obj)
+
+    def return_json_query(self, AmazonOrders):
+        return AmazonOrders.query
 
     class Meta:
             model = Filter
             fields = ('id', 'name', 'query', 'parent', 'leaf')
+
+
+class FilterSerializerPost(serializers.ModelSerializer):
+
+    def to_representation(self, obj):
+            #Add any self-referencing fields here (if not already done)
+            if 'branches' not in self.fields:
+                self.fields['children'] = FilterSerializerPost(obj, many=True)
+            return super(FilterSerializerPost, self).to_representation(obj)
+
+
+    class Meta:
+            model = Filter
+            fields = ('id', 'name', 'query', 'parent')
 

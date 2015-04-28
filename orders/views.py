@@ -1,15 +1,11 @@
-from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
-from rest_framework.response import Response
-from rest_framework import status
 from rest_framework import generics
 from rest_framework import authentication, permissions
 from inventory.models import AmazonOrders, ProductOrder
 from orders import serializers
 from orders.models import Filter
-from orders.serializers import AmazonOrdersSerializerPost, FilterSerializer
+from orders.serializers import FilterSerializerPost, FilterSerializerList
 import json
 from inventory.models import Product
 # Create your views here.
@@ -47,7 +43,7 @@ class OrderList(generics.ListCreateAPIView):
 
 
     def perform_create(self, serializer):
-        address = json.dumps(self.request.data['address']);
+        address = json.dumps(self.request.data['address'])
         address = json.loads(address)
         serializer.save(address=address, user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
         amazonproducts = self.request.data['amazonproducts'] if self.request.data['amazonproducts'] else ''
@@ -82,10 +78,18 @@ class FilterList(generics.ListCreateAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated, )
     queryset = Filter.objects.all()
-    serializer_class = FilterSerializer
+    # serializer_class = FilterSerializer
+    model = Filter
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return FilterSerializerPost
+        return FilterSerializerList
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+        query = json.dumps(self.request.data['query'])
+        query = json.loads(query)
+        serializer.save(query=query, user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
 
 
 class FilterDetails(generics.RetrieveUpdateDestroyAPIView):
@@ -95,4 +99,4 @@ class FilterDetails(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
     queryset = Filter.objects.all()
-    serializer_class = FilterSerializer
+    serializer_class = FilterSerializerList
