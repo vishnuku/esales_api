@@ -9,7 +9,8 @@ from jsonfield import JSONField
 
 class Filter(MPTTModel):
     name = models.CharField(max_length=20, blank=True, default='', unique=True)
-    query = JSONField()
+    # query = JSONField()
+    query = models.TextField(blank=True, null=True)
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)

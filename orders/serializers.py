@@ -76,8 +76,8 @@ class FilterSerializerList(serializers.ModelSerializer):
                 self.fields['children'] = FilterSerializerList(obj, many=True)
             return super(FilterSerializerList, self).to_representation(obj)
 
-    def return_json_query(self, AmazonOrders):
-        return AmazonOrders.query
+    def return_json_query(self, Filter):
+        return eval(str(Filter.query))
 
     class Meta:
             model = Filter

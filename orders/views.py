@@ -88,7 +88,6 @@ class FilterList(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         query = json.dumps(self.request.data['query'])
-        query = json.loads(query)
         serializer.save(query=query, user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
 
 
