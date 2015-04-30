@@ -39,18 +39,6 @@ class AmazonOrdersSerializerPost(serializers.ModelSerializer):
                   'shipservicelevel', 'purchasedate', 'lastupdatedate', 'amazonproduct')
 
 
-# class RecursiveField(serializers.Serializer):
-#     def to_native(self, value):
-#         return self.parent.to_native(value)
-
-class ChildrenSerializer(serializers.ModelSerializer):
-
-    class Meta:
-            model = Filter
-            # fields = ('id', 'name', 'query', 'parent')
-            fields = ('id', 'name', 'query')
-
-
 # class FilterSerializer(serializers.ModelSerializer):
 #     parent = serializers.PrimaryKeyRelatedField(read_only=True)
 #
@@ -64,6 +52,7 @@ class ChildrenSerializer(serializers.ModelSerializer):
 #
 
 class FilterSerializerList(serializers.ModelSerializer):
+    parent = serializers.PrimaryKeyRelatedField(read_only=True)
     leaf = serializers.SerializerMethodField('is_leaf')
     query = serializers.SerializerMethodField('return_json_query')
 
@@ -91,7 +80,6 @@ class FilterSerializerPost(serializers.ModelSerializer):
             if 'branches' not in self.fields:
                 self.fields['children'] = FilterSerializerPost(obj, many=True)
             return super(FilterSerializerPost, self).to_representation(obj)
-
 
     class Meta:
             model = Filter
