@@ -281,6 +281,15 @@ class AmazonOrders(models.Model):
         # import json
         return self.address
 
+    @property
+    def quantity(self):
+        productorders = ProductOrder.objects.filter(amazonorders=self)
+        sum = 0
+        for p in productorders:
+            sum = sum + int(p.quantity) if p.quantity else 0
+
+        return sum
+
     def create_from_dict(self, data, exempt=()):
         """
 
