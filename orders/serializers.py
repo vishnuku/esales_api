@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.fields import empty
 from inventory.models import AmazonOrders, Images
-from inventory.serializers import ProductOrderSerializer
+from inventory.serializers import ProductOrderSerializer, ProductSerializer
 from orders.models import Filter
 
 
@@ -11,6 +11,8 @@ class AmazonOrdersSerializerList(serializers.ModelSerializer):
 
     address = serializers.SerializerMethodField('return_json_address')
     product_pic = serializers.SerializerMethodField('return_order_product_pic')
+    productorder = ProductOrderSerializer(many=True, read_only=True)
+
 
     def return_json_address(self, AmazonOrders):
         return AmazonOrders.address
@@ -27,7 +29,7 @@ class AmazonOrdersSerializerList(serializers.ModelSerializer):
         model = AmazonOrders
         fields = ('id', 'amazonorderid', 'buyername', 'buyername', 'buyeremail', 'ordertype', 'numberofitemsshipped', 'numberofitemsunshipped',
                   'paymentmethod', 'orderstatus', 'saleschannel', 'amount', 'marketplaceid', 'fulfillmentchannel',
-                  'shipservicelevel', 'address', 'product_pic', 'quantity', 'purchasedate', 'lastupdatedate', 'amazonproduct')
+                  'shipservicelevel', 'address', 'product_pic', 'quantity', 'purchasedate', 'lastupdatedate', 'amazonproduct', 'productorder')
         depth = 1
 
 class AmazonOrdersSerializerPost(serializers.ModelSerializer):

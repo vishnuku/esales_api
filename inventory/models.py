@@ -371,7 +371,8 @@ class ProductOrder(models.Model):
     product = models.ForeignKey(Product)
     amazonorders = models.ForeignKey(AmazonOrders, related_name='productorder')
     warehousebin = models.ForeignKey(WarehouseBin, blank=True, null=True)
-    quantity = models.IntegerField(default=0)
+    quantityordered = models.IntegerField(default=0) #QuantityOrdered
+    quantity = models.IntegerField(default=0) #QuantityShipped
     status = models.CharField(max_length=20, blank=True, default='')
     message = models.CharField(max_length=50, blank=True, default='')
     created_on = models.DateTimeField(auto_now_add=True)
@@ -382,6 +383,7 @@ class ProductOrder(models.Model):
 
     class Meta:
         unique_together = ('product', 'amazonorders')
+
 
     def __unicode__(self):
         return '%s' % self.product.name
