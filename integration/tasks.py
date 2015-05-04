@@ -276,6 +276,7 @@ def amazon_get_order_live_details(amz, orderid, orderstatus):
                 productorder, created = ProductOrder.objects.get_or_create(product_id=item_obj.id, amazonorders_id=orderid,
                                                                    defaults={'quantity': item.QuantityShipped,
                                                                              'status': orderstatus,
+                                                                             'orderitemid': item.OrderItemId,
                                                                              'message': '',
                                                                              'user': amz['uid'],
                                                                              'created_by': amz['uid'],
