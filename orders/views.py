@@ -98,4 +98,14 @@ class FilterDetails(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
     queryset = Filter.objects.all()
-    serializer_class = FilterSerializerList
+    # serializer_class = FilterSerializerList
+
+    def get_serializer_class(self):
+        if self.request.method == 'PATCH':
+            return FilterSerializerPost
+        return FilterSerializerList
+
+
+    def perform_update(self, serializer):
+        query = json.dumps(self.request.data['query'])
+        serializer.save(query=query, user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
