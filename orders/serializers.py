@@ -57,6 +57,7 @@ class FilterSerializerList(serializers.ModelSerializer):
     parent = serializers.PrimaryKeyRelatedField(read_only=True)
     leaf = serializers.SerializerMethodField('is_leaf')
     query = serializers.SerializerMethodField('return_json_query')
+    column = serializers.SerializerMethodField('return_json_column')
 
     def is_leaf(self, Filter):
         return Filter.is_leaf_node()
@@ -70,9 +71,12 @@ class FilterSerializerList(serializers.ModelSerializer):
     def return_json_query(self, Filter):
         return eval(str(Filter.query))
 
+    def return_json_column(self, Filter):
+        return eval(str(Filter.column))
+
     class Meta:
             model = Filter
-            fields = ('id', 'name', 'query', 'parent', 'leaf')
+            fields = ('id', 'name', 'query', 'column', 'parent', 'leaf')
 
 
 class FilterSerializerPost(serializers.ModelSerializer):
@@ -85,5 +89,5 @@ class FilterSerializerPost(serializers.ModelSerializer):
 
     class Meta:
             model = Filter
-            fields = ('id', 'name', 'query', 'parent')
+            fields = ('id', 'name', 'query', 'column', 'parent')
 
