@@ -89,7 +89,7 @@ class FilterList(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         query = json.dumps(self.request.data['query'])
         column = json.dumps(self.request.data['column'])
-        serializer.save(query=query,column=column, user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+        serializer.save(query=query, column=column, user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
 
 
 class FilterDetails(generics.RetrieveUpdateDestroyAPIView):

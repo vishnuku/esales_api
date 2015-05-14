@@ -60,10 +60,10 @@ class Product(models.Model):
     purchase_price = models.FloatField(blank=True, default=0.0)
     retail_price = models.FloatField(blank=True, default=0)
     tax_price = models.FloatField(blank=True, default=0)
-    stock_quantity = models.IntegerField(default=0, blank=True)
-    min_stock_quantity = models.IntegerField(default=0, blank=True)
-    sold_quantity = models.IntegerField(default=0)
-    pending_quantity = models.IntegerField(default=0)
+    stock_quantity = models.IntegerField(default=0, blank=True, null=True)
+    min_stock_quantity = models.IntegerField(default=0, blank=True, null=True)
+    sold_quantity = models.IntegerField(blank=True, default=0)
+    pending_quantity = models.IntegerField(blank=True, default=0)
     image_url = models.CharField(max_length=100, blank=True, default='')
     shipping_fee = models.CharField(max_length=100, blank=True, default='')
     will_ship_internationally = models.CharField(max_length=100, blank=True, default='')
@@ -373,7 +373,7 @@ class ProductOrder(models.Model):
     warehousebin = models.ForeignKey(WarehouseBin, blank=True, null=True)
     quantityordered = models.IntegerField(default=0) #QuantityOrdered
     quantity = models.IntegerField(default=0) #QuantityShipped
-    orderitemid = models.IntegerField(default=0) #OrderItemId
+    orderitemid = models.CharField(blank=True, null=True, max_length=40) #OrderItemId
     status = models.CharField(max_length=20, blank=True, default='')
     message = models.CharField(max_length=50, blank=True, default='')
     created_on = models.DateTimeField(auto_now_add=True)

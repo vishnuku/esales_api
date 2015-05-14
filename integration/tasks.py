@@ -1,4 +1,5 @@
 import csv
+import json
 from datetime import datetime, timedelta
 
 from boto.mws.connection import MWSConnection
@@ -135,16 +136,15 @@ def inventory_process_report(amz, rr):
             tmp_misc_data['zshop_storefront_feature'] = row[15],
             tmp_misc_data['zshop_boldface'] = row[21]
 
-
             p, created = Product.objects.get_or_create(sku=row[3],
                                                        defaults={'name': row[0],
                                                                  'description': row[1],
                                                                  'sku': row[3],
                                                                  'retail_price': row[4],
-                                                                 'stock_quantity': row[5],
-                                                                 'pending_quantity': row[25],
+                                                                 'stock_quantity': row[5] if row[5].isdigit() else 0,
+                                                                 'pending_quantity': row[25] if row[25].isdigit() else 0,
                                                                  'image_url': row[7],
-                                                                 'shipping_fee': row[10],
+                                                                 'shipping_fee': row[10] if row[10].isdigit() else 0,
                                                                  'will_ship_internationally': row[19],
                                                                  'expedited_shipping': row[20],
                                                                  'category_id': c.id,
@@ -173,7 +173,7 @@ def inventory_process_report(amz, rr):
             channel.save()
         except Exception as e:
             print 'Exception while product creation',e.message
-            pass
+            print e
 
     return True
 

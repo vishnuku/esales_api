@@ -291,7 +291,72 @@ def amz_relationship_feed(amz, type, parent_sku, child_skus):
     return header+feedstring
 
 
-def get_mes_conn(amz):
+def amz_shipping_feed(amz, products):
+    feed = etree.Element('AmazonEnvelope')
+
+    # create header
+    header = etree.SubElement(feed, 'Header')
+    documentver = etree.SubElement(header, 'DocumentVersion')
+    documentver.text = "1.01"
+    merchantidentifier = etree.SubElement(header, 'MerchantIdentifier')
+    merchantidentifier.text = amz['mid']
+
+    # MessageType
+    msgtype = etree.SubElement(feed, 'MessageType')
+    msgtype.text = 'OrderFulfillment'
+
+    for i, product in enumerate(products):
+        msg = etree.SubElement(feed, 'Message')
+
+        msgid = etree.SubElement(msg, 'MessageID')
+        msgid.text = str(i)
+
+        orderfulfillment = etree.SubElement(msg, 'OrderFulfillment')
+        amzorderid = etree.SubElement(orderfulfillment, 'AmazonOrderID')
+        amzorderid.text(product['amzorderid'])
+        mfid = etree.SubElement(orderfulfillment, 'MerchantFulfillmentID')
+        mfid.text(product['mfid'])
+        ffdate = etree.SubElement(orderfulfillment, 'FulfillmentDate')
+        ffdate.text(product['ffdate'])
+
+        ffdata = etree.SubElement(orderfulfillment, 'FulfillmentData')
+        if 'ccode' in product.keys():
+            ccode = etree.SubElement(ffdata, 'CarrierCode')
+            ccode.text(product['ccode'])
+        if 'cname' in product.keys():
+            cname = etree.SubElement(ffdata, 'CarrierCode')
+            cname.text(product['cname'])
+        shipmethod = etree.SubElement(ffdata, 'ShippingMethod')
+        shipmethod.text(product['shipmethod'])
+        shiptracking = etree.SubElement(ffdata, 'ShipperTrackingNumber')
+        shiptracking.text(product['shiptracking'])
+
+        item = etree.SubElement(orderfulfillment, 'Item')
+        itemcode = etree.SubElement(item, 'AmazonOrderItemCode')
+        itemcode.text(product['itemcode'])
+        if 'mfid' in product.keys():
+            mfid = etree.SubElement(item, 'MerchantFulfillmentID')
+            mfid.text(product['mffid'])
+        quantity = etree.SubElement(item, 'Quantity')
+        quantity.text(product['quantity'])
+
+    feedstring = etree.tostring(feed)
+    feedstring.replace("<AmazonEnvelope>",
+                       '<AmazonEnvelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn- envelope.xsd">')
+    header = '<?xml version="1.0" ?>'
+    feedstring = header + feedstring
+    return feedstring
+
+
+def amz_acknowledge_feed(amz, data):
+    pass
+
+
+def amz_adjustment_feed(amz, data):
+    pass
+
+
+def get_mws_conn(amz):
     """
 
     :param amz:

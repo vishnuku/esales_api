@@ -1,0 +1,9 @@
+product['amzorderid'] = AmazonOrderid
+product['mfid'] = Merchantfulfilentid
+product['ffdate'] = fulfilment date timr string
+product['ccode'] = shiping carier code
+product['cname'] = if code not available use shiping courier name
+product['shipmethod'] = ship method name like 'standard 2 day delivery'
+product['shiptracking'] = tracking number
+product['itemcode'] = orderitemcode
+product['quantity'] = qauntity of product shipped
