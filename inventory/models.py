@@ -373,7 +373,7 @@ class ProductOrder(models.Model):
     warehousebin = models.ForeignKey(WarehouseBin, blank=True, null=True)
     quantityordered = models.IntegerField(default=0) #QuantityOrdered
     quantity = models.IntegerField(default=0) #QuantityShipped
-    orderitemid = models.IntegerField(default=0) #OrderItemId
+    orderitemid = models.CharField(blank=True, null=True, max_length=40) #OrderItemId
     status = models.CharField(max_length=20, blank=True, default='')
     message = models.CharField(max_length=50, blank=True, default='')
     created_on = models.DateTimeField(auto_now_add=True)
