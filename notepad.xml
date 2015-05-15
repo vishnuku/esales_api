@@ -1,28 +1,26 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<AmazonEnvelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xsi:noNamespaceSchemaLocation="amzn- envelope.xsd">
-    <Header>
-        <DocumentVersion>1.01</DocumentVersion>
-        <MerchantIdentifier>My Store</MerchantIdentifier>
-    </Header>
-    <MessageType>OrderFulfillment</MessageType>
-    <Message>
-        <MessageID>1</MessageID>
-        <OrderFulfillment>
-            <MerchantOrderID>1234567</MerchantOrderID>
-            <AmazonOrderID>123123</AmazonOrderID>
-            <MerchantFulfillmentID>1234567</MerchantFulfillmentID>
-            <FulfillmentDate>2002-05-01T15:36:33-08:00</FulfillmentDate>
-            <FulfillmentData>
-                <CarrierCode>UPS</CarrierCode>
-                <ShippingMethod>Second Day</ShippingMethod>
-                <ShipperTrackingNumber>1234567890</ShipperTrackingNumber>
-            </FulfillmentData>
-            <Item>
-                <MerchantOrderItemID>1234567</MerchantOrderItemID>
-                <MerchantFulfillmentItemID>1234567</MerchantFulfillmentItemID>
-                <Quantity>2</Quantity>￼
-            </Item>
-        </OrderFulfillment>
-    </Message>
-</AmazonEnvelope>
+<AddressValidateRequest USERID="210ZEIMA2186">
+    <Address ID="0">
+        <Address1>6155 ECKHERT RD APT 2204</Address1>
+        <City>SAN ANTONIO</City>
+        <Zip5></Zip5>
+        <Zip4></Zip4>
+    </Address>
+</AddressValidateRequest>
+
+<AddressValidateRequest USERID="210ZEIMA2186">
+    <Address ID="0">
+        <Address1></Address1>
+        <Address2>6406 Ivy Lane</Address2>
+        <City>Greenbelt</City>
+        <State>MD</State>
+        <Zip5></Zip5>
+        <Zip4></Zip4>
+    </Address>
+</AddressValidateRequest>
+
+
+http://production.shippingapis.com/ShippingAPITest.dll?API=Verify
+&XML=<AddressValidateRequest USERID="210ZEIMA2186"><Address ID="0"><Address1>6155 ECKHERT RD APT 2204</Address1><Address2>6406 Ivy Lane</Address2><City>SAN ANTONIO</City><State>MD</State><Zip5></Zip5><Zip4></Zip4></Address></AddressValidateRequest>
+
+
+http://production.shippingapis.com/ShippingAPITest.dll?API=Verify &XML=<AddressValidateRequest USERID="210ZEIMA2186"><Address><Address1>6155 ECKHERT RD APT 2204</Address1><Address2>6406 Ivy Lane</Address2><City>SAN ANTONIO</City><State>MD</State><Zip5></Zip5><Zip4></Zip4></Address></AddressValidateRequest>

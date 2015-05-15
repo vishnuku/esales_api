@@ -1,6 +1,7 @@
 # coding=utf-8
 import requests
 from lxml import etree
+from collections import OrderedDict
 
 
 class Usps(object):
@@ -10,6 +11,7 @@ class Usps(object):
 
     def __init__(self, *args, **kwargs):
         self.userid = kwargs['userid']
+        # self.url = 'http://production.shippingapis.com/ShippingAPITest.dll?API={}'
         self.url = 'http://production.shippingapis.com/ShippingAPITest.dll?API={}'
 
     def _response_parser(self, resposne):
@@ -74,7 +76,6 @@ class Usps(object):
         xml = self.generate_xml('ADDRESSVALIDATEREQUEST', address)
 
         self.send_request(xml, type='Verify')
-
         return xml
 
     def _generate_adressvalidaterequest_xml(self, address):
@@ -92,20 +93,20 @@ class Usps(object):
         addresskeymap['State'] = 'state'
 
         xml = etree.Element('AddressValidateRequest', USERID=self.userid)
-        add = etree.SubElement(xml, 'Address')
+        add = etree.SubElement(xml, 'Address', ID="0")
 
         for field in address.keys():
             if field in addresskeymap:
                 data = etree.SubElement(add, addresskeymap[field])
                 data.text = address[field]
-            elif field == 'postalcode':
-                zipcode = address[field].split('-')
-                for zip in zipcode:
-                    if len(zip) == 4:
-                        data = etree.SubElement(add, 'Zip4')
-                        data.text = zip
-                    else:
-                        data = etree.SubElement(add, 'Zip5')
-                        data.text = zip
+            # elif field == 'postalcode':
+            #     zipcode = address[field].split('-')
+            #     for zip in zipcode:
+            #         if len(zip) == 4:
+            #             data = etree.SubElement(add, 'Zip4')
+            #             data.text = zip
+            #         else:
+            #             data = etree.SubElement(add, 'Zip5')
+            #             data.text = zip
 
         return xml
