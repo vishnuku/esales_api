@@ -14,7 +14,7 @@ from .serializers import ChannelSerializer, AmazonProductSerializer, AmazonOrder
     AmazonOrdersSerializerWithOneASINPic
 from .models import Channel
 from inventory.models import AmazonProduct, Product, AmazonOrders, ProductListingConfigurator, ChannelCategory
-from tasks import amazon_request_report, amazon_get_order_live
+from tasks import amazon_request_report, amazon_get_order_live, amazon_get_order
 from utils import amz_product_feed, amz_inventory_feed, amz_price_feed, amz_image_feed, amz_relationship_feed, \
     get_mws_conn
 
@@ -220,22 +220,25 @@ class OrderSync(generics.ListCreateAPIView):
         :return:
         :rtype:
         """
-        amz = {}
-        try:
-            ch = Channel.objects.get(pk=pk)
-        except Channel.DoesNotExist:
-            return HttpResponse(status=404)
+        # amz = {}
+        # try:
+        #     ch = Channel.objects.get(pk=pk)
+        # except Channel.DoesNotExist:
+        #     return HttpResponse(status=404)
+        #
+        # amz["akey"] = ch.access_key
+        # amz["skey"] = ch.secret_key
+        # amz["mid"] = ch.merchant_id
+        # amz["mpid"] = ch.marketplace_id
+        # amz["cid"] = pk
+        # amz["uid"] = request.user
 
-        amz["akey"] = ch.access_key
-        amz["skey"] = ch.secret_key
-        amz["mid"] = ch.merchant_id
-        amz["mpid"] = ch.marketplace_id
-        amz["cid"] = pk
-        amz["uid"] = request.user
         # ch.sync_status = 1
         # ch.save()
         #TODO set for date
-        amazon_get_order_live.delay(amz)
+        # amazon_get_order_live.delay(amz)
+        amazon_get_order.delay(request.user)
+        print('Order synced')
         data = {"success": "true"}
         return Response(data, status=status.HTTP_200_OK)
 

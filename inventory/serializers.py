@@ -44,7 +44,7 @@ class ProductWithImagesSerializer(serializers.ModelSerializer):
         model = Product
         fields = ('id', 'name', 'brand', 'description', 'bullet_point', 'manufacturer', 'ucodetype', 'ucodevalue',
                   'purchase_price', 'retail_price', 'tax_price', 'sku', 'barcode', 'stock_quantity', 'min_stock_quantity',
-                  'sold_quantity', 'category', 'channel', 'meta_data', 'misc_data', 'origin', 'created_on', 'field2', 'images')
+                  'sold_quantity', 'category', 'channel', 'meta_data', 'misc_data', 'origin', 'created_on', 'field2', 'field8', 'images')
 
 
 class UserSerializer(serializers.ModelSerializer):

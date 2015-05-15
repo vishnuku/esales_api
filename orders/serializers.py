@@ -13,6 +13,7 @@ class AmazonOrdersSerializerList(serializers.ModelSerializer):
     product_pic = serializers.SerializerMethodField('return_order_product_pic')
     productorder = ProductOrderSerializer(many=True, read_only=True)
 
+    # channel_amazonorders = serializers.StringRelatedField(many=True)
 
     def return_json_address(self, AmazonOrders):
         return AmazonOrders.address
@@ -29,8 +30,8 @@ class AmazonOrdersSerializerList(serializers.ModelSerializer):
         model = AmazonOrders
         fields = ('id', 'amazonorderid', 'buyername', 'buyername', 'buyeremail', 'ordertype', 'numberofitemsshipped', 'numberofitemsunshipped',
                   'paymentmethod', 'orderstatus', 'saleschannel', 'amount', 'marketplaceid', 'fulfillmentchannel',
-                  'shipservicelevel', 'address', 'product_pic', 'quantity', 'purchasedate', 'lastupdatedate', 'amazonproduct', 'productorder')
-        depth = 1
+                  'shipservicelevel', 'address', 'product_pic', 'quantity', 'purchasedate', 'lastupdatedate', 'amazonproduct', 'productorder', 'channel_name')
+        # depth = 1
 
 class AmazonOrdersSerializerPost(serializers.ModelSerializer):
 
