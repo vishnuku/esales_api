@@ -272,6 +272,7 @@ class AmazonOrders(models.Model):
     lastupdatedate = models.DateTimeField(db_index=True, blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_on = models.DateTimeField(auto_now=True, auto_now_add=True, db_index=True)
+    channel = models.ForeignKey(Channel, related_name='channel_amazonorders', default=1)
     created_by = models.ForeignKey(User, related_name='created_by_amazonorders')
     updated_by = models.ForeignKey(User, related_name='updated_by_amazonorders')
     user = models.ForeignKey(User)
@@ -280,6 +281,10 @@ class AmazonOrders(models.Model):
     def get_address(self):
         # import json
         return self.address
+
+    @property
+    def channel_name(self):
+        return self.channel.name
 
     @property
     def quantity(self):

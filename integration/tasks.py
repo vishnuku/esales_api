@@ -178,6 +178,24 @@ def inventory_process_report(amz, rr):
     return True
 
 
+@shared_task
+def amazon_get_order(uid, datefrom=None):
+    try:
+        ch = Channel.objects.all()
+        for channel in ch:
+            amz = {}
+            amz["akey"] = channel.access_key
+            amz["skey"] = channel.secret_key
+            amz["mid"] = channel.merchant_id
+            amz["mpid"] = channel.marketplace_id
+            amz["cid"] = channel
+            amz["uid"] = uid
+            amazon_get_order_live.delay(amz)
+            # print('amz',amz)
+
+    except Channel.DoesNotExist:
+        pass
+
 
 @shared_task
 def amazon_get_order_live(amz, datefrom=None):
@@ -240,6 +258,7 @@ def amazon_get_order_live(amz, datefrom=None):
         except AmazonOrders.DoesNotExist:
             amzorder = AmazonOrders()
             amzorder.create_from_dict(t)
+            amzorder.channel = amz['cid']
             amzorder.user = amz['uid']
             amzorder.created_by = amz['uid']
             amzorder.updated_by = amz['uid']
