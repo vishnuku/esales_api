@@ -7,3 +7,10 @@ product['shipmethod'] = ship method name like 'standard 2 day delivery'
 product['shiptracking'] = tracking number
 product['itemcode'] = orderitemcode
 product['quantity'] = qauntity of product shipped
+
+
+##SHIPPING API INTEGRATION
+from shipping.integration.usps.usps import Usps
+usps = Usps(userid='user1234')
+add = {'city': 'SAN ANTONIO', 'name': 'Nana Musa', 'add1': '6155 ECKHERT RD APT 2204', 'country': 'US', 'phone': '312-843-2103', 'state': 'TX', 'postalcode': '78240-2635'}
+usps.address_info(add)
