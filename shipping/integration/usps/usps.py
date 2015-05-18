@@ -22,7 +22,10 @@ class Usps(object):
         :return:
         :rtype:
         """
-        print resposne
+        # print resposne
+        root = etree.fromstring(resposne)
+
+        return
 
     def send_request(self, xml, *args, **kwargs):
 
@@ -42,7 +45,8 @@ class Usps(object):
         url = self.url.format(kwargs['type'])
         payload = {'XML': xml}
         r = requests.post(url, data=payload)
-        self._response_parser(r.text)
+        self._response_parser(r.content)
+        return
 
     def generate_xml(self, type, data, *args, **kwargs):
         """
@@ -76,7 +80,7 @@ class Usps(object):
         xml = self.generate_xml('ADDRESSVALIDATEREQUEST', address)
 
         self.send_request(xml, type='Verify')
-        return xml
+        return
 
     def _generate_adressvalidaterequest_xml(self, address):
         """
@@ -86,27 +90,31 @@ class Usps(object):
         :return:
         :rtype:
         """
-        addresskeymap = {}
-        addresskeymap['city'] = 'City'
-        addresskeymap['add1'] = 'Address1'
-        addresskeymap['add2'] = 'Address2'
-        addresskeymap['State'] = 'state'
+
+        if 'postalcode' in address.keys():
+            postalcode = address['postalcode'].split('-')
+
+            for code in postalcode:
+                if len(code) == 4:
+                    address['zip4'] = code
+                elif len(code) == 5:
+                    address['zip5'] = code
+
+
+        addressmap = OrderedDict()
+        addressmap['Address1'] = 'add1'
+        addressmap['Address2'] = 'add2'
+        addressmap['City'] = 'city'
+        addressmap['State'] = 'state'
+        addressmap['Zip5'] = 'zip5'
+        addressmap['Zip4'] = 'zip4'
 
         xml = etree.Element('AddressValidateRequest', USERID=self.userid)
-        add = etree.SubElement(xml, 'Address', ID="0")
+        add = etree.SubElement(xml, 'Address')
 
-        for field in address.keys():
-            if field in addresskeymap:
-                data = etree.SubElement(add, addresskeymap[field])
-                data.text = address[field]
-            # elif field == 'postalcode':
-            #     zipcode = address[field].split('-')
-            #     for zip in zipcode:
-            #         if len(zip) == 4:
-            #             data = etree.SubElement(add, 'Zip4')
-            #             data.text = zip
-            #         else:
-            #             data = etree.SubElement(add, 'Zip5')
-            #             data.text = zip
+        for field in addressmap.keys():
+            data = etree.SubElement(add, field)
+            if addressmap[field] in address.keys():
+                data.text = address[addressmap[field]]
 
         return xml

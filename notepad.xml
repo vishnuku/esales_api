@@ -24,3 +24,10 @@ http://production.shippingapis.com/ShippingAPITest.dll?API=Verify
 
 
 http://production.shippingapis.com/ShippingAPITest.dll?API=Verify &XML=<AddressValidateRequest USERID="210ZEIMA2186"><Address><Address1>6155 ECKHERT RD APT 2204</Address1><Address2>6406 Ivy Lane</Address2><City>SAN ANTONIO</City><State>MD</State><Zip5></Zip5><Zip4></Zip4></Address></AddressValidateRequest>
+
+<!-- Successful response with updated field -->
+
+<AddressValidateResponse><Address><Address1>APT 2204</Address1><Address2>6155 ECKHERT RD</Address2><City>SAN ANTONIO</City><State>TX</State><Zip5>78240</Zip5><Zip4>2635</Zip4></Address></AddressValidateResponse>
+
+<!-- Error response with updated field -->
+<AddressValidateResponse><Address><Error><Number>-2147219402</Number><Source>clsAMS</Source><Description>Invalid State Code.  </Description><HelpFile/><HelpContext/></Error></Address></AddressValidateResponse>
