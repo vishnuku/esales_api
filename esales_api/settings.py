@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'integration',
     'inventory',
     'orders',
+    'shipping',
     'djcelery',
     'mptt',
 )
