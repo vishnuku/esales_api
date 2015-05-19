@@ -25,3 +25,6 @@ class Account(models.Model):
     created_by = models.IntegerField()
     updated_by = models.IntegerField()
     user = models.ForeignKey(User)
+
+    class Meta:
+        unique_together = ('name','number',)
