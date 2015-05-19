@@ -16,7 +16,7 @@ class AccountList(generics.ListCreateAPIView):
     serializer_class = AccountSerializer
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+        serializer.save(user=self.request.user, created_by=self.request.user.id, updated_by=self.request.user.id)
 
 
 class AccountDetails(generics.RetrieveUpdateDestroyAPIView):
