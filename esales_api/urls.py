@@ -41,6 +41,7 @@ urlpatterns = [
     url(r'^', include('integration.urls')),
     url(r'^', include('inventory.urls')),
     url(r'^', include('orders.urls')),
+    url(r'^', include('shipping.urls')),
     url(r'^api-token-auth/', obtain_auth_token),
     # url(r'^', include('channel_integration.urls')),
     # url(r'^', include('inventory_management.urls'))

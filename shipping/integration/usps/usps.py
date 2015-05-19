@@ -1,6 +1,7 @@
 # coding=utf-8
 import requests
 from lxml import etree
+from lxml import objectify
 from collections import OrderedDict
 
 
@@ -22,10 +23,9 @@ class Usps(object):
         :return:
         :rtype:
         """
-        # print resposne
-        root = etree.fromstring(resposne)
 
-        return
+        root = objectify.fromstring(resposne)
+        return root
 
     def send_request(self, xml, *args, **kwargs):
 
