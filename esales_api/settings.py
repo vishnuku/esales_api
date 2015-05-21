@@ -152,9 +152,14 @@ LOGGING = {
 from datetime import timedelta
 
 CELERYBEAT_SCHEDULE = {
-    'add-every-30-seconds': {
+    'sync-channel': {
         'task': 'inventory.tasks.sync_inventory',
-        'schedule': timedelta(seconds=3600),
+        'schedule': timedelta(seconds=14400),
+    },
+
+    'sync-orders': {
+        'task': 'inventory.tasks.sync_order',
+        'schedule': timedelta(seconds=14400),
     },
 }
 
