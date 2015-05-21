@@ -158,6 +158,7 @@ CELERYBEAT_SCHEDULE = {
     },
 }
 
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 CELERY_TIMEZONE = 'UTC'
 
 try:
