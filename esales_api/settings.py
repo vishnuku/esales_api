@@ -152,12 +152,18 @@ LOGGING = {
 from datetime import timedelta
 
 CELERYBEAT_SCHEDULE = {
-    'add-every-30-seconds': {
-        'task': 'esales_api.tasks.sync_inventory',
-        'schedule': timedelta(seconds=3600),
+    'sync-channel': {
+        'task': 'inventory.tasks.sync_inventory',
+        'schedule': timedelta(seconds=14400),
+    },
+
+    'sync-orders': {
+        'task': 'inventory.tasks.sync_order',
+        'schedule': timedelta(seconds=14400),
     },
 }
 
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 CELERY_TIMEZONE = 'UTC'
 
 try:

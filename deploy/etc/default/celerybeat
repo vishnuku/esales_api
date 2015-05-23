@@ -8,7 +8,7 @@ export DJANGO_SETTINGS_MODULE="settings"
 # comment out this line if you don't use an app
 #CELERY_APP="proj"
 # or fully qualified:
-#CELERY_APP="proj.tasks:app"
+CELERY_APP="esales_api"
 
 # Where to chdir at start.
 CELERYBEAT_CHDIR="/opt/esales/esales_api"
