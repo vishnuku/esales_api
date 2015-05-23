@@ -94,6 +94,9 @@ class WarehouseBinSerializer(serializers.ModelSerializer):
 
 
 class ProductOrderSerializer(serializers.ModelSerializer):
+    '''
+    This method returned data on basis of order item.
+    '''
     products = ProductWithImagesSerializer(source='product',read_only=True)
     warehousebins = WarehouseBinSerializer(source='warehousebin',read_only=True)
 

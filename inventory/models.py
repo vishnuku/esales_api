@@ -336,7 +336,7 @@ class ProductListingConfigurator(models.Model):
 
 
 class Warehouse(models.Model):
-    name = models.CharField(max_length=105, blank=False)
+    name = models.CharField(max_length=105, blank=False, unique=True)
     address = models.CharField(max_length=255, blank=True)
     town = models.CharField(max_length=105, blank=True)
     country = models.CharField(max_length=105, blank=True)
