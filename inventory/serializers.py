@@ -1,5 +1,8 @@
 from django.contrib.auth.models import User
+from django.core.serializers import json
 from rest_framework import serializers
+from rest_framework.utils.encoders import JSONEncoder
+# from json import JSONEncoder
 from integration.serializers import AmazonOrdersSerializerWithOneASINPic
 
 from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, WarehouseBin, \
@@ -93,13 +96,29 @@ class WarehouseBinSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'warehouse', 'stock_quantity', 'sold_quantity', 'min_stock_quantity', 'product', 'warehouse_detail')
 
 
+class MyEncoder(JSONEncoder):
+    def default(self, o):
+        return o.__dict__
+
 class ProductOrderSerializer(serializers.ModelSerializer):
-    products = ProductWithImagesSerializer(source='product',read_only=True)
-    warehousebins = WarehouseBinSerializer(source='warehousebin',read_only=True)
+    products = ProductWithImagesSerializer(source='product', read_only=True)
+    warehousebins = WarehouseBinSerializer(source='warehousebin', read_only=True)
+    suggestion = serializers.SerializerMethodField('get_suggestion_w')
+
+    def get_suggestion_w(self, obj):
+        warehouse = WarehouseBin.objects.filter(product=obj.product)
+        suggested = {}
+        if warehouse:
+            suggested["bin_id"] = warehouse[0].id
+            suggested["bin_name"] = warehouse[0].name
+            suggested["warehouse_id"] = warehouse[0].warehouse.id
+            suggested["warehouse_name"] = warehouse[0].warehouse.name
+
+        return suggested
 
     class Meta:
         model = ProductOrder
-        fields = ('id', 'products', 'warehousebins', 'quantity', 'status', 'warehousebin')
+        fields = ('id', 'products', 'warehousebins', 'quantity', 'status', 'warehousebin', 'suggestion')
 
 
 class ProductOrderSerializer2(serializers.ModelSerializer):

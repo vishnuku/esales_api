@@ -307,8 +307,10 @@ class ProductOrderList(generics.ListCreateAPIView):
         by filtering against a `username` query parameter in the URL.
         """
         queryset = ProductOrder.objects.all()
+        print 'Testing 1'
 
         if 'order' in self.kwargs:
+            print 'order'
             queryset = queryset.filter(amazonorders=self.kwargs['order'])
 
         return queryset
