@@ -375,3 +375,22 @@ def sync_inventory():
         amz["cid"] = ch.id
         amz["uid"] = User.objects.get(pk=1)
         amazon_request_report.delay(amz, '_GET_MERCHANT_LISTINGS_DATA_')
+
+
+@shared_task
+def sync_order():
+    try:
+        ch = Channel.objects.filter(status=1)
+        for channel in ch:
+            amz = {}
+            amz["akey"] = channel.access_key
+            amz["skey"] = channel.secret_key
+            amz["mid"] = channel.merchant_id
+            amz["mpid"] = channel.marketplace_id
+            amz["cid"] = channel
+            amz["uid"] = User.objects.get(pk=1)
+            amazon_get_order_live.delay(amz)
+            # print('amz',amz)
+
+    except Channel.DoesNotExist:
+        pass
