@@ -94,12 +94,24 @@ class WarehouseBinSerializer(serializers.ModelSerializer):
 
 
 class ProductOrderSerializer(serializers.ModelSerializer):
-    products = ProductWithImagesSerializer(source='product',read_only=True)
-    warehousebins = WarehouseBinSerializer(source='warehousebin',read_only=True)
+    products = ProductWithImagesSerializer(source='product', read_only=True)
+    warehousebins = WarehouseBinSerializer(source='warehousebin', read_only=True)
+    suggestion = serializers.SerializerMethodField('get_suggestion_w')
+
+    def get_suggestion_w(self, obj):
+        warehouse = WarehouseBin.objects.filter(product=obj.product)
+        suggested = {}
+        if warehouse:
+            suggested["bin_id"] = warehouse[0].id
+            suggested["bin_name"] = warehouse[0].name
+            suggested["warehouse_id"] = warehouse[0].warehouse.id
+            suggested["warehouse_name"] = warehouse[0].warehouse.name
+
+        return suggested
 
     class Meta:
         model = ProductOrder
-        fields = ('id', 'products', 'warehousebins', 'quantity', 'status', 'warehousebin')
+        fields = ('id', 'products', 'warehousebins', 'quantity', 'status', 'warehousebin', 'suggestion')
 
 
 class ProductOrderSerializer2(serializers.ModelSerializer):
