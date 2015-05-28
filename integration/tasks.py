@@ -1,5 +1,4 @@
 import csv
-import json
 from datetime import datetime, timedelta
 
 from boto.mws.connection import MWSConnection
@@ -8,7 +7,6 @@ from django.contrib.auth.models import User
 
 from .models import Channel
 from inventory.models import Product, Category, AmazonOrders, ProductOrder
-from rest_framework.renderers import JSONRenderer
 
 
 @shared_task
@@ -142,7 +140,8 @@ def inventory_process_report(amz, rr):
                                                                  'sku': row[3],
                                                                  'retail_price': row[4],
                                                                  'stock_quantity': row[5] if row[5].isdigit() else 0,
-                                                                 'pending_quantity': row[25] if row[25].isdigit() else 0,
+                                                                 'pending_quantity': row[25] if row[
+                                                                     25].isdigit() else 0,
                                                                  'image_url': row[7],
                                                                  'shipping_fee': row[10] if row[10].isdigit() else 0,
                                                                  'will_ship_internationally': row[19],
@@ -162,7 +161,7 @@ def inventory_process_report(amz, rr):
                                                                  'updated_by': amz['uid'],
                                                                  'user': amz['uid'],
                                                                  'misc_data': tmp_misc_data
-                                                                })
+                                                                 })
             if not created:
                 p.stock_quantity = int(row[5])
                 p.save()
@@ -172,7 +171,7 @@ def inventory_process_report(amz, rr):
             channel.sync_status = 1
             channel.save()
         except Exception as e:
-            print 'Exception while product creation',e.message
+            print 'Exception while product creation', e.message
             print e
 
     return True
@@ -210,7 +209,7 @@ def amazon_get_order_live(amz, datefrom=None):
     """
     orders = []
     if not datefrom:
-        datefrom = (datetime.now().replace(microsecond=0) + timedelta(days=-7)).isoformat()+'Z'
+        datefrom = (datetime.now().replace(microsecond=0) + timedelta(days=-7)).isoformat() + 'Z'
 
     con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
     rr = con.list_orders(MarketplaceId=[str(amz["mpid"])], CreatedAfter=datefrom)
@@ -246,7 +245,6 @@ def amazon_get_order_live(amz, datefrom=None):
         tmp_order['fulfillmentchannel'] = order.FulfillmentChannel if hasattr(order, 'FulfillmentChannel') else ''
         tmp_order['shipservicelevel'] = order.ShipServiceLevel if hasattr(order, 'ShipServiceLevel') else ''
 
-
         t = tmp_order
         try:
             amzorder = AmazonOrders.objects.get(amazonorderid=t['amazonorderid'])
@@ -265,9 +263,9 @@ def amazon_get_order_live(amz, datefrom=None):
             amzorder.save()
             amazon_get_order_live_details.apply_async((amz, amzorder.id, order.OrderStatus))
 
-    #Call this task to update product id
-    # if len(orders>0):
-    #     amazon_get_order_live_details.apply_async((amz, orders), countdown=60)
+            # Call this task to update product id
+            # if len(orders>0):
+            #     amazon_get_order_live_details.apply_async((amz, orders), countdown=60)
 
 
 @shared_task
@@ -283,23 +281,25 @@ def amazon_get_order_live_details(amz, orderid, orderstatus):
             item_obj = Product.objects.get(sku=item.SellerSKU)
             item_list.append(str(item_obj.id))
 
-            #Check if same product is already mapped
-            #if mapped get latest record
+            # Check if same product is already mapped
+            # if mapped get latest record
             productorder_obj = ProductOrder.objects.filter(product_id=item_obj.id).last()
 
-            if(item.QuantityShipped > 0):
+            if (item.QuantityShipped > 0):
                 item_obj.sold_quantity += int(item.QuantityShipped)
                 item_obj.save()
 
             productorder, created = ProductOrder.objects.get_or_create(product_id=item_obj.id, amazonorders_id=orderid,
-                                                               defaults={'quantity': item.QuantityShipped,
-                                                                         'status': orderstatus,
-                                                                         'orderitemid': item.OrderItemId,
-                                                                         'message': '',
-                                                                         'warehousebin': getattr(productorder_obj, 'warehousebin', None),
-                                                                         'user': amz['uid'],
-                                                                         'created_by': amz['uid'],
-                                                                         'updated_by': amz['uid']})
+                                                                       defaults={'quantity': item.QuantityShipped,
+                                                                                 'status': orderstatus,
+                                                                                 'orderitemid': item.OrderItemId,
+                                                                                 'message': '',
+                                                                                 'warehousebin': getattr(
+                                                                                     productorder_obj, 'warehousebin',
+                                                                                     None),
+                                                                                 'user': amz['uid'],
+                                                                                 'created_by': amz['uid'],
+                                                                                 'updated_by': amz['uid']})
 
             productorder.save()
 
@@ -307,11 +307,9 @@ def amazon_get_order_live_details(amz, orderid, orderstatus):
             print 'From Product.DoesNotExist', item.SellerSKU
             pass
 
-
     order.amazonproduct = ",".join(item_list)
     print order
     order.save()
-
 
 
 @shared_task
@@ -321,7 +319,7 @@ def csv_insert(instance):
     :param instance:
     :return:
     '''
-    f = open(str(instance.csv_name),'rU')
+    f = open(str(instance.csv_name), 'rU')
     reader = csv.reader(f)
     header = next(reader)
     error_list = []
@@ -329,32 +327,32 @@ def csv_insert(instance):
         try:
             product = Product()
             product.name = row[0]
-            product.purchase_price=row[1]
-            product.retail_price=row[2]
-            product.tax_price=row[3]
-            product.sku=row[4]
-            product.barcode=row[5]
-            product.stock=row[6]
-            product.minimum_stock_level=row[7]
-            product.meta_data=row[8]
-            product.origin=row[9]
+            product.purchase_price = row[1]
+            product.retail_price = row[2]
+            product.tax_price = row[3]
+            product.sku = row[4]
+            product.barcode = row[5]
+            product.stock = row[6]
+            product.minimum_stock_level = row[7]
+            product.meta_data = row[8]
+            product.origin = row[9]
             # product.created=row[10]
             # product.updated=row[11]
-            product.category_id=row[12]
+            product.category_id = row[12]
             # product.created_by_id=row[13]
             # product.updated_by_id=row[14]
             # product.user=row[15]
 
-            product.brand=row[16]
-            product.desc=row[17]
-            product.manufacturer=row[18]
-            product.ucodetype=row[19]
-            product.ucodevalue=row[20]
-            product.bullet_point=row[21]
+            product.brand = row[16]
+            product.desc = row[17]
+            product.manufacturer = row[18]
+            product.ucodetype = row[19]
+            product.ucodevalue = row[20]
+            product.bullet_point = row[21]
 
-            product.created_by=instance.user
-            product.updated_by=instance.user
-            product.user=instance.user
+            product.created_by = instance.user
+            product.updated_by = instance.user
+            product.user = instance.user
             product.save()
             print 'Created', product.id
         except Exception as e:

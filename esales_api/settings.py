@@ -161,6 +161,11 @@ CELERYBEAT_SCHEDULE = {
         'task': 'integration.tasks.sync_order',
         'schedule': timedelta(seconds=14400),
     },
+
+    'update-orders-warehouse': {
+        'task': 'inventory.tasks.map_order_product_warehouse',
+        'schedule': timedelta(seconds=14400),
+    },
 }
 
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
