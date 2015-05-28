@@ -5,6 +5,7 @@ from rest_framework import generics
 from rest_framework import authentication, permissions
 from rest_framework.response import Response
 from rest_framework import status
+from tasks import map_order_product_warehouse
 
 from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
     InventoryCSVSerializer, ChannelCategorySerializer, ProductListingConfiguratorSerializer, WarehouseSerializer, \
@@ -300,6 +301,10 @@ class ProductOrderList(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+        try:
+            map_order_product_warehouse.delay(pid=serializer.object.products, binid=serializer.object.warehousebin)
+        except Exception as e:
+            pass
 
     def get_queryset(self):
         """
