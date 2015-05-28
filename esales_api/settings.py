@@ -153,12 +153,12 @@ from datetime import timedelta
 
 CELERYBEAT_SCHEDULE = {
     'sync-channel': {
-        'task': 'inventory.tasks.sync_inventory',
+        'task': 'integration.tasks.sync_inventory',
         'schedule': timedelta(seconds=14400),
     },
 
     'sync-orders': {
-        'task': 'inventory.tasks.sync_order',
+        'task': 'integration.tasks.sync_order',
         'schedule': timedelta(seconds=14400),
     },
 }
