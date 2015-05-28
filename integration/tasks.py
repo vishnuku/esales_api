@@ -283,25 +283,25 @@ def amazon_get_order_live_details(amz, orderid, orderstatus):
             item_obj = Product.objects.get(sku=item.SellerSKU)
             item_list.append(str(item_obj.id))
 
+            #Check if same product is already mapped
+            #if mapped get latest record
+            productorder_obj = ProductOrder.objects.filter(product_id=item_obj.id).last()
 
             if(item.QuantityShipped > 0):
                 item_obj.sold_quantity += int(item.QuantityShipped)
                 item_obj.save()
 
-                #Insert to product order
-                # productorder = ProductOrder(product_id=item_obj.id, amazonorders_id=orderid, quantity=item.QuantityShipped,
-                #                             status=orderstatus, message='',
-                #                                             user=amz['uid'], created_by=amz['uid'], updated_by=amz['uid'])
-                productorder, created = ProductOrder.objects.get_or_create(product_id=item_obj.id, amazonorders_id=orderid,
-                                                                   defaults={'quantity': item.QuantityShipped,
-                                                                             'status': orderstatus,
-                                                                             'orderitemid': item.OrderItemId,
-                                                                             'message': '',
-                                                                             'user': amz['uid'],
-                                                                             'created_by': amz['uid'],
-                                                                             'updated_by': amz['uid']})
+            productorder, created = ProductOrder.objects.get_or_create(product_id=item_obj.id, amazonorders_id=orderid,
+                                                               defaults={'quantity': item.QuantityShipped,
+                                                                         'status': orderstatus,
+                                                                         'orderitemid': item.OrderItemId,
+                                                                         'message': '',
+                                                                         'warehousebin': getattr(productorder_obj, 'warehousebin', None),
+                                                                         'user': amz['uid'],
+                                                                         'created_by': amz['uid'],
+                                                                         'updated_by': amz['uid']})
 
-                productorder.save()
+            productorder.save()
 
         except Product.DoesNotExist:
             print 'From Product.DoesNotExist', item.SellerSKU
