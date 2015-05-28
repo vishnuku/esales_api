@@ -301,10 +301,6 @@ class ProductOrderList(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
-        try:
-            map_order_product_warehouse.delay(pid=serializer.object.products, binid=serializer.object.warehousebin)
-        except Exception as e:
-            pass
 
     def get_queryset(self):
         """
@@ -312,10 +308,8 @@ class ProductOrderList(generics.ListCreateAPIView):
         by filtering against a `username` query parameter in the URL.
         """
         queryset = ProductOrder.objects.all()
-        print 'Testing 1'
 
         if 'order' in self.kwargs:
-            print 'order'
             queryset = queryset.filter(amazonorders=self.kwargs['order'])
 
         return queryset
@@ -329,6 +323,16 @@ class ProductOrderDetails(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = ProductOrder.objects.all()
     serializer_class = ProductOrderSerializer
+
+    def perform_update(self, serializer):
+        serializer.save()
+
+        try:
+            map_order_product_warehouse.delay(pid=serializer.data['products']['id'], binid=serializer.data['warehousebins']['id'])
+        except Exception as e:
+            #TODO add logger
+            print 'In Exception',e
+            pass
 
 
 class OrderProductDetails(generics.RetrieveAPIView):
