@@ -28,3 +28,37 @@ class Account(models.Model):
 
     class Meta:
         unique_together = ('name','number',)
+
+
+class Service(models.Model):
+    account = models.ForeignKey(Account)
+    name = models.CharField(max_length=105, blank=False)
+    status = models.SmallIntegerField(default=0)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
+    created_by = models.IntegerField()
+    updated_by = models.IntegerField()
+    user = models.ForeignKey(User)
+
+    def __str__(self):
+        return '%s' % self.name
+
+    class Meta:
+        unique_together = ('account','name')
+
+
+class Packaging(models.Model):
+    account = models.ForeignKey(Account)
+    name = models.CharField(max_length=105, blank=False)
+    status = models.SmallIntegerField(default=0)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
+    created_by = models.IntegerField()
+    updated_by = models.IntegerField()
+    user = models.ForeignKey(User)
+
+    def __str__(self):
+        return '%s' % self.name
+
+    class Meta:
+        unique_together = ('account','name')
