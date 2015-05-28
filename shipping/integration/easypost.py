@@ -1,11 +1,6 @@
 # coding=utf-8
-import requests
 import easypost
 from shipping import Shipping
-from lxml import etree
-from lxml import objectify
-from collections import OrderedDict
-from shipping.errors import MissingParameter
 
 class Easypost(Shipping):
     """
@@ -104,8 +99,10 @@ class Easypost(Shipping):
 
         :param address:
         :type dictionary:
-        :param items:
-        :type items list of dictionary of items:
+        :param parcel:
+        :type info about parcel:
+        :param rate:
+        :type either lowest or rate_id:
         :param args:
         :type args:
         :param kwargs:

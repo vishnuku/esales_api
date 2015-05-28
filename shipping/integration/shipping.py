@@ -1,9 +1,4 @@
 # coding=utf-8
-import requests
-from lxml import etree
-from lxml import objectify
-from collections import OrderedDict
-from shipping.errors import MissingParameter
 
 class Shipping(object):
     """
