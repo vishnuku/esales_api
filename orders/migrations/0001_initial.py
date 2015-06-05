@@ -18,7 +18,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(default=b'', unique=True, max_length=20, blank=True)),
-                ('query', models.CharField(default=b'', max_length=50, blank=True)),
+                ('query', models.TextField(null=True, blank=True)),
+                ('column', models.TextField(null=True, blank=True)),
                 ('created_on', models.DateTimeField(auto_now_add=True)),
                 ('updated_on', models.DateTimeField(auto_now=True, auto_now_add=True)),
                 ('lft', models.PositiveIntegerField(editable=False, db_index=True)),

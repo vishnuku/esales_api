@@ -3,7 +3,7 @@ from rest_framework import serializers
 from integration.serializers import AmazonOrdersSerializerWithOneASINPic
 
 from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, WarehouseBin, \
-    ProductOrder, AmazonOrders, Product_Bundle
+    ProductOrder, AmazonOrders, Product_Bundle, Inventory
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -13,6 +13,17 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ('id', 'name', 'status', 'created_on')
+
+
+class InventorySerializer(serializers.ModelSerializer):
+    """
+    Inventory Serializer
+    """
+    class Meta:
+        model = Inventory
+        fields = ('id', 'name', 'brand', 'description', 'bullet_point', 'manufacturer', 'ucodetype', 'ucodevalue',
+                  'purchase_price', 'retail_price', 'tax_price', 'sku', 'barcode',
+                  'category', 'meta_data', 'created_on')
 
 
 class ProductSerializer(serializers.ModelSerializer):
