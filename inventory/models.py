@@ -46,6 +46,38 @@ class ProductType(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
 
+class Inventory(models.Model):
+    """
+    Model for product
+    TODO: Restructure as per standarrd
+    """
+    name = models.CharField(max_length=255, blank=False)
+    description = models.TextField(blank=True, null=True)
+    sku = models.CharField(max_length=100, blank=False, unique=True)
+    ucodetype = models.CharField(max_length=20, blank=True, choices=UCODETYPE)
+    ucodevalue = models.CharField(max_length=50, blank=True)
+    barcode = models.CharField(max_length=200, blank=True)
+    purchase_price = models.FloatField(blank=True, default=0.0)
+    retail_price = models.FloatField(blank=True, default=0)
+    tax_price = models.FloatField(blank=True, default=0)
+    sold_quantity = models.IntegerField(blank=True, default=0)
+    pending_quantity = models.IntegerField(blank=True, default=0)
+    image_url = models.CharField(max_length=100, blank=True, default='')
+    shipping_fee = models.CharField(max_length=100, blank=True, default='')
+    will_ship_internationally = models.CharField(max_length=100, blank=True, default='')
+    expedited_shipping = models.CharField(max_length=100, blank=True, default='')
+    brand = models.CharField(max_length=255, blank=True, null=True)
+    manufacturer = models.CharField(max_length=255, blank=True)
+    bullet_point = models.TextField(blank=True, null=True)
+    category = models.ForeignKey(Category, blank=True, null=True)
+    meta_data = models.TextField(blank=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
+    created_by = models.IntegerField()
+    updated_by = models.IntegerField()
+    user = models.ForeignKey(User)
+
+
 class Product(models.Model):
     """
     Model for product
@@ -134,35 +166,6 @@ class AmazonProduct(models.Model):
     updated_by = models.ForeignKey(User, related_name='updated_by_user_amzp')
     user = models.ForeignKey(User)
 
-#
-# class Product(models.Model):
-#     """
-#     Model for product
-#     TODO: Restructure as per standarrd
-#     """
-#     name = models.CharField(max_length=255, blank=False)
-#     brand = models.CharField(max_length=255, blank=True, null=True)
-#     desc = models.TextField(blank=True, null=True)
-#     bullet_point = models.TextField(blank=True, null=True)
-#     manufacturer = models.CharField(max_length=255, blank=True)
-#     ucodetype = models.CharField(max_length=255, blank=True, choices=UCODETYPE)
-#     ucodevalue = models.CharField(max_length=255, blank=True)
-#     purchase_price = models.FloatField()
-#     retail_price = models.FloatField()
-#     tax_price = models.FloatField(blank=True, default=0)
-#     sku = models.CharField(max_length=100, blank=False, unique=True)
-#     barcode = models.CharField(max_length=200)
-#     stock = models.IntegerField(default=0)
-#     minimum_stock_level = models.IntegerField(default=0)
-#     category = models.ForeignKey(Category)
-#     meta_data = models.TextField()
-#     origin = models.CharField(max_length=55, blank=True, null=True)
-#     created_on = models.DateTimeField(auto_now_add=True)
-#     updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
-#     created_by = models.ForeignKey(User, related_name='created_by_user_product')
-#     updated_by = models.ForeignKey(User, related_name='updated_by_user_product')
-#     user = models.ForeignKey(User)
-#
 
 class Images(models.Model):
     """

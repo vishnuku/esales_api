@@ -9,9 +9,9 @@ from tasks import map_order_product_warehouse
 
 from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
     InventoryCSVSerializer, ChannelCategorySerializer, ProductListingConfiguratorSerializer, WarehouseSerializer, \
-    WarehouseBinSerializer, ProductOrderSerializer, OrderProductSerializer, BundleProductSerializer
+    WarehouseBinSerializer, ProductOrderSerializer, OrderProductSerializer, BundleProductSerializer, InventorySerializer
 from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, \
-    WarehouseBin, ProductOrder, AmazonOrders, Product_Bundle
+    WarehouseBin, ProductOrder, AmazonOrders, Product_Bundle, Inventory
 from rest_framework_bulk import ListBulkCreateUpdateDestroyAPIView, ListCreateBulkUpdateAPIView
 
 logger = logging.getLogger(__name__)
@@ -46,6 +46,46 @@ class CategoryDetails(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+
+
+class InventoryList(generics.ListCreateAPIView):
+    """
+    List all the Inventory
+    This View will manage only local inventory
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = InventorySerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, created_by=self.request.user.id, updated_by=self.request.user.id)
+
+    def get_queryset(self):
+            """
+            Optionally restricts the returned purchases to a given user,
+            by filtering against a `username` query parameter in the URL.
+            """
+            queryset = Inventory.objects.all()
+            name = self.request.QUERY_PARAMS.get('name', None)
+            sku = self.request.QUERY_PARAMS.get('sku', None)
+
+            if name is not None:
+                queryset = queryset.filter(name__icontains=name)
+            elif sku is not None:
+                queryset = queryset.filter(sku=sku)
+            return queryset
+
+
+
+class InventoryDetails(generics.RetrieveUpdateDestroyAPIView):
+    """
+    List Inventory details
+    This View will manage only local inventory
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = Inventory.objects.all()
+    serializer_class = InventorySerializer
 
 
 class ProductList(generics.ListCreateAPIView):

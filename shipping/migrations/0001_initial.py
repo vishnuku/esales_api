@@ -38,4 +38,50 @@ class Migration(migrations.Migration):
             },
             bases=(models.Model,),
         ),
+        migrations.CreateModel(
+            name='Packaging',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=105)),
+                ('status', models.SmallIntegerField(default=0)),
+                ('created_on', models.DateTimeField(auto_now_add=True)),
+                ('updated_on', models.DateTimeField(auto_now=True, auto_now_add=True)),
+                ('created_by', models.IntegerField()),
+                ('updated_by', models.IntegerField()),
+                ('account', models.ForeignKey(to='shipping.Account')),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Service',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=105)),
+                ('status', models.SmallIntegerField(default=0)),
+                ('created_on', models.DateTimeField(auto_now_add=True)),
+                ('updated_on', models.DateTimeField(auto_now=True, auto_now_add=True)),
+                ('created_by', models.IntegerField()),
+                ('updated_by', models.IntegerField()),
+                ('account', models.ForeignKey(to='shipping.Account')),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.AlterUniqueTogether(
+            name='service',
+            unique_together=set([('account', 'name')]),
+        ),
+        migrations.AlterUniqueTogether(
+            name='packaging',
+            unique_together=set([('account', 'name')]),
+        ),
+        migrations.AlterUniqueTogether(
+            name='account',
+            unique_together=set([('name', 'number')]),
+        ),
     ]

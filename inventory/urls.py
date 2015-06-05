@@ -6,6 +6,8 @@ import views
 urlpatterns = [
     url(r'^inventory/categories/$', views.CategoryList.as_view(), name="inventory_categories"),
     url(r'^inventory/category/(?P<pk>[0-9]+)/$', views.CategoryDetails.as_view(), name='inventory_category'),
+    url(r'^inventory/inventories/$', views.InventoryList.as_view(), name="inventory_inventorys"),
+    url(r'^inventory/inventory/(?P<pk>[0-9]+)/$', views.InventoryDetails.as_view(), name='inventory_inventory'),
     url(r'^inventory/products/$', views.ProductList.as_view(), name="inventory_products"),
     url(r'^inventory/product/(?P<pk>[0-9]+)/$', views.ProductDetails.as_view(), name='inventory_product'),
     url(r'^inventory/images/$', views.ProductImageList.as_view(), name="inventory_images"),
