@@ -61,8 +61,7 @@ class Inventory(models.Model):
     retail_price = models.FloatField(blank=True, default=0)
     tax_price = models.FloatField(blank=True, default=0)
     sold_quantity = models.IntegerField(blank=True, default=0)
-    pending_quantity = models.IntegerField(blank=True, default=0)
-    image_url = models.CharField(max_length=100, blank=True, default='')
+    item_quantity = models.IntegerField(blank=True, default=0)
     shipping_fee = models.CharField(max_length=100, blank=True, default='')
     will_ship_internationally = models.CharField(max_length=100, blank=True, default='')
     expedited_shipping = models.CharField(max_length=100, blank=True, default='')
@@ -171,7 +170,7 @@ class Images(models.Model):
     """
     Model to hold the images for product
     """
-    product = models.ForeignKey(Product, default=1, related_name='images')
+    inventory = models.ForeignKey(Inventory, default=1, related_name='images')
     image = models.ImageField(upload_to='product/images/upload/%Y/%m/%d')
     is_main = models.BooleanField(default=False)
     status = models.SmallIntegerField(default=1, blank=True, null=True)

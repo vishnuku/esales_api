@@ -23,7 +23,7 @@ class InventorySerializer(serializers.ModelSerializer):
         model = Inventory
         fields = ('id', 'name', 'brand', 'description', 'bullet_point', 'manufacturer', 'ucodetype', 'ucodevalue',
                   'purchase_price', 'retail_price', 'tax_price', 'sku', 'barcode',
-                  'category', 'meta_data', 'created_on')
+                  'category', 'meta_data', 'created_on', 'item_quantity', 'sold_quantity')
 
 
 class ProductSerializer(serializers.ModelSerializer):

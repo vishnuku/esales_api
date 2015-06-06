@@ -1,4 +1,5 @@
 import logging
+from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from rest_framework.renderers import JSONRenderer
 from rest_framework import generics
@@ -129,12 +130,44 @@ class ProductDetails(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProductSerializer
 
 
+class InventoryImageList(generics.ListCreateAPIView):
+    """
+    List image related to a product
+    """
+    permission_classes = (permissions.AllowAny,) #TOOD Remove This block once fixed on client size
+    model = Images
+    serializer_class = ImageSerializer
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned purchases to a given user,
+        by filtering against a `username` query parameter in the URL.
+        """
+        queryset = Images.objects.all()
+        inventory = self.request.QUERY_PARAMS.get('inventory', None)
+        if inventory is not None:
+            queryset = queryset.filter(inventory_id=inventory)
+        return queryset
+
+    # def perform_create(self, serializer):
+    #     serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+
+
+class InventoryImageDetails(generics.RetrieveUpdateDestroyAPIView):
+    """
+    List info about a image
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = Images.objects.all()
+    serializer_class = ImageSerializer
+
+
+# not using it, because its converted from ProductImageList to InventoryImageList
 class ProductImageList(generics.ListCreateAPIView):
     """
     List image related to a product
     """
-    #authentication_classes = (authentication.TokenAuthentication,)
-    #permission_classes = (permissions.IsAuthenticated,)
     permission_classes = (permissions.AllowAny,) #TOOD Remove This block once fixed on client size
     model = Images
     serializer_class = ImageSerializer
@@ -150,16 +183,7 @@ class ProductImageList(generics.ListCreateAPIView):
             queryset = queryset.filter(product_id=product)
         return queryset
 
-    # @csrf_exempt
-    # def post(self, request, format=None):
-    #     serializer = ImageSerializer(data=request.data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         data = {"success": "true"}
-    #         return Response(data, status=status.HTTP_200_OK)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
+# not using it, because its converted from ProductImageDetails to InventoryImageDetails
 class ProductImageDetails(generics.RetrieveUpdateDestroyAPIView):
     """
     List info about a image
