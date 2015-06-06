@@ -82,6 +82,7 @@ class Product(models.Model):
     Model for product
     TODO: Restructure as per standarrd
     """
+    inventory = models.ForeignKey(Inventory, default=1, related_name='product_inventory')
     name = models.CharField(max_length=255, blank=False)
     description = models.TextField(blank=True, null=True)
     sku = models.CharField(max_length=100, blank=False, unique=True)
@@ -410,3 +411,25 @@ class Product_Bundle(models.Model):
 
     class Meta:
         unique_together = ('product', 'item')
+
+
+class StockIn(models.Model):
+    product = models.IntegerField()
+    inventory = models.IntegerField()
+    amazonorders = models.IntegerField()
+    warehousebin = models.IntegerField()
+    quantity = models.IntegerField()
+    created_by = models.IntegerField()
+    updated_by = models.IntegerField()
+    user = models.ForeignKey(User)
+
+
+class StockOut(models.Model):
+    product = models.IntegerField()
+    inventory = models.IntegerField()
+    amazonorders = models.IntegerField()
+    warehousebin = models.IntegerField()
+    quantity = models.IntegerField()
+    created_by = models.IntegerField()
+    updated_by = models.IntegerField()
+    user = models.ForeignKey(User)
