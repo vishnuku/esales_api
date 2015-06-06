@@ -328,14 +328,14 @@ class WarehouseBinList(generics.ListCreateAPIView):
         """
         queryset = WarehouseBin.objects.all()
 
-        if 'warehouse' in self.kwargs and 'product' in self.kwargs:
-            if int(self.kwargs['product']) == 0:
+        if 'warehouse' in self.kwargs and 'inventory' in self.kwargs:
+            if int(self.kwargs['inventory']) == 0:
                 queryset = queryset.filter(warehouse=self.kwargs['warehouse']).filter(product__isnull=True)
-            elif int(self.kwargs['product']) == 1:
+            elif int(self.kwargs['inventory']) == 1:
                 queryset = queryset.filter(warehouse=self.kwargs['warehouse']).filter(product__isnull=False)
 
-        elif 'product' in self.kwargs:
-            queryset = queryset.filter(product=self.kwargs['product'])
+        elif 'inventory' in self.kwargs:
+            queryset = queryset.filter(product=self.kwargs['inventory'])
 
         elif 'warehouse' in self.kwargs:
             queryset = queryset.filter(warehouse=self.kwargs['warehouse'])
