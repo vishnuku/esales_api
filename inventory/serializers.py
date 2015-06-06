@@ -101,7 +101,7 @@ class WarehouseBinSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WarehouseBin
-        fields = ('id', 'name', 'warehouse', 'stock_quantity', 'sold_quantity', 'min_stock_quantity', 'product', 'warehouse_detail')
+        fields = ('id', 'name', 'warehouse', 'stock_quantity', 'sold_quantity', 'min_stock_quantity', 'inventory', 'warehouse_detail')
 
 
 class ProductOrderSerializer(serializers.ModelSerializer):

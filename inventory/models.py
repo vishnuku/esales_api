@@ -355,7 +355,7 @@ class Warehouse(models.Model):
 
 class WarehouseBin(models.Model):
     warehouse = models.ForeignKey(Warehouse)
-    product = models.ForeignKey(Product, blank=True, null=True, related_name='productwarehousebin')
+    inventory = models.ForeignKey(Inventory, blank=True, null=True, related_name='productwarehousebin')
     stock_quantity = models.IntegerField(default=0)
     min_stock_quantity = models.IntegerField(default=0)
     sold_quantity = models.IntegerField(default=0)

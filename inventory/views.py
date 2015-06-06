@@ -330,12 +330,12 @@ class WarehouseBinList(generics.ListCreateAPIView):
 
         if 'warehouse' in self.kwargs and 'inventory' in self.kwargs:
             if int(self.kwargs['inventory']) == 0:
-                queryset = queryset.filter(warehouse=self.kwargs['warehouse']).filter(product__isnull=True)
+                queryset = queryset.filter(warehouse=self.kwargs['warehouse']).filter(inventory__isnull=True)
             elif int(self.kwargs['inventory']) == 1:
-                queryset = queryset.filter(warehouse=self.kwargs['warehouse']).filter(product__isnull=False)
+                queryset = queryset.filter(warehouse=self.kwargs['warehouse']).filter(inventory__isnull=False)
 
         elif 'inventory' in self.kwargs:
-            queryset = queryset.filter(product=self.kwargs['inventory'])
+            queryset = queryset.filter(inventory=self.kwargs['inventory'])
 
         elif 'warehouse' in self.kwargs:
             queryset = queryset.filter(warehouse=self.kwargs['warehouse'])
