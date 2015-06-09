@@ -3,7 +3,7 @@ from rest_framework import serializers
 from integration.serializers import AmazonOrdersSerializerWithOneASINPic
 
 from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, WarehouseBin, \
-    ProductOrder, AmazonOrders, Product_Bundle, Inventory
+    ProductOrder, AmazonOrders, Product_Bundle, Inventory, StockIn, StockOut
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -19,11 +19,22 @@ class InventorySerializer(serializers.ModelSerializer):
     """
     Inventory Serializer
     """
+    images = serializers.StringRelatedField(many=True)
     class Meta:
         model = Inventory
         fields = ('id', 'name', 'brand', 'description', 'bullet_point', 'manufacturer', 'ucodetype', 'ucodevalue',
                   'purchase_price', 'retail_price', 'tax_price', 'sku', 'barcode',
-                  'category', 'meta_data', 'created_on', 'item_quantity', 'sold_quantity')
+                  'category', 'meta_data', 'created_on', 'item_quantity', 'sold_quantity', 'images')
+
+
+class InventoryImageSerializer(serializers.ModelSerializer):
+    """
+    Inventory Serializer
+    """
+    images = serializers.StringRelatedField(many=True)
+    class Meta:
+        model = Inventory
+        fields = ['images']
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -49,13 +60,13 @@ class ProductWithImagesSerializer(serializers.ModelSerializer):
     """
     Product with Image Serializer
     """
-    images = serializers.StringRelatedField(many=True)
+    inventory = InventoryImageSerializer(read_only=True)
 
     class Meta:
         model = Product
         fields = ('id', 'name', 'brand', 'description', 'bullet_point', 'manufacturer', 'ucodetype', 'ucodevalue',
                   'purchase_price', 'retail_price', 'tax_price', 'sku', 'barcode', 'stock_quantity', 'min_stock_quantity',
-                  'sold_quantity', 'category', 'channel', 'meta_data', 'misc_data', 'origin', 'created_on', 'field2', 'field8', 'images')
+                  'sold_quantity', 'category', 'channel', 'meta_data', 'misc_data', 'origin', 'created_on', 'field2', 'field8', 'inventory')
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -140,3 +151,17 @@ class BundleProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product_Bundle
         fields = ('id', 'price', 'qty', 'item', 'product', 'items')
+
+
+class StockInSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = StockIn
+        fields = ('id', 'product', 'inventory', 'amazonorders', 'warehousebin', 'quantity')
+
+
+class StockOutSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = StockOut
+        fields = ('id', 'product', 'inventory', 'amazonorders', 'warehousebin', 'quantity')
