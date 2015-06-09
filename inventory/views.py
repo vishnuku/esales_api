@@ -10,9 +10,10 @@ from tasks import map_order_product_warehouse
 
 from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
     InventoryCSVSerializer, ChannelCategorySerializer, ProductListingConfiguratorSerializer, WarehouseSerializer, \
-    WarehouseBinSerializer, ProductOrderSerializer, OrderProductSerializer, BundleProductSerializer, InventorySerializer
+    WarehouseBinSerializer, ProductOrderSerializer, OrderProductSerializer, BundleProductSerializer, InventorySerializer, \
+    StockInSerializer, StockOutSerializer
 from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, \
-    WarehouseBin, ProductOrder, AmazonOrders, Product_Bundle, Inventory
+    WarehouseBin, ProductOrder, AmazonOrders, Product_Bundle, Inventory, StockIn, StockOut
 from rest_framework_bulk import ListBulkCreateUpdateDestroyAPIView, ListCreateBulkUpdateAPIView
 
 logger = logging.getLogger(__name__)
@@ -446,10 +447,54 @@ class BundleProductList(ListBulkCreateUpdateDestroyAPIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
-
-
 class BundleProductDetails(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
     queryset = Product_Bundle.objects.all()
     serializer_class = BundleProductSerializer
+
+
+class StockInList(generics.ListCreateAPIView):
+    """
+    List all the ProductListingConfigurator
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = StockIn.objects.all()
+    serializer_class = StockInSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, created_by=self.request.user.id, updated_by=self.request.user.id)
+
+
+class StockInDetails(generics.RetrieveUpdateDestroyAPIView):
+    """
+    List Product details
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = StockIn.objects.all()
+    serializer_class = StockInSerializer
+
+
+class StockOutList(generics.ListCreateAPIView):
+    """
+    List all the ProductListingConfigurator
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = StockOut.objects.all()
+    serializer_class = StockOutSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, created_by=self.request.user.id, updated_by=self.request.user.id)
+
+
+class StockOutDetails(generics.RetrieveUpdateDestroyAPIView):
+    """
+    List Product details
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = StockOut.objects.all()
+    serializer_class = StockOutSerializer
