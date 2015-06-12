@@ -19,7 +19,8 @@ class InventorySerializer(serializers.ModelSerializer):
     """
     Inventory Serializer
     """
-    images = serializers.StringRelatedField(many=True)
+    images = serializers.StringRelatedField(many=True, read_only=True)
+
     class Meta:
         model = Inventory
         fields = ('id', 'name', 'brand', 'description', 'bullet_point', 'manufacturer', 'ucodetype', 'ucodevalue',
@@ -45,7 +46,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = ('id', 'name', 'brand', 'description', 'bullet_point', 'manufacturer', 'ucodetype', 'ucodevalue',
                   'purchase_price', 'retail_price', 'tax_price', 'sku', 'barcode', 'stock_quantity', 'min_stock_quantity',
-                  'sold_quantity', 'category', 'channel', 'meta_data', 'origin', 'created_on')
+                  'sold_quantity', 'category', 'channel', 'meta_data', 'origin', 'created_on', 'inventory', 'product_type')
 
 
 class ImageSerializer(serializers.ModelSerializer):
