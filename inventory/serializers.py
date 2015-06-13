@@ -147,11 +147,11 @@ class OrderProductSerializer(serializers.ModelSerializer):
 
 
 class BundleProductSerializer(serializers.ModelSerializer):
-    items = ProductSerializer(source='item', read_only=True)
+    items = InventorySerializer(source='item', read_only=True)
 
     class Meta:
         model = Product_Bundle
-        fields = ('id', 'price', 'qty', 'item', 'product', 'items')
+        fields = ('id', 'price', 'qty', 'item', 'product', 'items',)
 
 
 class StockInSerializer(serializers.ModelSerializer):
