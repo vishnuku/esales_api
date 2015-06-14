@@ -91,5 +91,5 @@ class FilterSerializerPost(serializers.ModelSerializer):
 
     class Meta:
             model = Filter
-            fields = ('id', 'name', 'query', 'column', 'parent')
+            fields = ('id', 'name', 'query', 'column', 'logic', 'parent')
 
