@@ -12,6 +12,7 @@ class Filter(MPTTModel):
     # query = JSONField()
     query = models.TextField(blank=True, null=True)
     column = models.TextField(blank=True, null=True)
+    logic = models.TextField(blank=True, null=True)
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
