@@ -400,7 +400,7 @@ class ProductOrder(models.Model):
 
 class Product_Bundle(models.Model):
     product = models.ForeignKey(Product, related_name='product_product')
-    item = models.ForeignKey(Product, related_name='item_product')
+    item = models.ForeignKey(Inventory, related_name='item_inventory')
     price = models.FloatField()
     qty = models.SmallIntegerField()
     created_on = models.DateTimeField(auto_now_add=True)
