@@ -64,10 +64,11 @@ class FilterSerializerList(serializers.ModelSerializer):
         return Filter.is_leaf_node()
 
     def to_representation(self, obj):
-            #Add any self-referencing fields here (if not already done)
-            if 'branches' not in self.fields:
-                self.fields['children'] = FilterSerializerList(obj, many=True)
-            return super(FilterSerializerList, self).to_representation(obj)
+        print dir(self.fields)
+        #Add any self-referencing fields here (if not already done)
+        if 'branches' not in self.fields:
+            self.fields['children'] = FilterSerializerList(obj, many=True)
+        return super(FilterSerializerList, self).to_representation(obj)
 
     def return_json_query(self, Filter):
         return eval(str(Filter.query))
