@@ -43,7 +43,11 @@ class OrderList(generics.ListCreateAPIView):
                 try:
                     filter = Filter.objects.get(pk=int(fl))
                     if filter:
+
+                        #Deserilize the filter logic
                         logic = pickle.loads(filter.logic)
+
+                        #pass the query object to filter
                         queryset = AmazonOrders.objects.filter(logic)
                         print queryset.query
 
@@ -113,10 +117,15 @@ class FilterList(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         query = json.dumps(self.request.data['query'])
         column = json.dumps(self.request.data['column'])
-        fl = FilterLogic()
-        a = fl.parse_response(query)
-        b = pickle.dumps(a)
-        serializer.save(query=query, column=column, logic=b, user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+
+        #Create Instance of Filter logic
+        filter_logic = FilterLogic()
+        query_obj = filter_logic.parse_response(query)
+
+        #Serilize query object to save it
+        pickle_obj = pickle.dumps(query_obj)
+
+        serializer.save(query=query, column=column, logic=pickle_obj, user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
 
 
 
