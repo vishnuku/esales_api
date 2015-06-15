@@ -8,9 +8,9 @@ from orders.models import Filter
 from orders.serializers import FilterSerializerPost, FilterSerializerList
 import json
 from inventory.models import Product
-# Create your views here.
-import operator
 from django.db.models import Q
+import pickle
+import operator
 
 class JSONResponse(HttpResponse):
     """
@@ -28,8 +28,30 @@ class OrderList(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     # serializer_class = AmazonOrdersSerializer
 
-    queryset = AmazonOrders.objects.all()
     model = AmazonOrders
+
+
+    def get_queryset(self):
+            """
+            Optionally restricts the returned purchases to a given user,
+            by filtering against a `username` query parameter in the URL.
+            """
+            fl = self.request.QUERY_PARAMS.get('fl', None)
+            queryset = AmazonOrders.objects.all()
+
+            if fl is not None:
+                try:
+                    filter = Filter.objects.get(pk=int(fl))
+                    if filter:
+                        logic = pickle.loads(filter.logic)
+                        queryset = AmazonOrders.objects.filter(logic)
+                        print queryset.query
+
+                except Exception as e:
+                    print e
+
+            return queryset
+
 
     def manage_inventory_on_order_received(self, order_status, item_id, order_item_qty ):
         product = Product.objects.get(pk=item_id)
@@ -93,10 +115,8 @@ class FilterList(generics.ListCreateAPIView):
         column = json.dumps(self.request.data['column'])
         fl = FilterLogic()
         a = fl.parse_response(query)
-        print '######'
-        print a
-        print '######'
-        serializer.save(query=query, column=column, logic=a, user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+        b = pickle.dumps(a)
+        serializer.save(query=query, column=column, logic=b, user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
 
 
 
@@ -128,18 +148,6 @@ class FilterLogic():
         'all':                 'operator.and_'
     }
 
-    def format_main_response(self, content):
-        # print "json:       " + json_string
-        content = json.loads(str(content))
-        for key, value in content.iteritems():
-            print key
-            if type(value) == type(['']):
-                for sub_value in value:
-                    strg = str(json.dumps(sub_value))
-                    self.format_main_response(strg)
-            else:
-                print value
-
     def parse_response(self, json_string):
         print "json:       " + json_string
         content = json.loads(str(json_string))
@@ -157,9 +165,6 @@ class FilterLogic():
             elif key == 'conditions':
                 print 'in conditions %s',key
                 if type(value) == type(['']):
-                    # for sub_value in value:
-                    #     strg = str(json.dumps(sub_value))
-                    #     parse_condition(strg)
                     strg = str(json.dumps(value))
                     final_data = self.parse_condition(strg, content['conditionJoinType'])
 
@@ -192,7 +197,7 @@ class FilterLogic():
         if data['conditionKey'] == 'isbetween':
             py_data.append((data['lhsOperandKey']+self.OperatorMapping[data['conditionKey']], (data['conditionValue1'], data['conditionValue2'])))
         else:
-            # py_data.append((data['lhsOperandKey']+OperatorMapping[data['conditionKey']], data['conditionValue']))
             py_data.append((data['lhsOperandKey']+self.OperatorMapping[data['conditionKey']], data['conditionValue']))
+
 
 
