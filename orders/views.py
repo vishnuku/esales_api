@@ -37,22 +37,19 @@ class OrderList(generics.ListCreateAPIView):
             by filtering against a `username` query parameter in the URL.
             """
             fl = self.request.QUERY_PARAMS.get('fl', None)
-            queryset = AmazonOrders.objects.all()
 
             if fl is not None:
                 try:
                     filter = Filter.objects.get(pk=int(fl))
                     if filter:
+                        logic = pickle.loads(filter.logic)             #Deserilize the filter logic
+                        queryset = AmazonOrders.objects.filter(logic)  #pass the query object to filter
 
-                        #Deserilize the filter logic
-                        logic = pickle.loads(filter.logic)
-
-                        #pass the query object to filter
-                        queryset = AmazonOrders.objects.filter(logic)
                         print queryset.query
-
                 except Exception as e:
                     print e
+            else:
+                queryset = AmazonOrders.objects.all()
 
             return queryset
 
@@ -120,10 +117,10 @@ class FilterList(generics.ListCreateAPIView):
 
         #Create Instance of Filter logic
         filter_logic = FilterLogic()
-        query_obj = filter_logic.parse_response(query)
+        query_obj = filter_logic.parse_response(query, 0, '')
 
         #Serilize query object to save it
-        pickle_obj = pickle.dumps(query_obj)
+        pickle_obj = pickle.dumps(filter_logic.condition_data)
 
         serializer.save(query=query, column=column, logic=pickle_obj, user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
 
@@ -146,42 +143,85 @@ class FilterDetails(generics.RetrieveUpdateDestroyAPIView):
 
     def perform_update(self, serializer):
         query = json.dumps(self.request.data['query'])
-        serializer.save(query=query, user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+
+        #Create Instance of Filter logic
+        filter_logic = FilterLogic()
+        query_obj = filter_logic.parse_response(query, 0, '')
+
+        #Serilize query object to save it
+        pickle_obj = pickle.dumps(filter_logic.condition_data)
+
+        serializer.save(query=query, logic=pickle_obj, user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+
 
 class FilterLogic():
     OperatorMapping = {
         'isbetween':           '__range',
-        'equals':              '__eq',
+        'equals':              '__exact',
         'islessthanorequalto': '__lte',
         'any':                 'operator.or_',
-        'all':                 'operator.and_'
+        'all':                 'operator.and_',
+        'and':                 'and',
+        'or':                  'or',
+        'none':                'or'
     }
 
-    def parse_response(self, json_string):
+    final_data = []
+    branch_data = []
+    condition_data = Q()
+        # branch_join_type=None
+
+    def parse_response(self, json_string, branch_level, branch_join_type):
         print "json:       " + json_string
+        print '***branch_level: ',branch_level
         content = json.loads(str(json_string))
-        branch_level = 0
-        final_data=""
         for key, value in content.iteritems():
-            print key
             if key == 'branches':
                 print 'in brance %s',key
+                print self.condition_data.__len__()
                 if type(value) == type(['']):
                     branch_level += 1
                     for sub_value in value:
+                        branch_join_type = sub_value['branchJoinType']
+
                         strg = str(json.dumps(sub_value))
-                        self.parse_response(strg)
+                        self.branch_data.append(strg)
+
+                        self.parse_response(strg, branch_level, branch_join_type)
+
+
             elif key == 'conditions':
                 print 'in conditions %s',key
                 if type(value) == type(['']):
                     strg = str(json.dumps(value))
-                    final_data = self.parse_condition(strg, content['conditionJoinType'])
+                    data = self.parse_condition(strg, content['conditionJoinType'])
+                    print 'data******',data
+                    print 'Branch Join Type %s',branch_join_type
+                    if self.condition_data.__len__()==0:
+                        self.condition_data = data
+                    if branch_join_type and self.condition_data.__len__()>0:
+                        if branch_join_type == 'and':
+                            self.condition_data = self.condition_data & data
+                        elif branch_join_type == 'or':
+                            self.condition_data = self.condition_data | data
+                        elif branch_join_type == 'none':
+                            self.condition_data = self.condition_data | data
+
+
+                    # if branch_join_type and self.condition_data.__len__()>0:
+                        # self.condition_data.append(self.OperatorMapping[branch_join_type])
+                    # self.condition_data.append(data)
+
 
             else:
-                print '***branch_level: ',branch_level
                 print value
 
-        return final_data
+
+            # if content.has_key('branchJoinType'):
+            #     if data:
+            #         final_data=final_data.__and__(data)
+            #     print 'final_data******',final_data
+
 
     def parse_condition(self, condition_string, conditionJoinType):
         print "______________start condition json_______________"
@@ -197,7 +237,9 @@ class FilterLogic():
         q = reduce(eval(self.OperatorMapping[conditionJoinType]), q_list)
 
 
+
         print q
+        print self.OperatorMapping[conditionJoinType]
         print "______________end condition json_______________"
         return q
 
@@ -207,6 +249,3 @@ class FilterLogic():
             py_data.append((data['lhsOperandKey']+self.OperatorMapping[data['conditionKey']], (data['conditionValue1'], data['conditionValue2'])))
         else:
             py_data.append((data['lhsOperandKey']+self.OperatorMapping[data['conditionKey']], data['conditionValue']))
-
-
-
