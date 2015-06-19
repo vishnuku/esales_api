@@ -156,14 +156,21 @@ class FilterDetails(generics.RetrieveUpdateDestroyAPIView):
 
 class FilterLogic():
     OperatorMapping = {
-        'isbetween':           '__range',
-        'equals':              '__exact',
-        'islessthanorequalto': '__lte',
-        'any':                 'operator.or_',
-        'all':                 'operator.and_',
-        'and':                 'and',
-        'or':                  'or',
-        'none':                'or'
+        'isbetween':               '__range',
+        'isnotbetween':            '__range',  #TODO work for this
+        'equals':                  '__exact',
+        'doesnotequal':            '__exact',  #TODO work for this
+        'islessthan':              '__lt',
+        'islessthanorequalto':     '__lte',
+        'isgreaterthan':           '__gt',
+        'isgreaterthanorequalto' : '__gte',
+        'beginswith':              '__istartswith',
+        'endswith':                '__iendswith',
+        'any':                     'operator.or_',
+        'all':                     'operator.and_',
+        'and':                     'and',
+        'or':                      'or',
+        'none':                    'or'
     }
 
     final_data = []
