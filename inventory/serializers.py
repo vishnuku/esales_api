@@ -35,7 +35,7 @@ class InventoryImageSerializer(serializers.ModelSerializer):
     images = serializers.StringRelatedField(many=True)
     class Meta:
         model = Inventory
-        fields = ['images']
+        fields = ['id', 'images']
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -62,6 +62,7 @@ class ProductWithImagesSerializer(serializers.ModelSerializer):
     Product with Image Serializer
     """
     inventory = InventoryImageSerializer(read_only=True)
+    # invetories = InventoryImageSerializer(read_only=True)
 
     class Meta:
         model = Product
