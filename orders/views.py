@@ -243,12 +243,24 @@ class FilterLogic():
 
         q = reduce(eval(self.OperatorMapping[conditionJoinType]), q_list)
 
+        print "______________y Start______________"
+        py_data1 = []
+        for data in content:
+            if data['conditionKey'] == 'isbetween':
+                py_data1.append(Q((data['lhsOperandKey']+self.OperatorMapping[data['conditionKey']], (data['conditionValue1'], data['conditionValue2']))))
+            elif data['conditionKey'] == 'doesnotequal':
+                py_data1.append(~Q((data['lhsOperandKey']+self.OperatorMapping[data['conditionKey']], data['conditionValue'])))
+            else:
+                py_data1.append(Q((data['lhsOperandKey']+self.OperatorMapping[data['conditionKey']], data['conditionValue'])))
 
+        q1 = reduce(eval(self.OperatorMapping[conditionJoinType]), py_data1)
+        print q1
+        print "______________y end______________"
 
         print q
         print self.OperatorMapping[conditionJoinType]
         print "______________end condition json_______________"
-        return q
+        return q1
 
 
     def build_logic(self, data, py_data):
