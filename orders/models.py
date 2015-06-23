@@ -8,7 +8,7 @@ from jsonfield import JSONField
 
 
 class Filter(MPTTModel):
-    name = models.CharField(max_length=20, blank=True, default='', unique=True)
+    name = models.CharField(max_length=50, blank=True, default='', unique=True)
     # query = JSONField()
     query = models.TextField(blank=True, null=True)
     column = models.TextField(blank=True, null=True)
