@@ -37,15 +37,30 @@ class OrderList(generics.ListCreateAPIView):
             by filtering against a `username` query parameter in the URL.
             """
             fl = self.request.QUERY_PARAMS.get('fl', None)
-
+            queryset = None
             if fl is not None:
                 try:
                     filter = Filter.objects.get(pk=int(fl))
                     if filter:
-                        logic = pickle.loads(filter.logic)             #Deserilize the filter logic
-                        queryset = AmazonOrders.objects.filter(logic)  #pass the query object to filter
+                        #If filter is only root node
+                        ancestor_logic = Q()                                  #Create Q object to hold other query
+                        if filter.is_root_node():
+                            ancestor_logic = pickle.loads(filter.logic)             #Deserilize the filter logic
 
-                        print queryset.query
+                        #If filter has parents
+                        else:
+                            for filter_data in filter.get_ancestors(False,True):  #Get all parents including self
+                                filter_logic = pickle.loads(filter_data.logic)    #Deserilize the filter logic
+                                if ancestor_logic.__len__()==0:
+                                    ancestor_logic = filter_logic
+                                else:
+                                    ancestor_logic = ancestor_logic & filter_logic
+
+                        if ancestor_logic:
+                            queryset = AmazonOrders.objects.filter(ancestor_logic)  #pass the query object to filter
+                            print queryset.query
+
+
                 except Exception as e:
                     print e
             else:
@@ -120,7 +135,7 @@ class FilterList(generics.ListCreateAPIView):
         query_obj = filter_logic.parse_response(query, 0, '')
 
         #Serilize query object to save it
-        pickle_obj = pickle.dumps(filter_logic.condition_data)
+        pickle_obj = pickle.dumps(filter_logic.condition_data) if filter_logic.condition_data else None
 
         serializer.save(query=query, column=column, logic=pickle_obj, user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
 
@@ -149,7 +164,7 @@ class FilterDetails(generics.RetrieveUpdateDestroyAPIView):
         query_obj = filter_logic.parse_response(query, 0, '')
 
         #Serilize query object to save it
-        pickle_obj = pickle.dumps(filter_logic.condition_data)
+        pickle_obj = pickle.dumps(filter_logic.condition_data) if filter_logic.condition_data else None
 
         serializer.save(query=query, logic=pickle_obj, user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
 
@@ -185,7 +200,7 @@ class FilterLogic():
         for key, value in content.iteritems():
             if key == 'branches':
                 print 'in brance %s',key
-                print self.condition_data.__len__()
+                # print self.condition_data.__len__()
                 if type(value) == type(['']):
                     branch_level += 1
                     for sub_value in value:
@@ -236,35 +251,25 @@ class FilterLogic():
         content = json.loads(str(condition_string))
 
         py_data = []
-        for sub_value in content:
-            self.build_logic(sub_value, py_data)
-
-        q_list = [Q(x) for x in py_data]
-
-        q = reduce(eval(self.OperatorMapping[conditionJoinType]), q_list)
-
-        print "______________y Start______________"
-        py_data1 = []
         for data in content:
             if data['conditionKey'] == 'isbetween':
-                py_data1.append(Q((data['lhsOperandKey']+self.OperatorMapping[data['conditionKey']], (data['conditionValue1'], data['conditionValue2']))))
+                py_data.append(Q((data['lhsOperandKey']+self.OperatorMapping[data['conditionKey']], (data['conditionValue1'], data['conditionValue2']))))
             elif data['conditionKey'] == 'doesnotequal':
-                py_data1.append(~Q((data['lhsOperandKey']+self.OperatorMapping[data['conditionKey']], data['conditionValue'])))
+                py_data.append(~Q((data['lhsOperandKey']+self.OperatorMapping[data['conditionKey']], data['conditionValue'])))
             else:
-                py_data1.append(Q((data['lhsOperandKey']+self.OperatorMapping[data['conditionKey']], data['conditionValue'])))
+                py_data.append(Q((data['lhsOperandKey']+self.OperatorMapping[data['conditionKey']], data['conditionValue'])))
 
-        q1 = reduce(eval(self.OperatorMapping[conditionJoinType]), py_data1)
-        print q1
-        print "______________y end______________"
+        if py_data:
+            q = reduce(eval(self.OperatorMapping[conditionJoinType]), py_data)
 
-        print q
-        print self.OperatorMapping[conditionJoinType]
-        print "______________end condition json_______________"
-        return q1
+            print q
+            return q
+        #
+        # q = reduce(eval(self.OperatorMapping[conditionJoinType]), py_data)
+        #
+        # print q
+        # print self.OperatorMapping[conditionJoinType]
+        # print "______________end condition json_______________"
+        # return q
 
 
-    def build_logic(self, data, py_data):
-        if data['conditionKey'] == 'isbetween':
-            py_data.append((data['lhsOperandKey']+self.OperatorMapping[data['conditionKey']], (data['conditionValue1'], data['conditionValue2'])))
-        else:
-            py_data.append((data['lhsOperandKey']+self.OperatorMapping[data['conditionKey']], data['conditionValue']))
