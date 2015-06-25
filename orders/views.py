@@ -117,9 +117,16 @@ class FilterList(generics.ListCreateAPIView):
     """
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated, )
-    queryset = Filter.objects.all()
+    # queryset = Filter.objects.all()
     # serializer_class = FilterSerializer
     model = Filter
+
+    def get_queryset(self):
+        queryset = Filter.objects.all()
+        if self.request.method == 'GET':
+            queryset = queryset.filter(parent__isnull=True)
+        return queryset
+
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
