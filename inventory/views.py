@@ -110,7 +110,10 @@ class ProductList(generics.ListCreateAPIView):
             name = self.request.QUERY_PARAMS.get('name', None)
             sku = self.request.QUERY_PARAMS.get('sku', None)
             type = self.request.QUERY_PARAMS.get('type', None)
+            channel_ac = self.request.QUERY_PARAMS.get('ac', None)
 
+            if channel_ac is not None:
+                queryset = queryset.filter(channel__exact=channel_ac)
             if type is not None:
                 queryset = queryset.filter(product_type=type)
             if name is not None:

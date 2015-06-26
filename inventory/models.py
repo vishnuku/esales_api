@@ -82,7 +82,7 @@ class Product(models.Model):
     Model for product
     TODO: Restructure as per standarrd
     """
-    inventory = models.ForeignKey(Inventory, default=1, related_name='product_inventory')
+    inventory = models.ForeignKey(Inventory, blank=True, null=True, related_name='product_inventory')
     name = models.CharField(max_length=255, blank=False)
     description = models.TextField(blank=True, null=True)
     sku = models.CharField(max_length=100, blank=False, unique=True)

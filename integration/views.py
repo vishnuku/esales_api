@@ -39,7 +39,14 @@ def channels(request):
     List all code channels, or create a new channel.
     """
     if request.method == 'GET':
+        #TODO: need to implement user based get.
         channels = Channel.objects.all()
+        try:
+            if request.GET.get('mktp') and request.GET.get('mktp') > 0:
+                channels = channels.filter(marketplace__exact=int(request.GET.get('mktp')))
+        except Exception as e:
+            print (e)
+
         serializer = ChannelSerializer(channels, many=True)
         return JSONResponse(serializer.data)
 

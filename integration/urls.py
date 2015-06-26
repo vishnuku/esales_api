@@ -15,6 +15,8 @@ import views
 
 
 urlpatterns = [
+    # Usage: This url return the list of all channels.
+    # Filter: Use ?mktp=id for filter channel list, based upon the marketplace id.
     url(r'^inventory/channels/$', views.channels, name='channels'),
     url(r'^inventory/channel/(?P<pk>[0-9]+)/$', views.channel, name='channel'),
     # url(r'^channel/$', views.channels, name='cahnnels'),

@@ -7,7 +7,7 @@ from inventory.models import AmazonProduct, AmazonOrders, Images
 class ChannelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Channel
-        fields = ('id', 'name', 'site', 'merchant_id', 'marketplace_id', 'access_key', 'secret_key', 'merchant_name',
+        fields = ('id', 'marketplace', 'name', 'site', 'merchant_id', 'marketplace_id', 'access_key', 'secret_key', 'merchant_name',
                   'status', 'sync_status')
 
 
