@@ -120,30 +120,51 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
     'formatters': {
-        'verbose': {
+        'standard': {
             'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
             'datefmt' : "%d/%b/%Y %H:%M:%S"
         },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
-        },
     },
     'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'esales.log',
-            'formatter': 'verbose'
+        'null': {
+            'level':'DEBUG',
+            'class':'django.utils.log.NullHandler',
+        },
+        'logfile': {
+            'level':'DEBUG',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR + "/logfile/log.log",
+            'maxBytes': 50000,
+            'backupCount': 2,
+            'formatter': 'standard',
+        },
+        'console':{
+            'level':'INFO',
+            'class':'logging.StreamHandler',
+            'formatter': 'standard'
         },
     },
     'loggers': {
         'django': {
-            'handlers':['file'],
+            'handlers':['console'],
             'propagate': True,
-            'level':'DEBUG',
+            'level':'WARN',
         },
-        'MYAPP': {
-            'handlers': ['file'],
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'integration.views': {
+            'handlers': ['console', 'logfile'],
+            'level': 'DEBUG',
+        },
+        'inventory.views': {
+            'handlers': ['console', 'logfile'],
+            'level': 'DEBUG',
+        },
+        'orders.views': {
+            'handlers': ['console', 'logfile'],
             'level': 'DEBUG',
         },
     }
