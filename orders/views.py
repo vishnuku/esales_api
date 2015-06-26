@@ -11,6 +11,9 @@ from inventory.models import Product
 from django.db.models import Q
 import pickle
 import operator
+import logging
+
+logger = logging.getLogger(__name__)
 
 class JSONResponse(HttpResponse):
     """
@@ -39,13 +42,15 @@ class OrderList(generics.ListCreateAPIView):
             fl = self.request.QUERY_PARAMS.get('fl', None)
             queryset = None
             if fl is not None:
+                logger.info("Got filter id: %s", fl)
                 try:
                     filter = Filter.objects.get(pk=int(fl))
                     if filter:
-                        #If filter is only root node
                         ancestor_logic = Q()                                  #Create Q object to hold other query
+                        #If filter is only root node
                         if filter.is_root_node():
                             ancestor_logic = pickle.loads(filter.logic)             #Deserilize the filter logic
+                            logger.info("Filter has only root node, Logic: %s", ancestor_logic)
 
                         #If filter has parents
                         else:
@@ -56,15 +61,18 @@ class OrderList(generics.ListCreateAPIView):
                                 else:
                                     ancestor_logic = ancestor_logic & filter_logic
 
+                            logger.info("Filter has parents, Logic: %s", ancestor_logic)
+
                         if ancestor_logic:
                             queryset = AmazonOrders.objects.filter(ancestor_logic)  #pass the query object to filter
-                            print queryset.query
+                            logger.info("Filter query, Query: %s", queryset.query)
 
 
                 except Exception as e:
-                    print e
+                    logger.error("In queryset exception : %s",e)
             else:
                 queryset = AmazonOrders.objects.all()
+                logger.info("Filter not passed, Processing full Query: %s", queryset.query)
 
             return queryset
 
@@ -124,9 +132,9 @@ class FilterList(generics.ListCreateAPIView):
     def get_queryset(self):
         queryset = Filter.objects.all()
         if self.request.method == 'GET':
+            logger.info("Get data of all parent")
             queryset = queryset.filter(parent__isnull=True)
         return queryset
-
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -147,8 +155,8 @@ class FilterList(generics.ListCreateAPIView):
         serializer.save(query=query, column=column, logic=pickle_obj, user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
 
 
-
 class FilterDetails(generics.RetrieveUpdateDestroyAPIView):
+
     """
     List the Filter details
     """
@@ -181,7 +189,7 @@ class FilterLogic():
         'isbetween':               '__range',
         'isnotbetween':            '__range',  #TODO work for this
         'equals':                  '__exact',
-        'doesnotequal':            '__exact',  #TODO work for this
+        'doesnotequal':            '__exact',
         'islessthan':              '__lt',
         'islessthanorequalto':     '__lte',
         'isgreaterthan':           '__gt',
@@ -217,7 +225,6 @@ class FilterLogic():
                         self.branch_data.append(strg)
 
                         self.parse_response(strg, branch_level, branch_join_type)
-
 
             elif key == 'conditions':
                 print 'in conditions %s',key
@@ -278,5 +285,3 @@ class FilterLogic():
         # print self.OperatorMapping[conditionJoinType]
         # print "______________end condition json_______________"
         # return q
-
-
