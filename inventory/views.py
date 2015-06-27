@@ -74,7 +74,7 @@ class InventoryList(generics.ListCreateAPIView):
             if name is not None:
                 queryset = queryset.filter(name__icontains=name)
             elif sku is not None:
-                queryset = queryset.filter(sku=sku)
+                queryset = queryset.filter(sku__icontains=sku)
             return queryset
 
 
