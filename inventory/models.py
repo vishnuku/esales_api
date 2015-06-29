@@ -291,12 +291,13 @@ class AmazonOrders(models.Model):
 
     @property
     def quantity(self):
-        productorders = ProductOrder.objects.filter(amazonorders=self)
-        sum = 0
-        for p in productorders:
-            sum = sum + int(p.quantity) if p.quantity else 0
-
-        return sum
+        # productorders = ProductOrder.objects.filter(amazonorders=self)
+        # sum = 0
+        # for p in productorders:
+        #     sum = sum + int(p.quantity) if p.quantity else 0
+        #
+        # return sum
+        return int(self.numberofitemsshipped) + int(self.numberofitemsunshipped)
 
     def create_from_dict(self, data, exempt=()):
         """

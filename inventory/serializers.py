@@ -111,6 +111,7 @@ class WarehouseSerializer(serializers.ModelSerializer):
 
 class WarehouseBinSerializer(serializers.ModelSerializer):
     warehouse_detail = WarehouseSerializer(source='warehouse', read_only=True)
+    inventory = InventorySerializer(read_only=True)
 
     class Meta:
         model = WarehouseBin

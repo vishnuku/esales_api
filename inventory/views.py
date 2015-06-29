@@ -358,6 +358,7 @@ class WarehouseBinDetails(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = WarehouseBinSerializer
 
 
+
 class ProductOrderList(generics.ListCreateAPIView):
     """
     List all the ProductListingConfigurator
