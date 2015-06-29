@@ -2,5 +2,4 @@
 .idea
 media/*
 esales_api/settings_local.py
-esales.log
-logfile/*
+*.log
