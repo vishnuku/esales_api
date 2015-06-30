@@ -122,10 +122,9 @@ class Product(models.Model):
     product_type = models.CharField(max_length=5, blank=True, choices=PRODUCTTYPE, default=1)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name='created_by_user_product')
-    updated_by = models.ForeignKey(User, related_name='updated_by_user_product')
+    created_by = models.IntegerField()
+    updated_by = models.IntegerField()
     user = models.ForeignKey(User)
-
 
 
 class AmazonProduct(models.Model):

@@ -5,9 +5,9 @@ from boto.mws.connection import MWSConnection
 from celery import shared_task
 from django.contrib.auth.models import User
 
-from .models import Channel
+from integration.models import Channel
 from inventory.models import Product, Category, AmazonOrders, ProductOrder
-
+import itertools
 
 @shared_task
 def amazon_request_report(amz, rtype='_GET_MERCHANT_LISTINGS_DATA_'):
@@ -48,8 +48,10 @@ def amazon_get_report_list(amz, rid, rtype='_GET_MERCHANT_LISTINGS_DATA_'):
     rr = con.get_report_request_list(ReportRequestIdList=[rid])
 
     if rr.GetReportRequestListResult.ReportRequestInfo[0].ReportProcessingStatus == '_DONE_':
+        print 'amazon_get_report_list: ',rr.GetReportRequestListResult.ReportRequestInfo[0].ReportProcessingStatus
+
         rid = rr.GetReportRequestListResult.ReportRequestInfo[0].GeneratedReportId
-        amazon_get_report.apply_async((amz, rid))
+        amazon_get_report.apply_async((amz, rid, rtype))
         # amazon_get_report_vish.apply_async((amz, rid))
         pass
     elif rr.GetReportRequestListResult.ReportRequestInfo[0].ReportProcessingStatus == '_DONE_NO_DATA_':
@@ -78,7 +80,10 @@ def amazon_get_report(amz, rid, rtype='_GET_MERCHANT_LISTINGS_DATA_'):
     con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
     rr = con.get_report(ReportId=rid)
 
+    print 'amazon_get_report'
+
     if rtype == '_GET_MERCHANT_LISTINGS_DATA_':
+        print 'amazon_get_report: if condition'
         inventory_process_report(amz, rr)
     elif rtype == '_GET_ORDERS_DATA_':
         order_process_report(amz, rr)
@@ -101,18 +106,11 @@ def order_process_report(amz, rr):
 
 
 def inventory_process_report(amz, rr):
-    """
 
-    :param amz:
-    :type amz:
-    :param rr:
-    :type rr:
-    :return:
-    :rtype:
-    """
 
     rr = rr.split("\n")
     print(amz)
+    rh = rr[0].split("\t")
     del (rr[0])
     del (rr[len(rr) - 1])
 
@@ -121,44 +119,44 @@ def inventory_process_report(amz, rr):
         print row
         # crete or get category
         try:
+            row_data = dict(itertools.izip_longest(rh, row))
             c, cr = Category.objects.get_or_create(name=row[13],
                                                    defaults={'user': amz['uid'], 'created_by': amz['uid'],
                                                              'updated_by': amz['uid']})
 
             tmp_misc_data = {}
-            tmp_misc_data['add_delete'] = row[24],
-            tmp_misc_data['fulfillment_channel'] = row[26],
-            tmp_misc_data['bid_for_featured_placement'] = row[23],
-            tmp_misc_data['zshop_category1'] = row[13],
-            tmp_misc_data['zshop_browse_path'] = row[14],
-            tmp_misc_data['zshop_storefront_feature'] = row[15],
-            tmp_misc_data['zshop_boldface'] = row[21]
+            tmp_misc_data['add_delete'] = row_data['add-delete'],
+            tmp_misc_data['fulfillment_channel'] = row_data['fulfillment-channel'],
+            tmp_misc_data['bid_for_featured_placement'] = row_data['bid-for-featured-placement'],
+            tmp_misc_data['zshop_category1'] = row_data['zshop-category1'],
+            tmp_misc_data['zshop_browse_path'] = row_data['zshop-browse-path'],
+            tmp_misc_data['zshop_storefront_feature'] = row_data['zshop-storefront-feature'],
+            tmp_misc_data['zshop_boldface'] = row_data['zshop-boldface']
 
-            p, created = Product.objects.get_or_create(sku=row[3],
-                                                       defaults={'name': row[0],
-                                                                 'description': row[1],
-                                                                 'sku': row[3],
-                                                                 'retail_price': row[4],
-                                                                 'stock_quantity': row[5] if row[5].isdigit() else 0,
-                                                                 'pending_quantity': row[25] if row[
-                                                                     25].isdigit() else 0,
-                                                                 'image_url': row[7],
-                                                                 'shipping_fee': row[10] if row[10].isdigit() else 0,
-                                                                 'will_ship_internationally': row[19],
-                                                                 'expedited_shipping': row[20],
+            p, created = Product.objects.get_or_create(sku=row_data['seller-sku'],
+                                                       defaults={'name': row_data['item-name'],
+                                                                 'description': row_data['item-description'],
+                                                                 'sku': row_data['seller-sku'],
+                                                                 'retail_price': row_data['price'],
+                                                                 'stock_quantity': int(row_data['quantity']) if row_data['quantity'].isdigit() else 0,
+                                                                 'pending_quantity': int(row_data['pending-quantity']) if row_data['pending-quantity'].isdigit() else 0,
+                                                                 'image_url': row_data['image-url'],
+                                                                 'shipping_fee': row_data['zshop-shipping-fee'] if row_data['zshop-shipping-fee'].isdigit() else 0,
+                                                                 'will_ship_internationally': row_data['will-ship-internationally'],
+                                                                 'expedited_shipping': row_data['expedited-shipping'],
                                                                  'category_id': c.id,
-                                                                 'field1': row[6],
-                                                                 'field2': row[16],
-                                                                 'field3': row[17],
-                                                                 'field4': row[18],
-                                                                 'field5': row[11],
-                                                                 'field6': row[12],
-                                                                 'field7': row[9],
-                                                                 'field8': row[2],
-                                                                 'field9': row[8],
+                                                                 'field1': row_data['open-date'],
+                                                                 'field2': row_data['asin1'],
+                                                                 'field3': row_data['asin2'],
+                                                                 'field4': row_data['asin3'],
+                                                                 'field5': row_data['item-note'],
+                                                                 'field6': row_data['item-condition'],
+                                                                 'field7': row_data['product-id-type'],
+                                                                 'field8': row_data['listing-id'],
+                                                                 'field9': row_data['item-is-marketplace'],
                                                                  'channel': amz['cid'],
-                                                                 'created_by': amz['uid'],
-                                                                 'updated_by': amz['uid'],
+                                                                 'created_by': amz['uid'].id,
+                                                                 'updated_by': amz['uid'].id,
                                                                  'user': amz['uid'],
                                                                  'misc_data': tmp_misc_data
                                                                  })
@@ -172,7 +170,7 @@ def inventory_process_report(amz, rr):
             channel.save()
         except Exception as e:
             print 'Exception while product creation', e.message
-            print e
+            print dir(e)
 
     return True
 
