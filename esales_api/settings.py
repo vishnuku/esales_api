@@ -183,11 +183,10 @@ CELERYBEAT_SCHEDULE = {
         'schedule': timedelta(seconds=14400),
     },
 
-    'sync-sch': {
-        'task': 'integration.tasks.test_sch',
-        'schedule': timedelta(seconds=10),
-    },
-
+    # 'sync-sch': {
+    #     'task': 'integration.tasks.test_sch',
+    #     'schedule': timedelta(seconds=10),
+    # },
 
     # 'update-orders-warehouse': {
     #     'task': 'inventory.tasks.map_order_product_warehouse',
