@@ -360,6 +360,7 @@ def csv_insert(instance):
 @shared_task
 def sync_inventory():
     channels = Channel.objects.filter(status=1)
+    print 'Sync inv'
 
     for ch in channels:
         amz = {}
@@ -376,6 +377,7 @@ def sync_inventory():
 def sync_order():
     try:
         ch = Channel.objects.filter(status=1)
+        print 'Sync Order'
         for channel in ch:
             amz = {}
             amz["akey"] = channel.access_key
@@ -389,3 +391,8 @@ def sync_order():
 
     except Channel.DoesNotExist:
         pass
+
+
+@shared_task()
+def test_sch():
+    print 'I am live', datetime
