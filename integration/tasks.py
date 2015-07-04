@@ -206,8 +206,16 @@ def amazon_get_order_live(amz, datefrom=None):
     :rtype:
     """
     orders = []
+
+
+
     if not datefrom:
         datefrom = (datetime.now().replace(microsecond=0) + timedelta(days=-7)).isoformat() + 'Z'
+
+        #Get the latest updatedate from db
+        last_updated_order = AmazonOrders.objects.all().order_by('-lastupdatedate')[:1]
+        if last_updated_order:
+            datefrom = ((last_updated_order[0].lastupdatedate).replace(tzinfo=None)).isoformat() + 'Z'
 
     con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
     rr = con.list_orders(MarketplaceId=[str(amz["mpid"])], CreatedAfter=datefrom)
@@ -392,8 +400,3 @@ def sync_order():
 
     except Channel.DoesNotExist:
         pass
-
-
-@shared_task()
-def test_sch():
-    print 'I am live', datetime
