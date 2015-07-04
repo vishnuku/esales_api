@@ -187,6 +187,7 @@ class InventorySync(generics.ListCreateAPIView):
         :return:
         :rtype:
         """
+
         amz = {}
         try:
             ch = Channel.objects.get(pk=pk)
@@ -244,7 +245,9 @@ class OrderSync(generics.ListCreateAPIView):
         # ch.save()
         #TODO set for date
         # amazon_get_order_live.delay(amz)
+        logger.info('order sync process init.')
         amazon_get_order.delay(request.user)
+        logger.info('order sync process completed.')
         print('Order synced')
         data = {"success": "true"}
         return Response(data, status=status.HTTP_200_OK)
