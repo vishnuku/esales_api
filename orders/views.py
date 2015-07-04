@@ -39,9 +39,10 @@ class OrderList(generics.ListCreateAPIView):
             Optionally restricts the returned purchases to a given user,
             by filtering against a `username` query parameter in the URL.
             """
-            fl = self.request.QUERY_PARAMS.get('fl', None) if (self.request.QUERY_PARAMS.get('fl', None)).isdigit() else None
+            fl = self.request.QUERY_PARAMS.get('fl', None)
+
             queryset = None
-            if fl is not None:
+            if fl is not None and fl.isdigit():
                 logger.info("Got filter id: %s", fl)
                 try:
                     filter = Filter.objects.get(pk=int(fl))
