@@ -39,8 +39,10 @@ class OrderList(generics.ListCreateAPIView):
             Optionally restricts the returned purchases to a given user,
             by filtering against a `username` query parameter in the URL.
             """
+
             fl = self.request.QUERY_PARAMS.get('fl', None)
             win = self.request.QUERY_PARAMS.get('win', None)
+            win_filter = Q(orderstatus__in=['Shipped', 'Unshipped', 'Processing'], fulfillmentchannel='MFN')
 
             queryset = None
             if fl is not None and fl.isdigit():
@@ -66,7 +68,6 @@ class OrderList(generics.ListCreateAPIView):
                             logger.info("Filter has parents, Logic: %s", ancestor_logic)
 
                         if ancestor_logic:
-                            win_filter = Q(orderstatus__in=['Shipped', 'Unshipped', 'Processing'], fulfillmentchannel='MFN')
                             queryset = AmazonOrders.objects.filter(ancestor_logic & win_filter)  #pass the query object to filter
                             logger.info("Filter query, Query: %s", queryset.query)
 
@@ -85,7 +86,8 @@ class OrderList(generics.ListCreateAPIView):
                     logger.info("Win query, Query: %s", queryset.query)
 
             else:
-                queryset = AmazonOrders.objects.all()
+                #queryset = AmazonOrders.objects.all()
+                queryset = AmazonOrders.objects.filter(win_filter)
                 logger.info("Filter not passed, Processing full Query: %s", queryset.query)
 
             return queryset
