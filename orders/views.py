@@ -40,8 +40,10 @@ class OrderList(generics.ListCreateAPIView):
             by filtering against a `username` query parameter in the URL.
             """
             fl = self.request.QUERY_PARAMS.get('fl', None)
+            win = self.request.QUERY_PARAMS.get('win', None)
+
             queryset = None
-            if fl is not None:
+            if fl is not None and fl.isdigit():
                 logger.info("Got filter id: %s", fl)
                 try:
                     filter = Filter.objects.get(pk=int(fl))
@@ -70,6 +72,17 @@ class OrderList(generics.ListCreateAPIView):
 
                 except Exception as e:
                     logger.error("In queryset exception : %s",e)
+            elif win is not None:
+                logic = None
+                if win == 'AFN':
+                    logic = Q(fulfillmentchannel='MFN')
+                elif win in ['Pending', 'Canceled']:
+                    logic = Q(orderstatus=win)
+
+                if logic:
+                    queryset = AmazonOrders.objects.filter(logic)
+                    logger.info("Win query, Query: %s", queryset.query)
+
             else:
                 queryset = AmazonOrders.objects.all()
                 logger.info("Filter not passed, Processing full Query: %s", queryset.query)
