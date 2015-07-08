@@ -66,7 +66,8 @@ class OrderList(generics.ListCreateAPIView):
                             logger.info("Filter has parents, Logic: %s", ancestor_logic)
 
                         if ancestor_logic:
-                            queryset = AmazonOrders.objects.filter(ancestor_logic)  #pass the query object to filter
+                            win_filter = Q(orderstatus__in=['Shipped', 'Unshipped', 'Processing'], fulfillmentchannel='MFN')
+                            queryset = AmazonOrders.objects.filter(ancestor_logic & win_filter)  #pass the query object to filter
                             logger.info("Filter query, Query: %s", queryset.query)
 
 
@@ -75,7 +76,7 @@ class OrderList(generics.ListCreateAPIView):
             elif win is not None:
                 logic = None
                 if win == 'AFN':
-                    logic = Q(fulfillmentchannel='MFN')
+                    logic = Q(fulfillmentchannel=win)
                 elif win in ['Pending', 'Canceled']:
                     logic = Q(orderstatus=win)
 
@@ -108,8 +109,8 @@ class OrderList(generics.ListCreateAPIView):
         address = json.loads(address)
         serializer.save(address=address, user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
         amazonproducts = self.request.data['amazonproducts'] if self.request.data['amazonproducts'] else ''
-        if len(amazonproducts) > 0 :
-            for product in amazonproducts :
+        if len(amazonproducts) > 0:
+            for product in amazonproducts:
                 productorder, created = ProductOrder.objects.get_or_create(product_id=product,
                                                                            amazonorders_id=serializer.data['id'],
                                                                             defaults={'quantity': '1',
@@ -246,7 +247,7 @@ class FilterLogic():
                     data = self.parse_condition(strg, content['conditionJoinType'])
                     print 'data******',data
                     print 'Branch Join Type %s',branch_join_type
-                    if self.condition_data.__len__()==0:
+                    if self.condition_data.__len__() == 0:
                         self.condition_data = data
                     if branch_join_type and self.condition_data.__len__()>0:
                         if branch_join_type == 'and':
