@@ -58,19 +58,17 @@ class OrderList(generics.ListCreateAPIView):
 
                         #If filter has parents
                         else:
-                            for filter_data in filter.get_ancestors(False,True):  #Get all parents including self
+                            for filter_data in filter.get_ancestors(False, True):  #Get all parents including self
                                 filter_logic = pickle.loads(filter_data.logic)    #Deserilize the filter logic
                                 if ancestor_logic.__len__()==0:
                                     ancestor_logic = filter_logic
                                 else:
                                     ancestor_logic = ancestor_logic & filter_logic
-
                             logger.info("Filter has parents, Logic: %s", ancestor_logic)
 
                         if ancestor_logic:
                             queryset = AmazonOrders.objects.filter(ancestor_logic & win_filter)  #pass the query object to filter
                             logger.info("Filter query, Query: %s", queryset.query)
-
 
                 except Exception as e:
                     logger.error("In queryset exception : %s",e)
