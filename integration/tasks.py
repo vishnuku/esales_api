@@ -217,7 +217,8 @@ def amazon_get_order_live(amz, datefrom=None):
             datefrom = ((last_updated_order[0].lastupdatedate).replace(tzinfo=None)).isoformat() + 'Z'
 
     con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
-    rr = con.list_orders(MarketplaceId=[str(amz["mpid"])], CreatedAfter=datefrom)
+    # rr = con.list_orders(MarketplaceId=[str(amz["mpid"])], CreatedAfter=datefrom)
+    rr = con.list_orders(MarketplaceId=[str(amz["mpid"])], LastUpdatedAfter=datefrom)
 
     for order in rr.ListOrdersResult.Orders.Order:
         tmp_address = {}
