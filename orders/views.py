@@ -75,7 +75,7 @@ class OrderList(generics.ListCreateAPIView):
             elif win is not None:
                 logic = None
                 if win == 'AFN':
-                    logic = Q(fulfillmentchannel=win)
+                    logic = Q(fulfillmentchannel=win, orderstatus='Shipped')
                 elif win in ['Pending', 'Canceled']:
                     logic = Q(orderstatus=win)
 
