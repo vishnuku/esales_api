@@ -178,7 +178,8 @@ def inventory_process_report(amz, rr):
 @shared_task
 def amazon_get_order(uid, datefrom=None):
     try:
-        ch = Channel.objects.filter(status=1).filter(user=uid)
+        # ch = Channel.objects.filter(status=1).filter(user=uid)
+        ch = Channel.objects.filter(status=1)
         for channel in ch:
             amz = {}
             amz["akey"] = channel.access_key

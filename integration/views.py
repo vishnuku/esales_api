@@ -250,6 +250,7 @@ class OrderSync(generics.ListCreateAPIView):
         if int(pk) == 0:
             datefrom = (datetime.now().replace(microsecond=0) + timedelta(days=-30)).isoformat() + 'Z'
             amazon_get_order.delay(request.user, datefrom)
+            print('Order synced', datefrom)
         else:
             amazon_get_order.delay(request.user)
 
