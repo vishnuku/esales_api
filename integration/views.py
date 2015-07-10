@@ -1,5 +1,6 @@
 # from django.shortcuts import render
 from boto.mws.connection import MWSConnection
+from datetime import timedelta, datetime
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from mptt.forms import TreeNodeChoiceField
@@ -246,7 +247,12 @@ class OrderSync(generics.ListCreateAPIView):
         #TODO set for date
         # amazon_get_order_live.delay(amz)
         logger.info('order sync process init.')
-        amazon_get_order.delay(request.user)
+        if int(pk) == 0:
+            datefrom = (datetime.now().replace(microsecond=0) + timedelta(days=-30)).isoformat() + 'Z'
+            amazon_get_order.delay(request.user, datefrom)
+        else:
+            amazon_get_order.delay(request.user)
+
         logger.info('order sync process completed.')
         print('Order synced')
         data = {"success": "true"}

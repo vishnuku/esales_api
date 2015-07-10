@@ -187,8 +187,7 @@ def amazon_get_order(uid, datefrom=None):
             amz["mpid"] = channel.marketplace_id
             amz["cid"] = channel
             amz["uid"] = uid
-            print amz
-            amazon_get_order_live.delay(amz)
+            amazon_get_order_live.delay(amz, datefrom)
     except Channel.DoesNotExist:
         pass
 
@@ -209,12 +208,12 @@ def amazon_get_order_live(amz, datefrom=None):
 
 
     if not datefrom:
-        datefrom = (datetime.now().replace(microsecond=0) + timedelta(days=-7)).isoformat() + 'Z'
+        datefrom = (datetime.now().replace(microsecond=0) + timedelta(days=-10)).isoformat() + 'Z'
 
         #Get the latest updatedate from db
-        last_updated_order = AmazonOrders.objects.all().order_by('-lastupdatedate')[:1]
-        if last_updated_order:
-            datefrom = ((last_updated_order[0].lastupdatedate).replace(tzinfo=None)).isoformat() + 'Z'
+        # last_updated_order = AmazonOrders.objects.all().order_by('-lastupdatedate')[:1]
+        # if last_updated_order:
+        #     datefrom = ((last_updated_order[0].lastupdatedate).replace(tzinfo=None)).isoformat() + 'Z'
 
     con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
     # rr = con.list_orders(MarketplaceId=[str(amz["mpid"])], CreatedAfter=datefrom)
