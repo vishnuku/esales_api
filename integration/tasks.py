@@ -178,8 +178,7 @@ def inventory_process_report(amz, rr):
 @shared_task
 def amazon_get_order(uid, datefrom=None):
     try:
-        # ch = Channel.objects.filter(status=1).filter(user=uid)
-        ch = Channel.objects.filter(status=1)
+        ch = Channel.objects.filter(status=1).filter(user=uid)
         for channel in ch:
             amz = {}
             amz["akey"] = channel.access_key
@@ -188,7 +187,7 @@ def amazon_get_order(uid, datefrom=None):
             amz["mpid"] = channel.marketplace_id
             amz["cid"] = channel
             amz["uid"] = uid
-            amazon_get_order_live.delay(amz, datefrom)
+            amazon_get_order_live.delay(amz)
     except Channel.DoesNotExist:
         pass
 
@@ -209,7 +208,7 @@ def amazon_get_order_live(amz, datefrom=None):
 
 
     if not datefrom:
-        datefrom = (datetime.now().replace(microsecond=0) + timedelta(days=-10)).isoformat() + 'Z'
+        datefrom = (datetime.now().replace(microsecond=0) + timedelta(days=-20)).isoformat() + 'Z'
 
         #Get the latest updatedate from db
         # last_updated_order = AmazonOrders.objects.all().order_by('-lastupdatedate')[:1]
@@ -219,7 +218,7 @@ def amazon_get_order_live(amz, datefrom=None):
     con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
     # rr = con.list_orders(MarketplaceId=[str(amz["mpid"])], CreatedAfter=datefrom)
     rr = con.list_orders(MarketplaceId=[str(amz["mpid"])], LastUpdatedAfter=datefrom)
-
+    print rr
     for order in rr.ListOrdersResult.Orders.Order:
         tmp_address = {}
         tmp_order = {}
