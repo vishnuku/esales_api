@@ -218,8 +218,9 @@ def amazon_get_order_live(amz, datefrom=None):
     con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
     # rr = con.list_orders(MarketplaceId=[str(amz["mpid"])], CreatedAfter=datefrom)
     rr = con.list_orders(MarketplaceId=[str(amz["mpid"])], LastUpdatedAfter=datefrom)
-    print rr
+    print("before order loop")
     for order in rr.ListOrdersResult.Orders.Order:
+        print("in order", order)
         tmp_address = {}
         tmp_order = {}
         if order.ShippingAddress is not None:
