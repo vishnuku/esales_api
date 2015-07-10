@@ -178,7 +178,7 @@ def inventory_process_report(amz, rr):
 @shared_task
 def amazon_get_order(uid, datefrom=None):
     try:
-        ch = Channel.objects.filter(status=1).filter(user=uid)
+        ch = Channel.objects.filter(status=1)
         for channel in ch:
             amz = {}
             amz["akey"] = channel.access_key
@@ -208,7 +208,7 @@ def amazon_get_order_live(amz, datefrom=None):
 
 
     if not datefrom:
-        datefrom = (datetime.now().replace(microsecond=0) + timedelta(days=-20)).isoformat() + 'Z'
+        datefrom = (datetime.now().replace(microsecond=0) + timedelta(days=-10)).isoformat() + 'Z'
 
         #Get the latest updatedate from db
         # last_updated_order = AmazonOrders.objects.all().order_by('-lastupdatedate')[:1]
@@ -219,8 +219,30 @@ def amazon_get_order_live(amz, datefrom=None):
     # rr = con.list_orders(MarketplaceId=[str(amz["mpid"])], CreatedAfter=datefrom)
     rr = con.list_orders(MarketplaceId=[str(amz["mpid"])], LastUpdatedAfter=datefrom)
     print("before order loop")
-    for order in rr.ListOrdersResult.Orders.Order:
-        print("in order", order)
+    if rr:
+        for order in rr.ListOrdersResult.Orders.Order:
+            sync_order_to_db(amz, order)
+
+        token = str(rr.ListOrdersResult.NextToken) if hasattr(rr.ListOrdersResult, 'NextToken') else None
+        if token:
+            print 'First token found', token
+            goto_next_token.delay(amz, token)
+
+
+@shared_task()
+def goto_next_token(amz, token):
+    con = MWSConnection(aws_access_key_id=amz['akey'], aws_secret_access_key=amz['skey'], Merchant=amz['mid'])
+    rt = con.list_orders_by_next_token(MarketplaceId=[str(amz["mpid"])], NextToken=token)
+    for order in rt.ListOrdersByNextTokenResult.Orders.Order:
+        sync_order_to_db(amz, order)
+
+    token = str(rt.ListOrdersByNextTokenResult.NextToken) if hasattr(rt.ListOrdersByNextTokenResult, 'NextToken') else None
+    if token:
+        print 'Another token found', token
+        goto_next_token.delay(amz, token)
+
+
+def sync_order_to_db(amz, order):
         tmp_address = {}
         tmp_order = {}
         if order.ShippingAddress is not None:
