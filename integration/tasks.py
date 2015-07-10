@@ -187,7 +187,7 @@ def amazon_get_order(uid, datefrom=None):
             amz["mpid"] = channel.marketplace_id
             amz["cid"] = channel
             amz["uid"] = uid
-            amazon_get_order_live.delay(amz)
+            amazon_get_order_live.delay(amz, datefrom)
     except Channel.DoesNotExist:
         pass
 
