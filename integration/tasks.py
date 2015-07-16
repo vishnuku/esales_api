@@ -307,6 +307,7 @@ def amazon_get_order_live_details(amz, orderid, orderstatus):
     item_obj = 0
     for item in rr.ListOrderItemsResult.OrderItems.OrderItem:
         try:
+            #Create order item product if not exitst on our DB
             item_obj, item_created = Product.objects.get_or_create(sku=item.SellerSKU,
                                                      defaults={'name': item.Title,
                                                                'sku': item.SellerSKU,
