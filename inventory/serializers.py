@@ -57,6 +57,14 @@ class ImageSerializer(serializers.ModelSerializer):
         model = Images
 
 
+class ProductInventorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Product_Inventory
+        fields = ('id', 'product', 'inventory', 'quantity')
+
+
+
 class ProductWithImagesSerializer(serializers.ModelSerializer):
     """
     Product with Image Serializer
@@ -155,13 +163,6 @@ class BundleProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product_Bundle
         fields = ('id', 'bundle', 'items',)
-
-
-class ProductInventorySerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Product_Inventory
-        fields = ('id', 'product', 'inventory', 'quantity')
 
 
 class StockInSerializer(serializers.ModelSerializer):
