@@ -1,4 +1,5 @@
 import csv
+
 from datetime import datetime, timedelta
 
 from boto.mws.connection import MWSConnection
@@ -306,7 +307,18 @@ def amazon_get_order_live_details(amz, orderid, orderstatus):
     item_obj = 0
     for item in rr.ListOrderItemsResult.OrderItems.OrderItem:
         try:
-            item_obj = Product.objects.get(sku=item.SellerSKU)
+            item_obj, item_created = Product.objects.get_or_create(sku=item.SellerSKU,
+                                                     defaults={'name': item.Title,
+                                                               'sku': item.SellerSKU,
+                                                               'retail_price': item.ItemPrice,
+                                                               'stock_quantity': item.QuantityOrdered,
+                                                               'field2': item.ASIN,
+                                                               'channel': amz['cid'].id,
+                                                               'created_by': amz['uid'].id,
+                                                               'updated_by': amz['uid'].id,
+                                                               'user': amz['uid']
+                                                               })
+
             item_list.append(str(item_obj.id))
 
             # Check if same product is already mapped
