@@ -78,6 +78,8 @@ class OrderList(generics.ListCreateAPIView):
                     logic = Q(fulfillmentchannel=win, orderstatus='Shipped')
                 elif win in ['Pending', 'Canceled']:
                     logic = Q(orderstatus=win)
+                elif win == 'Unshipped':
+                    logic = Q(orderstatus=win)
 
                 if logic:
                     queryset = AmazonOrders.objects.filter(logic)
