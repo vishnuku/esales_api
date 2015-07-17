@@ -123,7 +123,8 @@ class Product(models.Model):
     updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
     created_by = models.IntegerField()
     updated_by = models.IntegerField()
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User),
+    linked_product = models.TextField(null=True, blank=True)
 
 
 class AmazonProduct(models.Model):
