@@ -337,7 +337,7 @@ class WarehouseBinList(generics.ListCreateAPIView):
         by filtering against a `username` query parameter in the URL.
         """
         queryset = WarehouseBin.objects.all()
-
+        print self.kwargs
         if 'warehouse' in self.kwargs and 'inventory' in self.kwargs:
             if int(self.kwargs['inventory']) == 0:
                 queryset = queryset.filter(warehouse=self.kwargs['warehouse']).filter(inventory__isnull=True)

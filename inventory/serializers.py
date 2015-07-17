@@ -126,11 +126,11 @@ class WarehouseSerializer(serializers.ModelSerializer):
 
 class WarehouseBinSerializer(serializers.ModelSerializer):
     warehouse_detail = WarehouseSerializer(source='warehouse', read_only=True)
-    inventory = InventorySerializer(read_only=True)
+    inventory_detail = InventorySerializer(read_only=True, source='inventory')
 
     class Meta:
         model = WarehouseBin
-        fields = ('id', 'name', 'warehouse', 'stock_quantity', 'sold_quantity', 'min_stock_quantity', 'inventory', 'warehouse_detail')
+        fields = ('id', 'name', 'warehouse', 'stock_quantity', 'sold_quantity', 'min_stock_quantity', 'inventory', 'inventory_detail', 'warehouse_detail')
 
 
 class ProductOrderSerializer(serializers.ModelSerializer):
