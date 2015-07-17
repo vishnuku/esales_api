@@ -124,7 +124,7 @@ class Product(models.Model):
     created_by = models.IntegerField()
     updated_by = models.IntegerField()
     user = models.ForeignKey(User),
-    linked_product = models.TextField(null=True, blank=True)
+    linked_inventory = models.TextField(null=True, blank=True)
 
 
 class AmazonProduct(models.Model):
