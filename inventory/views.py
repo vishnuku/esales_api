@@ -11,9 +11,10 @@ from tasks import map_order_product_warehouse
 from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
     InventoryCSVSerializer, ChannelCategorySerializer, ProductListingConfiguratorSerializer, WarehouseSerializer, \
     WarehouseBinSerializer, ProductOrderSerializer, OrderProductSerializer, BundleProductSerializer, InventorySerializer, \
-    StockInSerializer, StockOutSerializer, ProductInventorySerializer
+    StockInSerializer, StockOutSerializer, ProductInventorySerializer, ShippingSettingSerializer
 from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, \
-    WarehouseBin, ProductOrder, AmazonOrders, Product_Bundle, Inventory, StockIn, StockOut, Product_Inventory
+    WarehouseBin, ProductOrder, AmazonOrders, Product_Bundle, Inventory, StockIn, StockOut, Product_Inventory, \
+    Shipping_Setting
 from rest_framework_bulk import ListBulkCreateUpdateDestroyAPIView, ListCreateBulkUpdateAPIView
 
 logger = logging.getLogger(__name__)
@@ -531,3 +532,26 @@ class ProductInventoryDetails(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = Product_Inventory.objects.all()
     serializer_class = ProductInventorySerializer
+
+
+class ShippingSettingList(generics.ListCreateAPIView):
+    """
+    List all the ProductListingConfigurator
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = Shipping_Setting.objects.all()
+    serializer_class = ShippingSettingSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, created_by=self.request.user.id, updated_by=self.request.user.id)
+
+
+class ShippingSettingDetails(generics.RetrieveUpdateDestroyAPIView):
+    """
+    List Product details
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = Shipping_Setting.objects.all()
+    serializer_class = ShippingSettingSerializer

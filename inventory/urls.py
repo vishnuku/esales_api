@@ -40,5 +40,7 @@ urlpatterns = [
     url(r'^inventory/stockout/(?P<pk>[0-9]+)/$', views.StockOutDetails.as_view(), name='inventory_stock_out'),
     url(r'^inventory/productinventories/$', views.ProductInventoryList.as_view(), name="inventory_product_inventories"),
     url(r'^inventory/productinventory/(?P<pk>[0-9]+)/$', views.ProductInventoryDetails.as_view(), name='inventory_product_inventory'),
+    url(r'^inventory/shippingsettings/$', views.ShippingSettingList.as_view(), name="inventory_shipping_settings"),
+    url(r'^inventory/shippingsetting/(?P<pk>[0-9]+)/$', views.ShippingSettingDetails.as_view(), name='inventory_shipping_setting'),
 
 ]

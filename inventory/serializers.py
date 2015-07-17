@@ -3,7 +3,7 @@ from rest_framework import serializers
 from integration.serializers import AmazonOrdersSerializerWithOneASINPic
 
 from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, WarehouseBin, \
-    ProductOrder, AmazonOrders, Product_Bundle, Inventory, StockIn, StockOut, Product_Inventory
+    ProductOrder, AmazonOrders, Product_Bundle, Inventory, StockIn, StockOut, Product_Inventory, Shipping_Setting
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -191,3 +191,12 @@ class StockOutSerializer(serializers.ModelSerializer):
     class Meta:
         model = StockOut
         fields = ('id', 'product', 'inventory', 'amazonorders', 'warehousebin', 'quantity')
+
+
+class ShippingSettingSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Shipping_Setting
+        fields = ('id', 'hashcode', 'weight1', 'weight1_unit', 'weight2', 'weight2_unit', 'length',
+                  'height', 'width', 'dimension_unit', 'd_standard', 'd_expedited', 'd_second_day', 'd_single_day',
+                  'd_economy', 'i_standard', 'i_expedited',  'i_economy')
