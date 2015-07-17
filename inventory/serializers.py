@@ -20,12 +20,13 @@ class InventorySerializer(serializers.ModelSerializer):
     Inventory Serializer
     """
     images = serializers.StringRelatedField(many=True, read_only=True)
+    productwarehousebin = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Inventory
         fields = ('id', 'name', 'brand', 'description', 'bullet_point', 'manufacturer', 'ucodetype', 'ucodevalue',
                   'purchase_price', 'retail_price', 'tax_price', 'sku', 'barcode',
-                  'category', 'meta_data', 'created_on', 'item_quantity', 'sold_quantity', 'images')
+                  'category', 'meta_data', 'created_on', 'item_quantity', 'sold_quantity', 'images', 'productwarehousebin')
 
 
 class InventoryImageSerializer(serializers.ModelSerializer):
@@ -148,6 +149,13 @@ class OrderProductSerializer(serializers.ModelSerializer):
         depth = 1
 
 
+class ProductInventorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Product_Inventory
+        fields = ('id', 'product', 'inventory', 'quantity')
+
+
 class BundleProductSerializer(serializers.ModelSerializer):
     items = InventorySerializer(source='item', read_only=True)
     bundle = ProductSerializer(source='product', read_only=True)
@@ -155,13 +163,6 @@ class BundleProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product_Bundle
         fields = ('id', 'bundle', 'items',)
-
-
-class ProductInventorySerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Product_Inventory
-        fields = ('id', 'product', 'inventory', 'quantity')
 
 
 class StockInSerializer(serializers.ModelSerializer):
