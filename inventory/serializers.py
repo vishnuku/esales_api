@@ -15,12 +15,17 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'status', 'created_on')
 
 
+class InventoryBinSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WarehouseBin
+        fields = ('id', 'name')
+
 class InventorySerializer(serializers.ModelSerializer):
     """
     Inventory Serializer
     """
     images = serializers.StringRelatedField(many=True, read_only=True)
-    inventorywarehousebin = serializers.StringRelatedField(many=True, read_only=True)
+    inventorywarehousebin = InventoryBinSerializer(many=True, read_only=True)
 
     class Meta:
         model = Inventory
