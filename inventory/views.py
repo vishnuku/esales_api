@@ -111,6 +111,7 @@ class ProductList(generics.ListCreateAPIView):
             sku = self.request.QUERY_PARAMS.get('sku', None)
             type = self.request.QUERY_PARAMS.get('type', None)
             channel_ac = self.request.QUERY_PARAMS.get('ac', None)
+            mapped = self.request.QUERY_PARAMS.get('map', None)
 
             if channel_ac is not None:
                 queryset = queryset.filter(channel__exact=channel_ac)
@@ -118,6 +119,11 @@ class ProductList(generics.ListCreateAPIView):
                 queryset = queryset.filter(product_type=type)
             if name is not None:
                 queryset = queryset.filter(name__icontains=name)
+            if mapped is not None:
+                if mapped.isdigit() and int(mapped) == 0:
+                    queryset = queryset.filter(linked_inventory__exact=None)
+                elif mapped.isdigit() and int(mapped) == 1:
+                    queryset = queryset.filter(linked_inventory__isnull=False)
             elif sku is not None:
                 queryset = queryset.filter(sku=sku)
             return queryset
