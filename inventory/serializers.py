@@ -20,13 +20,13 @@ class InventorySerializer(serializers.ModelSerializer):
     Inventory Serializer
     """
     images = serializers.StringRelatedField(many=True, read_only=True)
-    productwarehousebin = serializers.StringRelatedField(many=True, read_only=True)
+    inventorywarehousebin = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Inventory
         fields = ('id', 'name', 'brand', 'description', 'bullet_point', 'manufacturer', 'ucodetype', 'ucodevalue',
                   'purchase_price', 'retail_price', 'tax_price', 'sku', 'barcode',
-                  'category', 'meta_data', 'created_on', 'item_quantity', 'sold_quantity', 'images', 'productwarehousebin')
+                  'category', 'meta_data', 'created_on', 'item_quantity', 'sold_quantity', 'images', 'inventorywarehousebin')
 
 
 class InventoryImageSerializer(serializers.ModelSerializer):
