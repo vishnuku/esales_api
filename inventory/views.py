@@ -17,7 +17,7 @@ from .models import Category, Product, Images, CSV, ChannelCategory, ProductList
     WarehouseBin, ProductOrder, AmazonOrders, Product_Bundle, Inventory, StockIn, StockOut, Product_Inventory, \
     Shipping_Setting
 from rest_framework_bulk import ListBulkCreateUpdateDestroyAPIView, ListCreateBulkUpdateAPIView
-from esales_api.utils import hashcode
+from esales_api.utils import HashCode
 logger = logging.getLogger(__name__)
 
 
@@ -558,6 +558,8 @@ class ShippingSettingList(generics.ListCreateAPIView):
     '''
 
     def perform_create(self, serializer):
+        hash_code = HashCode.generate_hash_code()
+
         serializer.save(user=self.request.user, created_by=self.request.user.id, updated_by=self.request.user.id)
 
 
