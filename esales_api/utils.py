@@ -2,6 +2,8 @@ from django.db.models import FileField
 from django.forms import forms
 from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
+from inventory.models import Product_Inventory, ProductOrder
+import math
 
 class ContentTypeRestrictedFileField(FileField):
     """
@@ -41,15 +43,21 @@ class ContentTypeRestrictedFileField(FileField):
         return data
 
 
-class hashcode():
-    code = 0
-    qty = 0
-    product = 0
-    length = 0
-    def __init__(self):
-        print 'hashcode class called'
+class HashCode():
+    def generate_hash_code(self, amazonordersid):
 
-    def generate_code(self, qty, product):
-        print qty
-        print product
-        
+        product_order = ProductOrder.objects.filter(amazonorders=amazonordersid)
+        qty = 0
+        product_id = 0
+        data = []
+        length = product_order.__len__() if int(product_order.__len__()) > 1 else 2
+        for product in product_order:
+            qty += int(product.quantity) if int(product.quantity) > 1 else 2
+            product_id += int(product.product.id)  if int(product.product.id) > 1 else 2
+
+        qty = int(math.pow(qty, length))
+        product_id = int(math.pow(product_id, length))
+        hashcode = qty * product_id * length
+        data.append({'qty': qty, 'product_id': product_id, 'hashcode': hashcode, 'length': length})
+        return data
+
