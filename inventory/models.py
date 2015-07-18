@@ -124,7 +124,7 @@ class Product(models.Model):
     created_by = models.IntegerField()
     updated_by = models.IntegerField()
     user = models.ForeignKey(User),
-    linked_inventory = models.TextField(null=True, blank=True)
+    linked_inventory = JSONField(null=True)
 
 
 class AmazonProduct(models.Model):
@@ -449,7 +449,7 @@ class StockOut(models.Model):
 
 
 class Shipping_Setting(models.Model):
-    hashcode = models.IntegerField()
+    hashcode = models.IntegerField(null=True)
     weight1 = models.IntegerField()
     weight1_unit = models.CharField(max_length=50, blank=True, default='')
     weight2 = models.IntegerField()
@@ -469,3 +469,4 @@ class Shipping_Setting(models.Model):
     created_by = models.IntegerField()
     updated_by = models.IntegerField()
     user = models.ForeignKey(User)
+    hashcode_data = models.CharField(max_length=200, null=True)

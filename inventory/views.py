@@ -556,13 +556,22 @@ class ShippingSettingList(generics.ListCreateAPIView):
     @qty  ordered quantity of item
     @product ordered product id
     '''
-
     def perform_create(self, serializer):
-        hash_code = HashCode.generate_hash_code()
+        HashCode_obj = HashCode()
+        hash_code = HashCode_obj.generate_hash_code(int(self.request.data['amazonorderid']))
+        hashcode = hash_code[0]['hashcode']
+        logger.info('data returned by generate_hash_code():',hash_code)
+        serializer.save(hashcode=hashcode, hashcode_data=hash_code, user=self.request.user,
+                        created_by=self.request.user.id, updated_by=self.request.user.id)
 
-        serializer.save(user=self.request.user, created_by=self.request.user.id, updated_by=self.request.user.id)
 
-
+    def get_queryset(self):
+        orderid = self.request.QUERY_PARAMS.get('oid', None)
+        HashCode_obj = HashCode()
+        hash_code = HashCode_obj.generate_hash_code(int(orderid))
+        hashcode = hash_code[0]['hashcode']
+        queryset = Shipping_Setting.objects.filter(hashcode__exact=hashcode)
+        return queryset
 
 
 
