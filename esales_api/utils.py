@@ -39,3 +39,17 @@ class ContentTypeRestrictedFileField(FileField):
             pass        
             
         return data
+
+
+class hashcode():
+    code = 0
+    qty = 0
+    product = 0
+    length = 0
+    def __init__(self):
+        print 'hashcode class called'
+
+    def generate_code(self, qty, product):
+        print qty
+        print product
+        
