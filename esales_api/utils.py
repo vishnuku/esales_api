@@ -52,4 +52,4 @@ class hashcode():
     def generate_code(self, qty, product):
         print qty
         print product
-        
+

@@ -7,6 +7,7 @@ from rest_framework import authentication, permissions
 from rest_framework.response import Response
 from rest_framework import status
 from tasks import map_order_product_warehouse
+import json
 
 from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
     InventoryCSVSerializer, ChannelCategorySerializer, ProductListingConfiguratorSerializer, WarehouseSerializer, \
@@ -139,6 +140,13 @@ class ProductDetails(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+    def perform_update(self, serializer):
+        '''
+        remove u from json object: [{u'displayValue': u'4 X Bin02', u'product_inventory': 32, u'inventory': 24}]
+        json.dump(josnobject)
+        '''
+        serializer.save(linked_inventory=json.dumps(self.request.data['linked_inventory']))
 
 
 class InventoryImageList(generics.ListCreateAPIView):
@@ -552,8 +560,7 @@ class ShippingSettingList(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user, created_by=self.request.user.id, updated_by=self.request.user.id)
 
-    def get_queryset(self):
-        print hashcode()
+
 
 
 
