@@ -560,7 +560,8 @@ class ShippingSettingList(generics.ListCreateAPIView):
         HashCode_obj = HashCode()
         hash_code = HashCode_obj.generate_hash_code(int(self.request.data['amazonorderid']))
         hashcode = hash_code[0]['hashcode']
-        logger.info('data returned by generate_hash_code():',hash_code)
+        print hash_code
+        #logger.info('data returned by generate_hash_code():', str(hash_code))
         serializer.save(hashcode=hashcode, hashcode_data=hash_code, user=self.request.user,
                         created_by=self.request.user.id, updated_by=self.request.user.id)
 
