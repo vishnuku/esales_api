@@ -1,14 +1,18 @@
 import csv
 
 from datetime import datetime, timedelta
+import pickle
 
 from boto.mws.connection import MWSConnection
 from celery import shared_task
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 from integration.models import Channel
 from inventory.models import Product, Category, AmazonOrders, ProductOrder
 import itertools
+from orders.models import Filter
+
 
 @shared_task
 def amazon_request_report(amz, rtype='_GET_MERCHANT_LISTINGS_DATA_'):
@@ -435,3 +439,31 @@ def sync_order():
 
     except Channel.DoesNotExist:
         pass
+
+
+def sync_filter_count():
+    try:
+        filters = Filter.objects.all()
+
+        for filter in filters:
+            if filter:
+                ancestor_logic = Q()                                  #Create Q object to hold other query
+                #If filter is only root node
+                if filter.is_root_node():
+                    ancestor_logic = pickle.loads(filter.logic)             #Deserilize the filter logic
+
+                #If filter has parents
+                else:
+                    for filter_data in filter.get_ancestors(False, True):  #Get all parents including self
+                        filter_logic = pickle.loads(filter_data.logic)    #Deserilize the filter logic
+                        if ancestor_logic.__len__()==0:
+                            ancestor_logic = filter_logic
+                        else:
+                            ancestor_logic = ancestor_logic & filter_logic
+
+                if ancestor_logic:
+                    queryset = AmazonOrders.objects.filter(ancestor_logic)  #pass the query object to filter
+                    print queryset
+
+    except Exception as e:
+        print e
