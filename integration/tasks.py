@@ -442,6 +442,7 @@ def sync_order():
     except Channel.DoesNotExist:
         pass
 
+
 @shared_task
 def sync_filter_count():
     try:
