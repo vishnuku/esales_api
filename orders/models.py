@@ -19,6 +19,7 @@ class Filter(MPTTModel):
     created_by = models.ForeignKey(User, related_name='created_by_order_filter')
     updated_by = models.ForeignKey(User, related_name='updated_by_order_filter')
     user = models.ForeignKey(User)
+    filter_count = models.IntegerField(null=True)
 
     def __unicode__(self):
         return '%s' % self.name
