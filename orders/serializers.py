@@ -79,7 +79,7 @@ class FilterSerializerList(serializers.ModelSerializer):
     class Meta:
             model = Filter
             # fields = ('id', 'name', 'parent', 'leaf')
-            fields = ('id', 'name', 'query', 'column', 'parent', 'leaf')
+            fields = ('id', 'name', 'query', 'column', 'parent', 'leaf', 'filter_count')
 
 
 class FilterSerializerPost(serializers.ModelSerializer):
