@@ -194,9 +194,10 @@ class StockOutSerializer(serializers.ModelSerializer):
 
 
 class ShippingSettingSerializer(serializers.ModelSerializer):
+    orderid = serializers.CharField(read_only=True)
 
     class Meta:
         model = Shipping_Setting
         fields = ('id', 'hashcode', 'weight1', 'weight1_unit', 'weight2', 'weight2_unit', 'length',
                   'height', 'width', 'dimension_unit', 'd_standard', 'd_expedited', 'd_second_day', 'd_single_day',
-                  'd_economy', 'i_standard', 'i_expedited',  'i_economy')
+                  'd_economy', 'i_standard', 'i_expedited',  'i_economy', 'orderid')

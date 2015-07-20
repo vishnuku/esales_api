@@ -60,4 +60,3 @@ class HashCode():
         hashcode = qty * product_id * length
         data.append({'qty': qty, 'product_id': product_id, 'hashcode': hashcode, 'length': length})
         return data
-
