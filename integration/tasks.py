@@ -442,6 +442,7 @@ def sync_order():
     except Channel.DoesNotExist:
         pass
 
+
 @shared_task
 def sync_filter_count():
     try:
@@ -466,7 +467,7 @@ def sync_filter_count():
                 if ancestor_logic:
                     queryset = AmazonOrders.objects.filter(ancestor_logic)  #pass the query object to filter
                     if queryset:
-                        f = Filter()
+                        f = Filter.objects.get(pk=filter.id)
                         f.filter_count = queryset.count()
                         f.save()
 
