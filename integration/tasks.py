@@ -426,8 +426,7 @@ def sync_inventory():
 @shared_task
 def sync_order():
     try:
-        ch = Channel.objects.filter(status=1)
-        print 'Sync Order'
+        ch = Channel.objects.filter(status=1, marketplace=1)
         for channel in ch:
             amz = {}
             amz["akey"] = channel.access_key

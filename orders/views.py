@@ -6,13 +6,14 @@ from inventory.models import AmazonOrders, ProductOrder
 from orders import serializers
 from orders.models import Filter
 from orders.serializers import FilterSerializerPost, FilterSerializerList
+from integration.models import Channel
 import json
 from inventory.models import Product
 from django.db.models import Q
 import pickle
 import operator
 import logging
-
+import datetime
 logger = logging.getLogger(__name__)
 
 class JSONResponse(HttpResponse):
@@ -109,19 +110,35 @@ class OrderList(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         address = json.dumps(self.request.data['address'])
         address = json.loads(address)
-        serializer.save(address=address, user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
-        amazonproducts = self.request.data['amazonproducts'] if self.request.data['amazonproducts'] else ''
-        if len(amazonproducts) > 0:
-            for product in amazonproducts:
-                productorder, created = ProductOrder.objects.get_or_create(product_id=product,
-                                                                           amazonorders_id=serializer.data['id'],
-                                                                            defaults={'quantity': '1',
-                                                                             'status': 'Unshipped',
-                                                                             'message': '',
-                                                                             'user': self.request.user,
-                                                                             'created_by': self.request.user,
-                                                                             'updated_by': self.request.user})
-                productorder.save()
+        serializer.save(address=address,
+                        user=self.request.user,
+                        created_by=self.request.user,
+                        updated_by=self.request.user,
+                        channel=Channel.objects.get(marketplace=3)
+                        )
+        ProductOrders = self.request.data['orderItems'] if self.request.data['orderItems'] else ''
+        if len(ProductOrders) > 0:
+            for op in ProductOrders:
+                product_order = ProductOrder()
+                product_order.quantity = op['qty']
+                product_order.status = 'Unshipped'
+                product_order.amazonorders = AmazonOrders.objects.get(amazonorderid=self.request.data['amazonorderid'])
+                product_order.product = Product.objects.get(pk=op['id'])
+                product_order.user = self.request.user
+                product_order.created_by = self.request.user
+                product_order.updated_by = self.request.user
+                product_order.orderitemid = op['order_item_id']
+                product_order.save()
+                # productorder, created = ProductOrder.objects.get_or_create(product_id=product,
+                #                                                            amazonorders_id=serializer.data['id'],
+                #                                                             defaults={'quantity': '1',
+                #                                                              'status': 'Unshipped',
+                #                                                              'message': '',
+                #                                                              'user': self.request.user,
+                #                                                              'created_by': self.request.user,
+                #                                                              'updated_by': self.request.user})
+                # productorder.save()
+
 
 
 

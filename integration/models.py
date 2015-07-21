@@ -6,7 +6,7 @@ from django.db import models
 MARKETPLACES = (
     (1, 'Amazon'),
     (2, 'ebay'),
-    (3, 'mkt1'),
+    (3, 'Manual'),
     (4, 'mkt2'),
 )
 
