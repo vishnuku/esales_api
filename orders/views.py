@@ -120,7 +120,7 @@ class OrderList(generics.ListCreateAPIView):
         if len(ProductOrders) > 0:
             for op in ProductOrders:
                 product_order = ProductOrder()
-                product_order.quantity = op['qty']
+                product_order.quantityordered = op['qty']
                 product_order.status = 'Unshipped'
                 product_order.amazonorders = AmazonOrders.objects.get(amazonorderid=self.request.data['amazonorderid'])
                 product_order.product = Product.objects.get(pk=op['id'])

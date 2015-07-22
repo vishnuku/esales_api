@@ -52,8 +52,8 @@ class HashCode():
         data = []
         length = product_order.__len__() if int(product_order.__len__()) > 1 else 2
         for product in product_order:
-            qty += int(product.quantity) if int(product.quantity) > 1 else 2
-            product_id += int(product.product.id)  if int(product.product.id) > 1 else 2
+            qty += int(product.quantityordered) if int(product.quantityordered) > 1 else 2
+            product_id += int(product.product.id) if int(product.product.id) > 1 else 2
 
         qty = int(math.pow(qty, length))
         product_id = int(math.pow(product_id, length))
