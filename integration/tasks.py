@@ -315,11 +315,11 @@ def amazon_get_order_live_details(amz, orderid, orderstatus):
         try:
             # Create order item product if not exitst on our DB
             item_obj, item_created = Product.objects.get_or_create(sku=item.SellerSKU,
-                                                                   defaults={'name': item.Title,
-                                                                             'sku': item.SellerSKU,
-                                                                             'retail_price': item.ItemPrice,
-                                                                             'stock_quantity': item.QuantityOrdered,
-                                                                             'field2': item.ASIN,
+                                                                   defaults={'name': item.Title if hasattr(item, 'Title') else '',
+                                                                             'sku': item.SellerSKU if hasattr(item, 'SellerSKU') else '',
+                                                                             'retail_price': item.ItemPrice.Amount if (hasattr(item, 'ItemPrice.Amount') and item.ItemPrice.Amount) else 0,
+                                                                             'stock_quantity': item.QuantityOrdered if (hasattr(item, 'QuantityOrdered') and item.QuantityOrdered) else 0,
+                                                                             'field2': item.ASIN if hasattr(item, 'ASIN') else '',
                                                                              'channel': amz['cid'].id,
                                                                              'created_by': amz['uid'].id,
                                                                              'updated_by': amz['uid'].id,
@@ -337,9 +337,19 @@ def amazon_get_order_live_details(amz, orderid, orderstatus):
                 item_obj.save()
 
             productorder, created = ProductOrder.objects.get_or_create(product_id=item_obj.id, amazonorders_id=orderid,
-                                                                       defaults={'quantity': item.QuantityShipped,
-                                                                                 'status': orderstatus,
-                                                                                 'orderitemid': item.OrderItemId,
+                                                                       defaults={'orderitemid': item.OrderItemId,
+                                                                                 'quantityordered': item.QuantityOrdered if hasattr(item, 'QuantityOrdered') else '',
+                                                                                 'quantityshipped': item.QuantityShipped if hasattr(item, 'QuantityShipped') else '',
+                                                                                 'itemprice': item.ItemPrice.Amount if (hasattr(item, 'ItemPrice.Amount') and item.ItemPrice.Amount) else 0,
+                                                                                 'shippingprice': item.ShippingPrice.Amount if (hasattr(item, 'ShippingPrice.Amount') and item.ShippingPrice.Amount) else '',
+                                                                                 'itemtax': item.ItemTax.Amount if (hasattr(item, 'ItemTax.Amount') and item.ItemTax.Amount) else '',
+                                                                                 'shippingdiscount': item.ShippingDiscount.Amount if (hasattr(item, 'ShippingDiscount.Amount') and item.ShippingDiscount.Amount) else '',
+                                                                                 'shippingtax': item.ShippingTax.Amount if (hasattr(item, 'ShippingTax.Amount') and item.ShippingTax.Amount) else '',
+                                                                                 'giftwrapprice': item.GiftWrapPrice.Amount if (hasattr(item, 'GiftWrapPrice.Amount') and item.GiftWrapPrice.Amount) else '',
+                                                                                 'promotiondiscount': item.PromotionDiscount.Amount if (hasattr(item, 'PromotionDiscount.Amount') and item.PromotionDiscount.Amount) else '',
+                                                                                 'codfeediscount': item.CODFeeDiscount.Amount if (hasattr(item, 'CODFeeDiscount.Amount') and item.CODFeeDiscount.Amount) else '',
+                                                                                 'codfee': item.CODFee.Amount if (hasattr(item, 'CODFee.Amount') and item.CODFee.Amount) else '',
+                                                                                 'giftwraptax': item.GiftWrapTax.Amount if (hasattr(item, 'GiftWrapTax.Amount') and item.GiftWrapTax.Amount) else '',
                                                                                  'message': '',
                                                                                  'warehousebin': getattr(
                                                                                      productorder_obj, 'warehousebin',
@@ -471,6 +481,7 @@ def sync_order():
             amazon_get_order_live.delay(amz)
             # print('amz',amz)
 
+        #Call sync filter count to update it parallely
         sync_filter_count.delay()
     except Channel.DoesNotExist:
         pass

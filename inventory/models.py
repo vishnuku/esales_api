@@ -123,7 +123,7 @@ class Product(models.Model):
     updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
     created_by = models.IntegerField()
     updated_by = models.IntegerField()
-    user = models.ForeignKey(User),
+    user = models.ForeignKey(User, blank=True, null=True)
     linked_inventory = JSONField(null=True)
 
 
@@ -379,10 +379,19 @@ class ProductOrder(models.Model):
     product = models.ForeignKey(Product)
     amazonorders = models.ForeignKey(AmazonOrders, related_name='productorder')
     warehousebin = models.ForeignKey(WarehouseBin, blank=True, null=True)
-    quantityordered = models.IntegerField(default=0) #QuantityOrdered
-    quantity = models.IntegerField(default=0) #QuantityShipped
+    quantityordered = models.IntegerField(default=0)                     #QuantityOrdered
+    quantityshipped = models.IntegerField(default=0)                     #QuantityShipped
     orderitemid = models.CharField(blank=True, null=True, max_length=40) #OrderItemId
-    status = models.CharField(max_length=20, blank=True, default='')
+    itemprice = models.CharField(blank=True, null=True, max_length=40)
+    shippingprice = models.CharField(blank=True, null=True, max_length=40)
+    itemtax = models.CharField(blank=True, null=True, max_length=40)
+    shippingdiscount = models.CharField(blank=True, null=True, max_length=40)
+    shippingtax = models.CharField(blank=True, null=True, max_length=40)
+    giftwrapprice = models.CharField(blank=True, null=True, max_length=40)
+    promotiondiscount = models.CharField(blank=True, null=True, max_length=40)
+    codfeediscount = models.CharField(blank=True, null=True, max_length=40)
+    codfee = models.CharField(blank=True, null=True, max_length=40)
+    giftwraptax = models.CharField(blank=True, null=True, max_length=40)
     message = models.CharField(max_length=50, blank=True, default='')
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
