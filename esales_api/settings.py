@@ -181,11 +181,6 @@ CELERYBEAT_SCHEDULE = {
         'task': 'integration.tasks.sync_order',
         'schedule': timedelta(seconds=300),
     },
-    'sync-filter-count': {
-        'task': 'integration.tasks.sync_filter_count',
-        'schedule': timedelta(seconds=3600),
-    },
-
     # 'update-orders-warehouse': {
     #     'task': 'inventory.tasks.map_order_product_warehouse',
     #     'schedule': timedelta(seconds=14400),

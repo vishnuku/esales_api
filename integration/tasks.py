@@ -424,25 +424,6 @@ def sync_inventory():
 
 
 @shared_task
-def sync_order():
-    try:
-        ch = Channel.objects.filter(status=1, marketplace=1)
-        for channel in ch:
-            amz = {}
-            amz["akey"] = channel.access_key
-            amz["skey"] = channel.secret_key
-            amz["mid"] = channel.merchant_id
-            amz["mpid"] = channel.marketplace_id
-            amz["cid"] = channel
-            amz["uid"] = User.objects.get(pk=1)
-            amazon_get_order_live.delay(amz)
-            # print('amz',amz)
-
-    except Channel.DoesNotExist:
-        pass
-
-
-@shared_task
 def sync_filter_count():
     try:
         filters = Filter.objects.all()
@@ -472,3 +453,23 @@ def sync_filter_count():
 
     except Exception as e:
         print e
+
+
+@shared_task
+def sync_order():
+    try:
+        ch = Channel.objects.filter(status=1, marketplace=1)
+        for channel in ch:
+            amz = {}
+            amz["akey"] = channel.access_key
+            amz["skey"] = channel.secret_key
+            amz["mid"] = channel.merchant_id
+            amz["mpid"] = channel.marketplace_id
+            amz["cid"] = channel
+            amz["uid"] = User.objects.get(pk=1)
+            amazon_get_order_live.delay(amz)
+            # print('amz',amz)
+
+        sync_filter_count.delay()
+    except Channel.DoesNotExist:
+        pass
