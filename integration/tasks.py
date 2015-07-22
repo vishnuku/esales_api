@@ -427,6 +427,7 @@ def sync_inventory():
 def sync_filter_count():
     try:
         filters = Filter.objects.all()
+        win_filter = Q(orderstatus__in=['Shipped', 'Unshipped', 'Processing'], fulfillmentchannel='MFN')
 
         for filter in filters:
             if filter:
@@ -445,7 +446,7 @@ def sync_filter_count():
                             ancestor_logic = ancestor_logic & filter_logic
 
                 if ancestor_logic:
-                    queryset = AmazonOrders.objects.filter(ancestor_logic)  #pass the query object to filter
+                    queryset = AmazonOrders.objects.filter(ancestor_logic & win_filter)  #pass the query object to filter
                     if queryset:
                         f = Filter.objects.get(pk=filter.id)
                         f.filter_count = queryset.count()
