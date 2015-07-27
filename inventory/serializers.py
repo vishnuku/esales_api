@@ -18,7 +18,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class InventoryBinSerializer(serializers.ModelSerializer):
     class Meta:
         model = WarehouseBin
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'stock_quantity')
 
 class InventorySerializer(serializers.ModelSerializer):
     """
