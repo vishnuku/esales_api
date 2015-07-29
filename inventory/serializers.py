@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from rest_framework_bulk import BulkSerializerMixin, BulkListSerializer
 from integration.serializers import AmazonOrdersSerializerWithOneASINPic
 
 from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, WarehouseBin, \
@@ -44,12 +45,23 @@ class InventoryImageSerializer(serializers.ModelSerializer):
         fields = ['id', 'images']
 
 
-class ProductSerializer(serializers.ModelSerializer):
+# class ProductSerializer(serializers.ModelSerializer):
+#     """
+#     Product Serializer
+#     """
+#     class Meta:
+#         model = Product
+#         fields = ('id', 'name', 'brand', 'description', 'bullet_point', 'manufacturer', 'ucodetype', 'ucodevalue',
+#                   'purchase_price', 'retail_price', 'tax_price', 'sku', 'barcode', 'stock_quantity', 'min_stock_quantity',
+#                   'sold_quantity', 'category', 'channel', 'meta_data', 'origin', 'created_on', 'product_type', 'field2', 'field8','linked_inventory')
+
+class ProductSerializer(BulkSerializerMixin, serializers.ModelSerializer):
     """
     Product Serializer
     """
     class Meta:
         model = Product
+        list_serializer_class = BulkListSerializer
         fields = ('id', 'name', 'brand', 'description', 'bullet_point', 'manufacturer', 'ucodetype', 'ucodevalue',
                   'purchase_price', 'retail_price', 'tax_price', 'sku', 'barcode', 'stock_quantity', 'min_stock_quantity',
                   'sold_quantity', 'category', 'channel', 'meta_data', 'origin', 'created_on', 'product_type', 'field2', 'field8','linked_inventory')
@@ -201,3 +213,5 @@ class ShippingSettingSerializer(serializers.ModelSerializer):
         fields = ('id', 'hashcode', 'weight1', 'weight1_unit', 'weight2', 'weight2_unit', 'length',
                   'height', 'width', 'dimension_unit', 'd_standard', 'd_expedited', 'd_second_day', 'd_single_day',
                   'd_economy', 'i_standard', 'i_expedited',  'i_economy', 'orderid')
+
+

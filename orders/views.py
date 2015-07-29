@@ -4,8 +4,8 @@ from rest_framework import generics
 from rest_framework import authentication, permissions
 from inventory.models import AmazonOrders, ProductOrder
 from orders import serializers
-from orders.models import Filter
-from orders.serializers import FilterSerializerPost, FilterSerializerList
+from orders.models import Filter, OrderShippingDetail
+from orders.serializers import FilterSerializerPost, FilterSerializerList, OrderShippingSerializer
 from integration.models import Channel
 import json
 from inventory.models import Product
@@ -150,6 +150,21 @@ class OrderDetails(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = AmazonOrders.objects.all()
     serializer_class = serializers.AmazonOrdersSerializerList
+
+
+class OrderShippingList(generics.ListCreateAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = OrderShippingDetail.objects.all()
+    serializer_class = OrderShippingSerializer
+
+
+
+class OrderShippingDetailDetail(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = OrderShippingDetail.objects.all()
+    serializer_class = OrderShippingSerializer
 
 
 class FilterList(generics.ListCreateAPIView):

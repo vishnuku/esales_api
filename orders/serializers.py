@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 from inventory.models import AmazonOrders, Images
 from inventory.serializers import ProductOrderSerializer, ProductSerializer
-from orders.models import Filter
+from orders.models import Filter, OrderShippingDetail
 
 
 class AmazonOrdersSerializerList(serializers.ModelSerializer):
@@ -94,3 +94,8 @@ class FilterSerializerPost(serializers.ModelSerializer):
             model = Filter
             fields = ('id', 'name', 'query', 'column', 'logic', 'parent')
 
+
+class OrderShippingSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = OrderShippingDetail

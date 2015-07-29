@@ -92,7 +92,7 @@ class InventoryDetails(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = InventorySerializer
 
 
-class ProductList(generics.ListCreateAPIView):
+class ProductList(ListBulkCreateUpdateDestroyAPIView):
     """
     List all the products
     """
@@ -101,7 +101,16 @@ class ProductList(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+        serializer.save(user=self.request.user, created_by=self.request.user.id, updated_by=self.request.user.id)
+
+    def patch(self, request, *args, **kwargs):
+        for it in self.request.data:
+            obj = Product.objects.get(pk=it['id'])
+            obj.linked_inventory = json.dumps(it['linked_inventory'])
+            obj.save()
+        data = {'success': 'true'}
+        return Response(data, status=status.HTTP_200_OK)
+
 
     def get_queryset(self):
             """
@@ -519,7 +528,19 @@ class StockOutDetails(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = StockOutSerializer
 
 
-class ProductInventoryList(generics.ListCreateAPIView):
+# class ProductInventoryList(generics.ListCreateAPIView):
+#     """
+#     List all the ProductListingConfigurator
+#     """
+#     authentication_classes = (authentication.TokenAuthentication,)
+#     permission_classes = (permissions.IsAuthenticated,)
+#     queryset = Product_Inventory.objects.all()
+#     serializer_class = ProductInventorySerializer
+#
+#     def perform_create(self, serializer):
+#         serializer.save(user=self.request.user, created_by=self.request.user.id, updated_by=self.request.user.id)
+
+class ProductInventoryList(ListBulkCreateUpdateDestroyAPIView):
     """
     List all the ProductListingConfigurator
     """
@@ -530,6 +551,16 @@ class ProductInventoryList(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user, created_by=self.request.user.id, updated_by=self.request.user.id)
+
+    def delete(self, request, *args, **kwargs):
+        queryset = Product_Inventory.objects.all()
+        for c in self.request.data:
+            for ck, cv in c.iteritems():
+                queryset = queryset.filter(**{ck:cv})
+
+        queryset.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 
 class ProductInventoryDetails(generics.RetrieveUpdateDestroyAPIView):
