@@ -137,6 +137,8 @@ class ProductList(ListBulkCreateUpdateDestroyAPIView):
                     queryset = queryset.filter(linked_inventory__isnull=False)
             elif sku is not None:
                 queryset = queryset.filter(sku=sku)
+
+            print queryset.query.__str__()
             return queryset
 
 
@@ -604,10 +606,6 @@ class ShippingSettingList(generics.ListCreateAPIView):
         hashcode = hash_code[0]['hashcode']
         queryset = Shipping_Setting.objects.filter(hashcode__exact=hashcode)
         return queryset
-
-
-
-
 
 
 class ShippingSettingDetails(generics.RetrieveUpdateDestroyAPIView):
