@@ -125,6 +125,7 @@ class Product(models.Model):
     updated_by = models.IntegerField()
     user = models.ForeignKey(User, blank=True, null=True)
     linked_inventory = JSONField(null=True)
+    parent_product = models.IntegerField(default=None, null=True)
 
 
 class AmazonProduct(models.Model):
