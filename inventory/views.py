@@ -558,9 +558,8 @@ class ProductInventoryList(ListBulkCreateUpdateDestroyAPIView):
         queryset = Product_Inventory.objects.all()
         for c in self.request.data:
             for ck, cv in c.iteritems():
-                queryset = queryset.filter(**{ck:cv})
-
-        queryset.delete()
+                qs = queryset.filter(**{ck:cv})
+                qs.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
