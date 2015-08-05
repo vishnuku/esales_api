@@ -106,7 +106,11 @@ class ProductList(ListBulkCreateUpdateDestroyAPIView):
     def patch(self, request, *args, **kwargs):
         for it in self.request.data:
             obj = Product.objects.get(pk=it['id'])
-            obj.linked_inventory = json.dumps(it['linked_inventory'])
+            if 'linked_inventory' in it:
+                obj.linked_inventory = json.dumps(it['linked_inventory'])
+            if 'parent_product' in it:
+                print 'sfdsf'
+                obj.parent_product = json.dumps(it['parent_product'])
             obj.save()
         data = {'success': 'true'}
         return Response(data, status=status.HTTP_200_OK)
@@ -440,48 +444,28 @@ class OrderProductDetails(generics.RetrieveAPIView):
 class BundleProductList(ListBulkCreateUpdateDestroyAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
-    queryset = Product_Bundle.objects.all()
+    queryset = Product.objects.all()
     serializer_class = BundleProductSerializer
 
-    def update_bundle_product(self, id, stock_quantity):
-        product = Product.objects.get(pk=id)
-
-        if product:
-            product.product_type = 2
-            product.stock_quantity = stock_quantity
-            product.save()
-            logger.debug('Product Bundle updated:')
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
-        self.update_bundle_product(self.request.data[0]['product'], self.request.data[0]['bundle_product_qty'])
-
     def get_queryset(self):
-        queryset = Product_Bundle.objects.all()
-        if 'product' in self.kwargs:
-            queryset = queryset.filter(product=self.kwargs['product'])
-
+        queryset = Product.objects.filter(product_type__exact=2)
+        print queryset.query
         return queryset
 
-    def patch(self, request, *args, **kwargs):
 
-        for it in self.request.data:
-            obj = Product_Bundle.objects.get(pk=it['id'])
-            obj.price = it['price']
-            obj.qty = it['qty']
-            obj.save()
-
-        self.update_bundle_product(self.request.data[0]['product'], self.request.data[0]['bundle_product_qty'])
-
-        data = {'success': 'true'}
-        return Response(data, status=status.HTTP_200_OK)
 
 
 class BundleProductDetails(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
-    queryset = Product_Bundle.objects.all()
+    queryset = Product.objects.all()
     serializer_class = BundleProductSerializer
+
+    def get_queryset(self):
+        queryset = Product.objects.filter(product_type__exact=2)
+        print queryset.query
+        return queryset
+
 
 
 class StockInList(generics.ListCreateAPIView):

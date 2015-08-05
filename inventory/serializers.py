@@ -64,7 +64,7 @@ class ProductSerializer(BulkSerializerMixin, serializers.ModelSerializer):
         list_serializer_class = BulkListSerializer
         fields = ('id', 'name', 'brand', 'description', 'bullet_point', 'manufacturer', 'ucodetype', 'ucodevalue',
                   'purchase_price', 'retail_price', 'tax_price', 'sku', 'barcode', 'stock_quantity', 'min_stock_quantity',
-                  'sold_quantity', 'category', 'channel', 'meta_data', 'origin', 'created_on', 'product_type', 'field2', 'field8','linked_inventory')
+                  'sold_quantity', 'category', 'channel', 'meta_data', 'origin', 'created_on', 'product_type', 'parent_product', 'field2', 'field8','linked_inventory')
 
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -177,18 +177,23 @@ class OrderProductSerializer(serializers.ModelSerializer):
 
 class ProductInventorySerializer(serializers.ModelSerializer):
 
+    product_i_inventory = InventorySerializer(source='inventory', read_only=True)
+
     class Meta:
         model = Product_Inventory
-        fields = ('id', 'product', 'inventory', 'quantity')
+        fields = ('id', 'product', 'inventory', 'quantity', 'product_i_inventory')
 
 
 class BundleProductSerializer(serializers.ModelSerializer):
-    items = InventorySerializer(source='item', read_only=True)
-    bundle = ProductSerializer(source='product', read_only=True)
+    #items = InventorySerializer(source='item', read_only=True)
+    # bundle = ProductSerializer(source='product', read_only=True)
+
+    product_i_product = ProductInventorySerializer(many=True, read_only=True)
 
     class Meta:
-        model = Product_Bundle
-        fields = ('id', 'bundle', 'items',)
+        model = Product
+
+
 
 
 class StockInSerializer(serializers.ModelSerializer):
