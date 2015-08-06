@@ -83,6 +83,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = ProductImages
+        fields = ('product', 'image', 'is_main', 'status')
 
 
 class ProductInventorySerializer(serializers.ModelSerializer):

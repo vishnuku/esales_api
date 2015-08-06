@@ -12,7 +12,7 @@ import json
 from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
     InventoryCSVSerializer, ChannelCategorySerializer, ProductListingConfiguratorSerializer, WarehouseSerializer, \
     WarehouseBinSerializer, ProductOrderSerializer, OrderProductSerializer, BundleProductSerializer, InventorySerializer, \
-    StockInSerializer, StockOutSerializer, ProductInventorySerializer, ShippingSettingSerializer
+    StockInSerializer, StockOutSerializer, ProductInventorySerializer, ShippingSettingSerializer, ProductImageSerializer
 from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, \
     WarehouseBin, ProductOrder, AmazonOrders, Product_Bundle, Inventory, StockIn, StockOut, Product_Inventory, \
     Shipping_Setting, ProductImages
@@ -203,7 +203,10 @@ class InventoryProductImageList(generics.ListCreateAPIView):
     """
     permission_classes = (permissions.AllowAny,) #TOOD Remove This block once fixed on client size
     model = ProductImages
-    serializer_class = ImageSerializer
+    serializer_class = ProductImageSerializer
+
+    # def perform_create(self, serializer):
+    #     serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
 
     def get_queryset(self):
         """
@@ -227,7 +230,11 @@ class InventoryProductImageDetails(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
     queryset = ProductImages.objects.all()
-    serializer_class = ImageSerializer
+    serializer_class = ProductImageSerializer
+
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+
 
 
 # not using it, because its converted from ProductImageList to InventoryImageList
@@ -482,7 +489,6 @@ class BundleProductList(ListBulkCreateUpdateDestroyAPIView):
 
     def get_queryset(self):
         queryset = Product.objects.filter(product_type__exact=2)
-        print queryset.query
         return queryset
 
 
@@ -495,8 +501,7 @@ class BundleProductDetails(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = BundleProductSerializer
 
     def get_queryset(self):
-        queryset = Product.objects.filter(product_type__exact=2)
-        print queryset.query
+        queryset = Product.objects.filter(product_type__exact=2, id=self.kwargs['pk'])
         return queryset
 
 
