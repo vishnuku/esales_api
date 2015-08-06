@@ -196,6 +196,35 @@ class Images(models.Model):
         return '%s' % self.image
 
 
+class ProductImages(models.Model):
+    """
+    Model to hold the images for product
+    """
+    product = models.ForeignKey(Product, default=1, related_name='images')
+    image = models.ImageField(upload_to='product/images/upload/%Y/%m/%d')
+    is_main = models.BooleanField(default=False)
+    status = models.SmallIntegerField(default=1, blank=True, null=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
+    created_by = models.ForeignKey(User, related_name='created_by_user_productimages')
+    updated_by = models.ForeignKey(User, related_name='updated_by_user_productimages')
+    user = models.ForeignKey(User)
+
+    class Meta:
+        ordering = ('created_on',)
+
+    def get_image_abs_path(self):
+        """
+
+        :return:
+        :rtype:
+        """
+        return os.path.join(settings.MEDIA_ROOT, self.image.name)
+
+    def __unicode__(self):
+        return '%s' % self.image
+
+
 class Sync(models.Model):
     """
     Keep tracks of sync request

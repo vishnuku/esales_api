@@ -4,7 +4,8 @@ from rest_framework_bulk import BulkSerializerMixin, BulkListSerializer
 from integration.serializers import AmazonOrdersSerializerWithOneASINPic
 
 from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, WarehouseBin, \
-    ProductOrder, AmazonOrders, Product_Bundle, Inventory, StockIn, StockOut, Product_Inventory, Shipping_Setting
+    ProductOrder, AmazonOrders, Product_Bundle, Inventory, StockIn, StockOut, Product_Inventory, Shipping_Setting, \
+    ProductImages
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -59,6 +60,7 @@ class ProductSerializer(BulkSerializerMixin, serializers.ModelSerializer):
     """
     Product Serializer
     """
+
     class Meta:
         model = Product
         list_serializer_class = BulkListSerializer
@@ -73,6 +75,14 @@ class ImageSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Images
+
+
+class ProductImageSerializer(serializers.ModelSerializer):
+    """
+    Image Serializer
+    """
+    class Meta:
+        model = ProductImages
 
 
 class ProductInventorySerializer(serializers.ModelSerializer):

@@ -15,7 +15,7 @@ from .serializers import CategorySerializer, ProductSerializer, ImageSerializer,
     StockInSerializer, StockOutSerializer, ProductInventorySerializer, ShippingSettingSerializer
 from .models import Category, Product, Images, CSV, ChannelCategory, ProductListingConfigurator, Warehouse, \
     WarehouseBin, ProductOrder, AmazonOrders, Product_Bundle, Inventory, StockIn, StockOut, Product_Inventory, \
-    Shipping_Setting
+    Shipping_Setting, ProductImages
 from rest_framework_bulk import ListBulkCreateUpdateDestroyAPIView, ListCreateBulkUpdateAPIView
 from esales_api.utils import HashCode
 logger = logging.getLogger(__name__)
@@ -194,6 +194,39 @@ class InventoryImageDetails(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
     queryset = Images.objects.all()
+    serializer_class = ImageSerializer
+
+
+class InventoryProductImageList(generics.ListCreateAPIView):
+    """
+    List image related to a product
+    """
+    permission_classes = (permissions.AllowAny,) #TOOD Remove This block once fixed on client size
+    model = ProductImages
+    serializer_class = ImageSerializer
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned purchases to a given user,
+        by filtering against a `username` query parameter in the URL.
+        """
+        queryset = ProductImages.objects.all()
+        product = self.request.QUERY_PARAMS.get('product', None)
+        if product is not None:
+            queryset = queryset.filter(product_id=product)
+        return queryset
+
+    # def perform_create(self, serializer):
+    #     serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
+
+
+class InventoryProductImageDetails(generics.RetrieveUpdateDestroyAPIView):
+    """
+    List info about a image
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = ProductImages.objects.all()
     serializer_class = ImageSerializer
 
 
