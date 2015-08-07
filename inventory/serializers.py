@@ -22,11 +22,20 @@ class InventoryBinSerializer(serializers.ModelSerializer):
         model = WarehouseBin
         fields = ('id', 'name', 'stock_quantity')
 
+class InventoryImageSerializer(serializers.ModelSerializer):
+    """
+    Inventory Serializer
+    """
+    class Meta:
+        model = Images
+        fields = ['id', 'image']
+
+
 class InventorySerializer(serializers.ModelSerializer):
     """
     Inventory Serializer
     """
-    images = serializers.StringRelatedField(many=True, read_only=True)
+    images = InventoryImageSerializer(many=True, read_only=True)
     inventorywarehousebin = InventoryBinSerializer(many=True, read_only=True)
 
     class Meta:
@@ -36,14 +45,6 @@ class InventorySerializer(serializers.ModelSerializer):
                   'category', 'meta_data', 'created_on', 'item_quantity', 'sold_quantity', 'images', 'inventorywarehousebin')
 
 
-class InventoryImageSerializer(serializers.ModelSerializer):
-    """
-    Inventory Serializer
-    """
-    images = serializers.StringRelatedField(many=True)
-    class Meta:
-        model = Inventory
-        fields = ['id', 'images']
 
 
 # class ProductSerializer(serializers.ModelSerializer):
@@ -56,17 +57,30 @@ class InventoryImageSerializer(serializers.ModelSerializer):
 #                   'purchase_price', 'retail_price', 'tax_price', 'sku', 'barcode', 'stock_quantity', 'min_stock_quantity',
 #                   'sold_quantity', 'category', 'channel', 'meta_data', 'origin', 'created_on', 'product_type', 'field2', 'field8','linked_inventory')
 
+
+class ProductImageSerializer(serializers.ModelSerializer):
+    """
+    Image Serializer
+    """
+    class Meta:
+        model = ProductImages
+        fields = ('product', 'image', 'id')
+
+
+
 class ProductSerializer(BulkSerializerMixin, serializers.ModelSerializer):
     """
     Product Serializer
     """
+    images = ProductImageSerializer(read_only=True, many=True)
 
     class Meta:
         model = Product
         list_serializer_class = BulkListSerializer
         fields = ('id', 'name', 'brand', 'description', 'bullet_point', 'manufacturer', 'ucodetype', 'ucodevalue',
                   'purchase_price', 'retail_price', 'tax_price', 'sku', 'barcode', 'stock_quantity', 'min_stock_quantity',
-                  'sold_quantity', 'category', 'channel', 'meta_data', 'origin', 'created_on', 'product_type', 'parent_product', 'field2', 'field8','linked_inventory')
+                  'sold_quantity', 'category', 'channel', 'meta_data', 'origin', 'created_on', 'product_type',
+                  'parent_product', 'field2', 'field8','linked_inventory', 'images')
 
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -76,14 +90,6 @@ class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Images
 
-
-class ProductImageSerializer(serializers.ModelSerializer):
-    """
-    Image Serializer
-    """
-    class Meta:
-        model = ProductImages
-        fields = ('product', 'image', 'is_main', 'status')
 
 
 class ProductInventorySerializer(serializers.ModelSerializer):
@@ -157,7 +163,8 @@ class WarehouseBinSerializer(serializers.ModelSerializer):
 
 
 class ProductOrderSerializer(serializers.ModelSerializer):
-    products = ProductWithImagesSerializer(source='product', read_only=True)
+    #products = ProductWithImagesSerializer(source='product', read_only=True)
+    products = ProductSerializer(source='product', read_only=True)
     warehousebins = WarehouseBinSerializer(source='warehousebin', read_only=True)
 
     class Meta:
@@ -198,11 +205,12 @@ class ProductInventorySerializer(serializers.ModelSerializer):
 class BundleProductSerializer(serializers.ModelSerializer):
     #items = InventorySerializer(source='item', read_only=True)
     # bundle = ProductSerializer(source='product', read_only=True)
-
+    images = ProductImageSerializer(many=True, read_only=True)
     product_i_product = ProductInventorySerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
+        #fields= ('id', 'images', 'product_i_product')
 
 
 

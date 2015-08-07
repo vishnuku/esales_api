@@ -1,4 +1,5 @@
 import logging
+import os
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from rest_framework.renderers import JSONRenderer
@@ -8,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from tasks import map_order_product_warehouse
 import json
+from django.conf import settings
 
 from .serializers import CategorySerializer, ProductSerializer, ImageSerializer, ProductWithImagesSerializer,\
     InventoryCSVSerializer, ChannelCategorySerializer, ProductListingConfiguratorSerializer, WarehouseSerializer, \
@@ -493,7 +495,6 @@ class BundleProductList(ListBulkCreateUpdateDestroyAPIView):
 
 
 
-
 class BundleProductDetails(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
@@ -503,6 +504,22 @@ class BundleProductDetails(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         queryset = Product.objects.filter(product_type__exact=2, id=self.kwargs['pk'])
         return queryset
+
+    def delete(self, request, *args, **kwargs):
+        '''
+        If we got delete bundle request then it will effect listed table as per logic;
+        Product table: Because bundle saved in product table with product type 2,So it will delete form product table.
+        Productinventory table: Each bundle have some linked items, So those items will delete..
+        ProductImages talbe: Each bundle may have some images, So those will be deleted.
+        *logic: If we are assigning bundle to any product then that product has a parent with bundle id. So If we are
+        deleting bundle then its child product will be unlink.
+        '''
+        #TODO: Currently images are not removing form directory. we need ot remove them if image field object is deleted.
+        ProductImages.objects.filter(product=self.kwargs['pk']).delete()
+        Product_Inventory.objects.filter(product=self.kwargs['pk']).delete()
+        Product.objects.filter(parent_product=self.kwargs['pk']).update(parent_product=0)
+        Product.objects.filter(id=self.kwargs['pk']).delete()
+        return Response(status=status.HTTP_200_OK)
 
 
 

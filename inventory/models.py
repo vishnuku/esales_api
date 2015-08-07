@@ -206,9 +206,9 @@ class ProductImages(models.Model):
     status = models.SmallIntegerField(default=1, blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name='created_by_user_productimages')
-    updated_by = models.ForeignKey(User, related_name='updated_by_user_productimages')
-    user = models.ForeignKey(User)
+    # created_by = models.ForeignKey(User, related_name='created_by_user_productimages')
+    # updated_by = models.ForeignKey(User, related_name='updated_by_user_productimages')
+    # user = models.ForeignKey(User)
 
     class Meta:
         ordering = ('created_on',)
