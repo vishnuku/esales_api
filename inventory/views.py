@@ -82,7 +82,6 @@ class InventoryList(generics.ListCreateAPIView):
             return queryset
 
 
-
 class InventoryDetails(generics.RetrieveUpdateDestroyAPIView):
     """
     List Inventory details
@@ -600,6 +599,17 @@ class ProductInventoryList(ListBulkCreateUpdateDestroyAPIView):
                 qs = queryset.filter(**{ck:cv})
                 qs.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def patch(self, request, *args, **kwargs):
+        '''
+        Input Data Sample: [{"id":56,"quantity":3, "product":1, "inventory":1},
+        {"id":56,"quantity":3, "product":1, "inventory":1}]
+        '''
+        for c in self.request.data:
+            Product_Inventory.objects.filter(id=c['id']).update(inventory=c['inventory'], quantity=c['quantity'])
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 
 
 
