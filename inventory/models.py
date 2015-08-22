@@ -308,6 +308,7 @@ class AmazonOrders(models.Model):
     fulfillmentchannel = models.CharField(blank=False, null=True, max_length=50)
     shipservicelevel = models.CharField(blank=False, null=True, max_length=50)
     address = JSONField()
+    ordershippingsettingstatus = models.SmallIntegerField(blank=True, null=True)
     purchasedate = models.DateTimeField(db_index=True, blank=True, null=True)
     lastupdatedate = models.DateTimeField(db_index=True, blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True, db_index=True)
@@ -463,9 +464,9 @@ class Product_Bundle(models.Model):
 
 class Product_Inventory(models.Model):
     product = models.ForeignKey(Product, related_name='product_i_product')
-    inventory = models.ForeignKey(Inventory, related_name='product_i_inventory')
+    inventory = models.ForeignKey(Inventory, related_name='product_i_inventory', blank=True, null=True)
     quantity = models.IntegerField()
-    warehouseBin = models.ForeignKey(WarehouseBin, related_name='product_bin')
+    warehouseBin = models.ForeignKey(WarehouseBin, related_name='product_bin', blank=True, null=True)
     created_by = models.IntegerField()
     updated_by = models.IntegerField()
     user = models.ForeignKey(User)

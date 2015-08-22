@@ -583,6 +583,7 @@ class StockOutDetails(generics.RetrieveUpdateDestroyAPIView):
 class ProductInventoryList(ListBulkCreateUpdateDestroyAPIView):
     """
     List all the ProductListingConfigurator
+    Post data smaple: [{}]
     """
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
@@ -593,6 +594,9 @@ class ProductInventoryList(ListBulkCreateUpdateDestroyAPIView):
         serializer.save(user=self.request.user, created_by=self.request.user.id, updated_by=self.request.user.id)
 
     def delete(self, request, *args, **kwargs):
+        '''
+        Input Data Sample: [{id:2}]
+        '''
         queryset = Product_Inventory.objects.all()
         for c in self.request.data:
             for ck, cv in c.iteritems():
@@ -600,14 +604,16 @@ class ProductInventoryList(ListBulkCreateUpdateDestroyAPIView):
                 qs.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
     def patch(self, request, *args, **kwargs):
         '''
-        Input Data Sample: [{"id":56,"quantity":3, "product":1, "inventory":1},
-        {"id":56,"quantity":3, "product":1, "inventory":1}]
+        Input Data Sample: [{"id":56,"quantity":3, "product":1, "inventory":null, "warehousebin":null}]
         '''
         for c in self.request.data:
-            Product_Inventory.objects.filter(id=c['id']).update(inventory=c['inventory'], quantity=c['quantity'])
-        return Response(status=status.HTTP_204_NO_CONTENT)
+            Product_Inventory.objects.filter(id=c['id']).update(inventory=c['inventory'],
+                                                                quantity=c['quantity'],
+                                                                warehouseBin=c['warehousebin'])
+        return Response(status=status.HTTP_202_ACCEPTED)
 
 
 
