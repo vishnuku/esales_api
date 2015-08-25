@@ -44,16 +44,15 @@ class ContentTypeRestrictedFileField(FileField):
 
 
 class HashCode():
-
     def generate_hash_code(self, amazonordersid):
 
         product_order = ProductOrder.objects.filter(amazonorders=amazonordersid)
         qty = 0
         product_id = 0
         data = []
-        length = product_order.__len__() if int(product_order.__len__()) > 1 else 2
+        length = product_order.__len__() if int(product_order.__len__()) > 1 else 6
         for product in product_order:
-            qty += int(product.quantityordered) if int(product.quantityordered) > 1 else 2
+            qty += int(product.quantityordered) if int(product.quantityordered) > 1 else 4
             product_id += int(product.product.id) if int(product.product.id) > 1 else 2
 
         qty = int(math.pow(qty, length))
