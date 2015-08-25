@@ -44,6 +44,7 @@ class ContentTypeRestrictedFileField(FileField):
 
 
 class HashCode():
+
     def generate_hash_code(self, amazonordersid):
 
         product_order = ProductOrder.objects.filter(amazonorders=amazonordersid)
