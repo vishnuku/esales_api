@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from rest_framework.renderers import JSONRenderer
 from rest_framework import generics
 from rest_framework import authentication, permissions
+from rest_framework import pagination
 from inventory.models import AmazonOrders, ProductOrder
 from orders import serializers
 from orders.models import Filter, OrderShippingDetail
@@ -31,6 +32,7 @@ class OrderList(generics.ListCreateAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
     # serializer_class = AmazonOrdersSerializer
+    #paginate_by_param = 'limit'
 
     model = AmazonOrders
 
@@ -44,6 +46,7 @@ class OrderList(generics.ListCreateAPIView):
             fl = self.request.QUERY_PARAMS.get('fl', None)
             win = self.request.QUERY_PARAMS.get('win', None)
             win_filter = Q(orderstatus__in=['Shipped', 'Unshipped', 'Processing'], fulfillmentchannel='MFN')
+            #win_filter = Q(orderstatus__in=['Unshipped', 'Processing'], fulfillmentchannel='MFN')
 
             queryset = None
             if fl is not None and fl.isdigit():
@@ -95,6 +98,12 @@ class OrderList(generics.ListCreateAPIView):
 
 
     def manage_inventory_on_order_received(self, order_status, item_id, order_item_qty ):
+        '''
+        :param order_status:
+        :param item_id:
+        :param order_item_qty:
+        :return:
+        '''
         product = Product.objects.get(pk=item_id)
         if order_status == 'shipped':
             product.stock_quantity -= order_item_qty

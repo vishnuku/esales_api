@@ -62,6 +62,7 @@ class InventoryList(generics.ListCreateAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = InventorySerializer
+    #paginate_by_param = 'limit'
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user, created_by=self.request.user.id, updated_by=self.request.user.id)
@@ -369,6 +370,7 @@ class WarehouseList(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = Warehouse.objects.all()
     serializer_class = WarehouseSerializer
+    #paginate_by_param = 'limit'
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user, created_by=self.request.user, updated_by=self.request.user)
@@ -612,7 +614,7 @@ class ProductInventoryList(ListBulkCreateUpdateDestroyAPIView):
         for c in self.request.data:
             Product_Inventory.objects.filter(id=c['id']).update(inventory=c['inventory'],
                                                                 quantity=c['quantity'],
-                                                                warehouseBin=c['warehousebin'])
+                                                                warehousebin=c['warehousebin'])
         return Response(status=status.HTTP_202_ACCEPTED)
 
 

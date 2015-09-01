@@ -466,7 +466,7 @@ class Product_Inventory(models.Model):
     product = models.ForeignKey(Product, related_name='product_i_product')
     inventory = models.ForeignKey(Inventory, related_name='product_i_inventory', blank=True, null=True)
     quantity = models.IntegerField()
-    warehouseBin = models.ForeignKey(WarehouseBin, related_name='product_bin', blank=True, null=True)
+    warehousebin = models.ForeignKey(WarehouseBin, related_name='product_bin', blank=True, null=True)
     created_by = models.IntegerField()
     updated_by = models.IntegerField()
     user = models.ForeignKey(User)

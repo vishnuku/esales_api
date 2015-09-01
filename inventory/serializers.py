@@ -206,7 +206,7 @@ class ProductInventorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product_Inventory
-        fields = ('id', 'product', 'inventory', 'quantity', 'product_i_inventory')
+        fields = ('id', 'product', 'inventory', 'quantity', 'warehousebin', 'product_i_inventory')
 
 
 class BundleProductSerializer(serializers.ModelSerializer):
