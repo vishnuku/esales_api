@@ -482,3 +482,28 @@ class InventoryOrder(generics.ListAPIView):
         queryset = AmazonOrders.objects.all()
         queryset = queryset.filter(id=self.kwargs['pk'])
         return queryset
+
+
+@csrf_exempt
+def test(request):
+    # Provide your credentials.
+    ACCESS_KEY = 'AKIAIHQUHXQOUNUM6SDA'
+    SECRET_KEY = 'EKvo/uO8+SjwdFBnBXAyUnL3M53RZ2+L6YV8KHSG'
+    SELLER_ID = 'A12E5EV3PJJY83'
+    MARKETPLACE_ID = 'A21TJRUUN4KGV'
+    HOST = 'mws.amazonservices.in'
+    conn = MWSConnection(
+        aws_access_key_id=ACCESS_KEY,
+        aws_secret_access_key=SECRET_KEY,
+        Merchant=SELLER_ID, host=HOST
+    )
+
+    # Get a list of orders.
+    response = conn.list_orders(
+        CreatedAfter='2016-08-01T00:00:00Z',
+        MarketplaceId=[MARKETPLACE_ID]
+    )
+
+    # Get the Amazon Order Id.
+    aa = response.ListOrdersResult.Orders.Order[0].AmazonOrderId
+    print aa

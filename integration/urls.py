@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^inventory/channel/(?P<pk>[0-9]+)/$', views.channel, name='channel'),
     # url(r'^channel/$', views.channels, name='cahnnels'),
     url(r'^inventory/amazon/$', views.inventory),
+    url(r'^inventory/test/$', views.test),
     url(r'^inventory/amazon/(?P<pk>[0-9]+)/$', views.inventory),
     # url(r'^inventory/sync/(?P<pk>[0-9]+)/$', views.sync),
     url(r'^inventory/sync/(?P<pk>[0-9]+)/$', views.InventorySync.as_view(), name='sync_view'),
