@@ -19,7 +19,7 @@ djangorestframework==3.0.3
 djangorestframework-bulk==0.2
 jsonfield==1.0.3
 kombu==3.0.24
-lxml==3.4.2
+lxml==4.6.5
 oauth2-provider==0.0
 oauthlib==0.7.2
 python-dateutil==2.4.1
