@@ -30,4 +30,4 @@ six==1.9.0
 wsgiref==0.1.2
 pyusps==0.0.6
 easypost==2.0.14
-reportlab==3.1.44
+reportlab==3.5.55
